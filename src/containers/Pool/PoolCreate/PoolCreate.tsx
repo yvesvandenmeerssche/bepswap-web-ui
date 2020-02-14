@@ -31,13 +31,13 @@ import {
   ConfirmModal,
   ConfirmModalContent,
 } from './PoolCreate.style';
+import { getTickerFormat, emptyString } from '../../../helpers/stringHelper';
+import { confirmCreatePool } from '../utils';
 import {
-  getUserFormat,
-  getTickerFormat,
-  emptyString,
-} from '../../../helpers/stringHelper';
-import { confirmCreatePool, getCreatePoolCalc } from '../utils';
-import { getCreatePoolTokens } from '../utils-next';
+  getCreatePoolTokens,
+  getCreatePoolCalc,
+  CreatePoolCalc,
+} from '../utils-next';
 
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 import { MAX_VALUE } from '../../../redux/app/const';
@@ -143,19 +143,22 @@ class PoolCreate extends React.Component<Props, State> {
     resetTxStatus();
   }
 
-  getData = () => {
+  getData = (runeAmount: number, tokenAmount: number): CreatePoolCalc => {
     const { symbol, poolAddress, priceIndex } = this.props;
-    const { runeAmount, tokenAmount } = this.state;
 
-    const runePrice = priceIndex.runePrice;
+    const runePrice = priceIndex.RUNE;
 
-    return getCreatePoolCalc(
-      symbol,
+    const createPoolCalc = getCreatePoolCalc({
+      tokenSymbol: symbol,
       poolAddress,
       runeAmount,
       runePrice,
       tokenAmount,
-    );
+    });
+
+    // console.log('xxx createPoolCalc', createPoolCalc);
+
+    return createPoolCalc;
   };
 
   getStakerData = () => {
@@ -177,7 +180,6 @@ class PoolCreate extends React.Component<Props, State> {
     const { assetData, symbol } = this.props;
     const { fR, fT } = this.state;
 
-    let newValue;
     const source = getTickerFormat(tokenName);
 
     const sourceAsset = assetData.find(data => {
@@ -205,40 +207,47 @@ class PoolCreate extends React.Component<Props, State> {
 
     const totalAmount = !sourceAsset ? 0 : sourceAsset.assetValue * balance;
 
+    console.log('xxx totalAmount:', totalAmount);
+    console.log('xxx amount:', amount);
+    const percentageAmount = totalAmount < amount ? 100 : (amount * 100) / totalAmount;
+    console.log('xxx percentageAmount:', percentageAmount);
     if (tokenName === 'rune') {
-      newValue = amount;
-
-      if (totalAmount < newValue) {
+      if (totalAmount < amount) {
+        console.log('xxx RUNE totalAmount < newValue ????????????????????? ');
         this.setState({
           runeAmount: totalAmount,
           selectedRune: 0,
         });
       } else {
+        console.log('xxx RUNE totalAmount >= amount ?????????????????????');
         this.setState({
-          runeAmount: newValue,
-          selectedRune: 0,
+          runeAmount: amount,
+          selectedRune: percentageAmount,
         });
       }
+    } else if (totalAmount < amount) {
+      console.log('xxx TOKEN totalAmount < amount ?????????????????????');
+      this.setState({
+        tokenAmount: totalAmount,
+        selectedToken: 0,
+      });
     } else {
-      newValue = amount;
-
-      if (totalAmount < newValue) {
-        this.setState({
-          tokenAmount: totalAmount,
-          selectedToken: 0,
-        });
-      } else {
-        this.setState({
-          tokenAmount: newValue,
-          selectedToken: 0,
-        });
-      }
+      console.log('xxx TOKEN totalAmount >= amount ?????????????????????');
+      this.setState({
+        tokenAmount: amount,
+        selectedToken: percentageAmount,
+      });
     }
   };
 
   handleSelectTokenAmount = (token: string) => (amount: number) => {
     const { assetData, symbol } = this.props;
     const { fR, fT } = this.state;
+
+    console.log('xxx handleSelectTokenAmount', token, amount);
+    console.log('xxx assetData', assetData);
+    console.log('xxx symbol', symbol);
+    console.log('xxx token', token);
 
     const selectedToken = assetData.find(data => {
       const { asset } = data;
@@ -249,6 +258,8 @@ class PoolCreate extends React.Component<Props, State> {
       return false;
     });
 
+    console.log('xxx selectedToken', selectedToken);
+
     const targetToken = assetData.find(data => {
       const { asset } = data;
       if (asset.toLowerCase() === symbol.toLowerCase()) {
@@ -256,6 +267,8 @@ class PoolCreate extends React.Component<Props, State> {
       }
       return false;
     });
+
+    console.log('xxx targetToken', targetToken);
 
     if (!selectedToken || !targetToken) {
       return;
@@ -281,18 +294,28 @@ class PoolCreate extends React.Component<Props, State> {
   };
 
   handleChangeBalance = (balance: number) => {
+    console.log('xxx handleChangeBalance START xxxxxxxxxxxxxxxxxxx');
+    console.log('xxx balance', balance);
+
     const { selectedRune, selectedToken, runeTotal, tokenTotal } = this.state;
     const fR = balance < 100 ? 1 : (201 - balance) / 100;
     const fT = balance > 100 ? 1 : balance / 100;
 
+    console.log('xxx selectedRune', selectedRune);
+    console.log('xxx selectedToken', selectedToken);
+    console.log('xxx fR', fR);
+    console.log('xxx fT', fT);
+
     if (selectedRune > 0) {
       const runeAmount = ((runeTotal * selectedRune) / 100) * fR;
+      console.log('xxx runeAmount', runeAmount);
       this.setState({
         runeAmount,
       });
     }
     if (selectedToken > 0) {
       const tokenAmount = ((tokenTotal * selectedToken) / 100) * fT;
+      console.log('xxx tokenAmount', tokenAmount);
       this.setState({
         tokenAmount,
       });
@@ -345,7 +368,7 @@ class PoolCreate extends React.Component<Props, State> {
           user.wallet,
           runeAmount,
           tokenAmount,
-          this.getData(),
+          this.getData(runeAmount, tokenAmount),
         );
 
         const hash = result && result.length ? result[0].hash : null;
@@ -482,7 +505,11 @@ class PoolCreate extends React.Component<Props, State> {
 
     const tokenPrice = _get(priceIndex, target.toUpperCase(), 0);
 
-    const { poolPrice, depth, share } = this.getData();
+    const { poolPrice, depth, share } = this.getData(runeAmount, tokenAmount);
+
+    console.log('xxx poolPrice', poolPrice);
+    console.log('xxx depth', depth);
+    console.log('xxx share', share);
 
     const poolAttrs = [
       {
@@ -493,7 +520,7 @@ class PoolCreate extends React.Component<Props, State> {
       {
         key: 'depth',
         title: 'Pool Depth',
-        value: `${basePriceAsset} ${getUserFormat(depth)}`,
+        value: `${basePriceAsset} ${depth}`,
       },
       { key: 'share', title: 'Your Share', value: `${share}%` },
     ];
