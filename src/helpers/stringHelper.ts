@@ -8,12 +8,12 @@ export type Pair = {
 
 export const getPair = (info?: string) => {
   if (info) {
-    const source = info.split('-')[0];
-    const target = info.split('-')[1] || '';
+    const source = info.split('-')[0].toLowerCase();
+    const target = info.split('-')[1].toLowerCase();
 
     return {
-      source: source.toLowerCase(),
-      target: target.toLowerCase(),
+      source,
+      target,
     };
   }
   return {

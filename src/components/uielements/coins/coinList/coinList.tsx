@@ -13,7 +13,8 @@ export type CoinListDataList = AssetData[] | StakeData[]
 
 type Props = {
   data?: CoinListDataList;
-  selected?: Maybe<CoinListDataList>;
+  value?: Maybe<StakeOrAssetData>;
+  selected?: AssetData[];
   onSelect?: (key: number) => void;
   size?: CoinListWrapperSize;
   className?: string;
@@ -25,6 +26,7 @@ type Props = {
 export const CoinList: React.FC<Props> = (props: Props): JSX.Element => {
   const {
     data = [],
+    value = Nothing,
     selected = [],
     onSelect = (_: number) => {},
     priceIndex,
@@ -74,8 +76,8 @@ export const CoinList: React.FC<Props> = (props: Props): JSX.Element => {
               return <Fragment key={asset} />;
             }
 
-            const isSelected = selected && selected.includes(data[index]);
-            const activeClass = isSelected ? 'active' : '';
+            const isSelected = selected.includes(data[index]);
+            const activeClass = isSelected || value === data[index] ? 'active' : '';
 
             return (
               <div

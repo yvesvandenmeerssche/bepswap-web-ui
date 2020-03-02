@@ -13,7 +13,7 @@ import Button from '../../components/uielements/button';
 import CoinList from  '../../components/uielements/coins/coinList';
 import { CoinListDataList } from  '../../components/uielements/coins/coinList/coinList';
 import * as midgardActions from '../../redux/midgard/actions';
-import { getTickerFormat, getPair } from '../../helpers/stringHelper';
+import { getPair, Pair, getTickerFormat } from '../../helpers/stringHelper';
 import {
   AssetLoader,
   StakeLoader,
@@ -27,13 +27,14 @@ import {
 } from '../../redux/wallet/types';
 import { RootState } from '../../redux/store';
 import { PriceDataIndex } from '../../redux/midgard/types';
-import { matchSwapDetailPair, matchPoolSymbol } from '../../helpers/routerHelper';
 
 const { TabPane } = Tabs;
 
 type ComponentProps = {
   status?: string;
+  page?: string;
   view?: string;
+  info?: string;
 };
 
 type ConnectedProps = {
@@ -45,7 +46,6 @@ type ConnectedProps = {
   priceIndex: PriceDataIndex;
   basePriceAsset: string;
   history: H.History;
-  pathname: string;
 };
 
 type Props = ComponentProps & ConnectedProps;
@@ -54,12 +54,15 @@ type State = {};
 
 class WalletView extends React.Component<Props, State> {
   static readonly defaultProps: Partial<Props> = {
+    page: '',
     view: '',
+    info: '',
     status: '',
   };
 
   componentDidMount() {
     const { getPools } = this.props;
+
     getPools();
   }
 
@@ -70,19 +73,11 @@ class WalletView extends React.Component<Props, State> {
     return sortedAssets[index].asset || '';
   };
 
-  getAssetBySource = (source: string): Maybe<AssetData> => {
+  getAssetByName = (asset: string): Maybe<AssetData> => {
     const { assetData } = this.props;
-    const result = assetData.find((data: AssetData) => {
-      const { source: assetSource } = getPair(data.asset);
-      return assetSource === source;
-    });
-    return result || Nothing;
-  };
 
-  getStakeDataBySource = (symbol: string): Maybe<StakeData> => {
-    const { stakeData } = this.props;
-    const sd = RD.toNullable(stakeData);
-    return sd && sd.find((data: StakeData) => symbol === data.targetSymbol);
+    const result = assetData.find(data => data.asset === asset);
+    return result || Nothing;
   };
 
   handleSelectAsset = (key: number) => {
@@ -131,22 +126,21 @@ class WalletView extends React.Component<Props, State> {
         ),
     )(stakeData);
 
-  getSelectedAsset = (): AssetData[] => {
-    const { pathname } = this.props;
-    const pair = matchSwapDetailPair(pathname);
-    const asset = this.getAssetBySource(pair?.source ?? '');
-    return asset ? [asset] : [];
-  };
+  getSelectedAsset = (pair: Pair): AssetData[] => {
+    const { page } = this.props;
 
-  getSelectedStake = (): AssetData[] => {
-    const { pathname } = this.props;
-    const symbol = matchPoolSymbol(pathname);
-    const stake = this.getStakeDataBySource(symbol || '');
-    return stake ? [stake] : [];
+    if (page === 'pool') {
+      const { target = '' } = pair;
+      const asset = this.getAssetByName(target);
+
+      return asset ? [asset] : [];
+    }
+    return [];
   };
 
   render() {
     const {
+      info,
       user,
       assetData,
       stakeData,
@@ -155,8 +149,10 @@ class WalletView extends React.Component<Props, State> {
       loadingAssets,
     } = this.props;
     const hasWallet = user && user.wallet;
-    const selectedAsset = this.getSelectedAsset();
-    const selectedStake = this.getSelectedStake();
+    const pair: Pair = getPair(info);
+    const { source = '' } = pair;
+    const selectedAsset = this.getSelectedAsset(pair);
+    const sourceIndex = this.getAssetByName(source);
     const sortedAssets = _sortBy(assetData, ['asset']);
     const stakeDataForSorting = RD.toNullable(stakeData);
     const sortedStakerData = stakeDataForSorting ? _sortBy(stakeDataForSorting, ['target']) : null;
@@ -177,6 +173,7 @@ class WalletView extends React.Component<Props, State> {
               <CoinList
                 data-test="wallet-asset-list"
                 data={sortedAssets}
+                value={sourceIndex}
                 selected={selectedAsset as CoinListDataList}
                 priceIndex={priceIndex}
                 onSelect={this.handleSelectAsset}
@@ -194,7 +191,6 @@ class WalletView extends React.Component<Props, State> {
                 data-test="wallet-stakes-list"
                 data={sortedStakerData}
                 priceIndex={priceIndex}
-                selected={selectedStake as CoinListDataList}
                 onSelect={(key: number) =>
                   this.handleSelectStake(key, sortedStakerData)}
                 unit={basePriceAsset}
@@ -216,7 +212,6 @@ export default compose(
       loadingAssets: state.Wallet.loadingAssets,
       priceIndex: state.Midgard.priceIndex,
       basePriceAsset: state.Midgard.basePriceAsset,
-      pathname: state.router.location.pathname,
     }),
     {
       getPools: midgardActions.getPools,
