@@ -25,7 +25,7 @@ import {
   GET_POOL_ADDRESSES_SUCCESS,
   GET_POOL_ADDRESSES_REQUEST,
   GET_POOL_ADDRESSES_FAILED,
-  GET_TX_BY_ADDRESS,
+  getTxByAddress,
   GET_TX_BY_ADDRESS_SUCCESS,
   GET_TX_BY_ADDRESS_FAILED,
   GET_TX_BY_ADDRESS_TXID,
@@ -207,7 +207,7 @@ const reducer: Reducer<State, MidgardActionTypes> = (
         poolAddress: Nothing,
         error: action.payload,
       };
-    case GET_TX_BY_ADDRESS:
+    case getTxByAddress.type:
       return {
         ...state,
         txData: [],

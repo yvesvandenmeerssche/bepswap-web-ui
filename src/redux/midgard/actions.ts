@@ -1,4 +1,6 @@
+import { createAction } from '@reduxjs/toolkit';
 import { AssetSymbol } from '../../types/bepswap';
+import { withPayloadType } from '../utils';
 import {
   GetStakerPoolDataPayload,
   PriceDataIndex,
@@ -190,15 +192,10 @@ export const setPriceIndex = (payload: PriceDataIndex): SetPriceIndex => ({
 });
 
 // get transactions by address
-export const GET_TX_BY_ADDRESS = 'GET_TX_BY_ADDRESS';
-export interface GetTxByAddress {
-  type: typeof GET_TX_BY_ADDRESS;
-  payload: string;
-}
-export const getTxByAddress = (payload: string): GetTxByAddress => ({
-  type: GET_TX_BY_ADDRESS,
-  payload,
-});
+export const getTxByAddress = createAction(
+  'GET_TX_BY_ADDRESS',
+  withPayloadType<string>(),
+);
 
 export const GET_TX_BY_ADDRESS_SUCCESS = 'GET_TX_BY_ADDRESS_SUCCESS';
 export interface GetTxByAddressSuccess {
@@ -325,9 +322,7 @@ export interface GetTxByAssetFailed {
   type: typeof GET_TX_BY_ASSET_FAILED;
   payload: Error;
 }
-export const getTxByAssetFailed = (
-  payload: Error,
-): GetTxByAssetFailed => ({
+export const getTxByAssetFailed = (payload: Error): GetTxByAssetFailed => ({
   type: GET_TX_BY_ASSET_FAILED,
   payload,
 });
@@ -349,7 +344,7 @@ export type MidgardActionTypes =
   | SetAssets
   | SetBasePriceAsset
   | SetPriceIndex
-  | GetTxByAddress
+  | getTxByAddress.type
   | GetTxByAddressSuccess
   | GetTxByAddressFailed
   | GetTxByAddressTxId
