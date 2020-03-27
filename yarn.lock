@@ -3499,9 +3499,9 @@ asap@~2.0.3, asap@~2.0.6:
   resolved "https://registry.yarnpkg.com/asap/-/asap-2.0.6.tgz#e50347611d7e690943208bbdafebcbc2fb866d46"
   integrity sha1-5QNHYR1+aQlDIIu9r+vLwvuGbUY=
 
-"asgardex-common@https://gitlab.com/thorchain/bepswap/asgardex-common.git#fix/bn-improvments":
+"asgardex-common@https://gitlab.com/thorchain/bepswap/asgardex-common.git#master":
   version "0.1.0"
-  resolved "https://gitlab.com/thorchain/bepswap/asgardex-common.git#87699f6584be264c8f8a293b08c41cbdf9b946a4"
+  resolved "https://gitlab.com/thorchain/bepswap/asgardex-common.git#99188c947d90f36f38fa993df3955273e6fcc563"
 
 asn1.js@^4.0.0:
   version "4.10.1"
