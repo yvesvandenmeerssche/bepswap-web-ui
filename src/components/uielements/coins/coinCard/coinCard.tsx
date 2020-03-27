@@ -3,6 +3,7 @@ import { Dropdown } from 'antd';
 import { sortBy as _sortBy } from 'lodash';
 
 import BigNumber from 'bignumber.js';
+import { util } from 'asgardex-common';
 import Label from '../../label';
 import Selection from '../../selection';
 import CoinInputAdvanced from '../coinInputAdvanced';
@@ -30,7 +31,6 @@ import { PriceDataIndex } from '../../../../redux/midgard/types';
 import { TokenAmount } from '../../../../types/token';
 import { tokenAmount } from '../../../../helpers/tokenHelper';
 import { FixmeType, AssetPair } from '../../../../types/bepswap';
-import { util } from 'asgardex-common';
 
 type DropdownCarretProps = {
   open: boolean;
