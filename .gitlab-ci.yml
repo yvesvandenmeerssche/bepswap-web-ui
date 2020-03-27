@@ -8,12 +8,10 @@ cache:
   key: ${CI_COMMIT_REF_SLUG}
   paths:
     - cache/Cypress
-    - node_modules/
-    - .yarn
 
 before_script:
   - echo "REACT_APP_MIDGARD_API_URL:" ${REACT_APP_MIDGARD_API_URL}
-  - yarn
+  - yarn install --frozen-lockfile
   - npm i -g firebase-tools
   - firebase -V
 
