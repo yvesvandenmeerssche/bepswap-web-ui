@@ -48,7 +48,6 @@ import { State as BinanceState } from '../../../redux/binance/types';
 import {
   PriceDataIndex,
   PoolDataMap,
-  StakerPoolData,
 } from '../../../redux/midgard/types';
 import { Maybe, FixmeType, AssetPair } from '../../../types/bepswap';
 import { User, AssetData } from '../../../redux/wallet/types';
@@ -68,7 +67,6 @@ type ConnectedProps = {
   pools: string[];
   poolAddress: string;
   poolData: PoolDataMap;
-  stakerPoolData: StakerPoolData;
   user: Maybe<User>;
   basePriceAsset: string;
   priceIndex: PriceDataIndex;
@@ -719,7 +717,6 @@ export default compose(
       poolData: state.Midgard.poolData,
       priceIndex: state.Midgard.priceIndex,
       basePriceAsset: state.Midgard.basePriceAsset,
-      stakerPoolData: state.Midgard.stakerPoolData,
       binanceData: state.Binance,
       txStatus: state.App.txStatus,
     }),

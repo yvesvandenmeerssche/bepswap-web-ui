@@ -87,7 +87,7 @@ type ConnectedProps = {
   poolAddress: Maybe<string>;
   poolData: PoolDataMap;
   assets: AssetDetailMap;
-  stakerPoolData: StakerPoolData;
+  stakerPoolData: Maybe<StakerPoolData>;
   priceIndex: PriceDataIndex;
   basePriceAsset: string;
   poolLoading: boolean;
@@ -953,7 +953,7 @@ class PoolStake extends React.Component<Props, State> {
   renderShareDetail = (
     _: PoolData,
     calcResult: CalcResult,
-    stakeData: StakerPoolData,
+    stakeInfo: StakersAssetData,
   ) => {
     const { symbol, priceIndex, basePriceAsset, assets } = this.props;
     const {
@@ -980,12 +980,6 @@ class PoolStake extends React.Component<Props, State> {
       };
     });
 
-    const stakeInfo =
-      (stakeData && stakeData[symbol]) ||
-      ({
-        stakeUnits: '0',
-      } as StakersAssetData);
-
     const { R, T, poolUnits = 0 } = calcResult;
 
     // withdraw values
@@ -997,7 +991,8 @@ class PoolStake extends React.Component<Props, State> {
       // avoid divison by zero
       poolUnits && poolUnits.isGreaterThan(0)
         ? // formula: ((withdrawRate * stakeUnits) / poolUnits) * R
-          util.bn(withdrawRate)
+          util
+            .bn(withdrawRate)
             .multipliedBy(stakeUnitsBN)
             .div(poolUnits)
             .multipliedBy(R)
@@ -1007,7 +1002,8 @@ class PoolStake extends React.Component<Props, State> {
     const tokenValue =
       // avoid divison by zero
       poolUnits && poolUnits.isGreaterThan(0)
-        ? util.bn(withdrawRate)
+        ? util
+            .bn(withdrawRate)
             .multipliedBy(stakeUnitsBN)
             .div(poolUnits)
             .multipliedBy(T)
@@ -1156,13 +1152,11 @@ class PoolStake extends React.Component<Props, State> {
     );
   };
 
-  renderYourShare = (calcResult: CalcResult, stakeData: StakerPoolData) => {
+  renderYourShare = (calcResult: CalcResult, stakeInfo: StakersAssetData) => {
     const { symbol, user, priceIndex, basePriceAsset } = this.props;
 
     const wallet = user ? user.wallet : null;
     const hasWallet = wallet !== null;
-
-    const stakeInfo = stakeData && stakeData[symbol];
 
     const { poolUnits, R, T } = calcResult;
     const source = 'rune';
@@ -1192,8 +1186,12 @@ class PoolStake extends React.Component<Props, State> {
       const runeShareValue: BigNumber = R.multipliedBy(stakeUnitsBN).div(
         poolUnits,
       );
-      runeStakedShare = baseAmount(runeStakedBN.multipliedBy(poolShare).div(100));
-      assetStakedShare = baseAmount(assetStakedBN.multipliedBy(poolShare).div(100));
+      runeStakedShare = baseAmount(
+        runeStakedBN.multipliedBy(poolShare).div(100),
+      );
+      assetStakedShare = baseAmount(
+        assetStakedBN.multipliedBy(poolShare).div(100),
+      );
       runeShare = baseAmount(runeShareValue);
 
       const runeSharePrice: BaseAmount = baseAmount(
@@ -1249,7 +1247,9 @@ class PoolStake extends React.Component<Props, State> {
                     <Status
                       title={source.toUpperCase()}
                       value={
-                        runeStakedShare ? formatBaseAsTokenAmount(runeStakedShare) : '...'
+                        runeStakedShare
+                          ? formatBaseAsTokenAmount(runeStakedShare)
+                          : '...'
                       }
                       loading={loading}
                     />
@@ -1406,16 +1406,18 @@ class PoolStake extends React.Component<Props, State> {
 
     const withdrawText = !completed ? 'YOU ARE WITHDRAWING' : 'YOU WITHDRAWN';
 
+    const stakeInfo = stakerPoolData && stakerPoolData[symbol];
+
     return (
       <ContentWrapper className="pool-stake-wrapper" transparent>
         <Row className="stake-info-view">{this.renderStakeInfo(poolStats)}</Row>
         <Row className="share-view">
           <Col className="your-share-view" span={24} lg={yourShareSpan}>
-            {this.renderYourShare(calcResult, stakerPoolData)}
+            {stakeInfo && this.renderYourShare(calcResult, stakeInfo)}
           </Col>
           {hasWallet && (
             <Col className="share-detail-view" span={24} lg={16}>
-              {this.renderShareDetail(poolStats, calcResult, stakerPoolData)}
+              { stakeInfo && this.renderShareDetail(poolStats, calcResult, stakeInfo)}
             </Col>
           )}
         </Row>

@@ -54,7 +54,7 @@ const initState: State = {
   bnbPoolAddress: Nothing,
   poolAddress: Nothing,
   poolData: {},
-  stakerPoolData: {},
+  stakerPoolData: Nothing,
   runePrice: 0,
   basePriceAsset, // set base price asset as a RUNE
   priceIndex: {
@@ -177,14 +177,14 @@ const reducer: Reducer<State, MidgardActionTypes> = (
 
       return {
         ...state,
-        stakerPoolData: { ...state.stakerPoolData, ...newStakerPoolData },
+        stakerPoolData: state.stakerPoolData ? { ...state.stakerPoolData, ...newStakerPoolData } : newStakerPoolData,
         stakerPoolDataLoading: false,
       };
     }
     case GET_STAKER_POOL_DATA_FAILED:
       return {
         ...state,
-        stakerPoolData: {},
+        stakerPoolData: Nothing,
         stakerPoolDataLoading: false,
         error: action.payload,
       };
