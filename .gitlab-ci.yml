@@ -1,4 +1,4 @@
-image: node:10.15
+image: node:12.14
 
 stages:
   - test
@@ -9,6 +9,7 @@ cache:
   paths:
     - cache/Cypress
     - node_modules/
+    - .yarn
 
 before_script:
   - echo "REACT_APP_MIDGARD_API_URL:" ${REACT_APP_MIDGARD_API_URL}
