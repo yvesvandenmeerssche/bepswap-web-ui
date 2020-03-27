@@ -13,7 +13,6 @@ cache:
 
 before_script:
   - echo "REACT_APP_MIDGARD_API_URL:" ${REACT_APP_MIDGARD_API_URL}
-  - yarn cache clean && rm yarn.lock
   - yarn
   - npm i -g firebase-tools
   - firebase -V
