@@ -30,7 +30,7 @@ import { PriceDataIndex } from '../../../../redux/midgard/types';
 import { TokenAmount } from '../../../../types/token';
 import { tokenAmount } from '../../../../helpers/tokenHelper';
 import { FixmeType, AssetPair } from '../../../../types/bepswap';
-import { delay } from '../../../../helpers/asyncHelper';
+import { util } from 'asgardex-common';
 
 type DropdownCarretProps = {
   open: boolean;
@@ -186,7 +186,7 @@ class CoinCard extends React.Component<Props, State> {
     this.setState({ openDropdown: false });
 
     // Wait for the dropdown to close
-    await delay(500);
+    await util.delay(500);
     this.handleResetPercentButtons();
     onChangeAsset(asset);
   };
