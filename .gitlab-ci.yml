@@ -4,19 +4,11 @@ stages:
   - test
   - deploy
 
-# to cache both npm modules and Cypress binary we use environment variables
-# to point at the folders we can list as paths in "cache" job settings
-# ^ Friendly borrowed from https://github.com/cypress-io/cypress-example-kitchensink/blob/master/.gitlab-ci.yml
-variables:
-  npm_config_cache: '$CI_PROJECT_DIR/.npm'
-  CYPRESS_CACHE_FOLDER: '$CI_PROJECT_DIR/cache/Cypress'
-
 cache:
   key: ${CI_COMMIT_REF_SLUG}
   paths:
     - .npm
-    - cache/Cypress
-    - node_modules
+    - .cache
 
 before_script:
   - echo "REACT_APP_MIDGARD_API_URL:" ${REACT_APP_MIDGARD_API_URL}
