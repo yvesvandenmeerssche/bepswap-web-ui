@@ -26,7 +26,6 @@ test:develop:
   image: cypress/base:10
   script:
     - yarn cy:verify
-    - yarn cy:info
     - yarn test
   environment:
     name: develop
