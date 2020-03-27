@@ -1,6 +1,7 @@
 import { Reducer } from 'redux';
 import { initial, success, pending, failure } from '@devexperts/remote-data-ts';
 
+import { util } from 'asgardex-common';
 import {
   getBNBPoolAddress,
   getPoolAddress,
@@ -42,7 +43,6 @@ import {
 } from './actions';
 import { Nothing } from '../../types/bepswap';
 import { PoolDetail, StakersAssetData } from '../../types/generated/midgard';
-import { bn } from '../../helpers/bnHelper';
 
 const basePriceAsset = getBasePriceAsset() || 'RUNE';
 
@@ -58,7 +58,7 @@ const initState: State = {
   runePrice: 0,
   basePriceAsset, // set base price asset as a RUNE
   priceIndex: {
-    RUNE: bn(1),
+    RUNE: util.bn(1),
   },
   error: null,
   poolLoading: false,

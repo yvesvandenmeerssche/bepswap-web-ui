@@ -2,6 +2,7 @@ import React from 'react';
 import { Dropdown } from 'antd';
 
 import BigNumber from 'bignumber.js';
+import { util } from 'asgardex-common';
 import {
   TokenSelectWrapper,
   TokenDropdownButton,
@@ -13,7 +14,6 @@ import TokenMenu from './tokenMenu';
 import TokenData from '../tokenData';
 import Ref from '../../../../helpers/event/ref';
 import clickedInNode from '../../../../helpers/event/clickedInNode';
-import { formatBN } from '../../../../helpers/bnHelper';
 import { AssetPair, FixmeType } from '../../../../types/bepswap';
 import { PriceDataIndex } from '../../../../redux/midgard/types';
 import { delay } from '../../../../helpers/asyncHelper';
@@ -185,7 +185,7 @@ class TokenSelect extends React.Component<Props, State> {
           <TokenSelectWrapper className={`tokenSelect-wrapper ${className}`}>
             <TokenData
               asset={asset}
-              priceValue={formatBN(price)}
+              priceValue={util.formatBN(price)}
               priceUnit={priceUnit}
             />
             {this.renderDropDownButton()}

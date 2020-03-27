@@ -9,7 +9,7 @@ import { crypto } from '@binance-chain/javascript-sdk';
 import { get as _get } from 'lodash';
 
 import BigNumber from 'bignumber.js';
-import { binance } from 'asgardex-common';
+import { binance, util } from 'asgardex-common';
 import { withBinanceTransferWS } from '../../../HOC/websocket/WSBinance';
 
 import Label from '../../../components/uielements/label';
@@ -62,13 +62,6 @@ import {
 } from '../../../redux/midgard/types';
 import { StakersAssetData } from '../../../types/generated/midgard';
 import { getAssetFromString } from '../../../redux/midgard/utils';
-import {
-  BN_ZERO,
-  bn,
-  validBNOrZero,
-  formatBN,
-  bnOrZero,
-} from '../../../helpers/bnHelper';
 import { TokenAmount, BaseAmount } from '../../../types/token';
 import {
   tokenAmount,
@@ -170,8 +163,8 @@ class PoolStake extends React.Component<Props, State> {
       tokenAmount: tokenAmount(0),
       fR: 1,
       fT: 1,
-      runeTotal: BN_ZERO,
-      tokenTotal: BN_ZERO,
+      runeTotal: util.bn(0),
+      tokenTotal: util.bn(0),
       runePercent: 0,
       tokenPercent: 0,
       txResult: false,
@@ -297,7 +290,7 @@ class PoolStake extends React.Component<Props, State> {
 
     // formula: sourceAsset.assetValue * balance
     const totalAmount = !sourceAsset
-      ? BN_ZERO
+      ? util.bn(0)
       : sourceAsset.assetValue.amount().multipliedBy(balance);
     // formula: targetToken.assetValue * balance
     const totalTokenAmount = targetToken.assetValue
@@ -437,7 +430,7 @@ class PoolStake extends React.Component<Props, State> {
   getData = (): CalcResult => {
     const { symbol, poolData, priceIndex, poolAddress } = this.props;
     const { runeAmount, tokenAmount } = this.state;
-    const runePrice = validBNOrZero(priceIndex?.RUNE);
+    const runePrice = util.validBNOrZero(priceIndex?.RUNE);
 
     const calcResult = getCalcResult(
       symbol,
@@ -756,7 +749,7 @@ class PoolStake extends React.Component<Props, State> {
     const source = 'rune';
     const target = getTickerFormat(symbol);
 
-    const Pr = validBNOrZero(priceIndex?.RUNE);
+    const Pr = util.validBNOrZero(priceIndex?.RUNE);
     const tokenPrice = _get(priceIndex, target.toUpperCase(), 0);
     const txURL = TESTNET_TX_BASE_URL + hash;
 
@@ -827,8 +820,8 @@ class PoolStake extends React.Component<Props, State> {
     const source = 'rune';
     const target = getTickerFormat(symbol);
 
-    const runePrice = validBNOrZero(priceIndex?.RUNE);
-    const tokenPrice = validBNOrZero(priceIndex[target.toUpperCase()]);
+    const runePrice = util.validBNOrZero(priceIndex?.RUNE);
+    const tokenPrice = util.validBNOrZero(priceIndex[target.toUpperCase()]);
     const txURL = TESTNET_TX_BASE_URL + hash;
 
     if (!this.withdrawData) {
@@ -975,8 +968,8 @@ class PoolStake extends React.Component<Props, State> {
     const source = 'rune';
     const target = getTickerFormat(symbol);
 
-    const runePrice = validBNOrZero(priceIndex?.RUNE);
-    const tokenPrice = validBNOrZero(priceIndex[target.toUpperCase()]);
+    const runePrice = util.validBNOrZero(priceIndex?.RUNE);
+    const tokenPrice = util.validBNOrZero(priceIndex[target.toUpperCase()]);
 
     const tokensData: AssetPair[] = Object.keys(assets).map(tokenName => {
       const tokenData = assets[tokenName];
@@ -999,27 +992,27 @@ class PoolStake extends React.Component<Props, State> {
     // withdraw values
     const withdrawRate: number = (widthdrawPercentage || 50) / 100;
     const { stakeUnits = '0' } = stakeInfo;
-    const stakeUnitsBN = bn(stakeUnits);
+    const stakeUnitsBN = util.bn(stakeUnits);
 
     const value =
       // avoid divison by zero
       poolUnits && poolUnits.isGreaterThan(0)
         ? // formula: ((withdrawRate * stakeUnits) / poolUnits) * R
-          bn(withdrawRate)
+          util.bn(withdrawRate)
             .multipliedBy(stakeUnitsBN)
             .div(poolUnits)
             .multipliedBy(R)
-        : BN_ZERO;
+        : util.bn(0);
     const runeBaseAmount = baseAmount(value);
     // formula: (withdrawRate * stakeUnits) / poolUnits) * T
     const tokenValue =
       // avoid divison by zero
       poolUnits && poolUnits.isGreaterThan(0)
-        ? bn(withdrawRate)
+        ? util.bn(withdrawRate)
             .multipliedBy(stakeUnitsBN)
             .div(poolUnits)
             .multipliedBy(T)
-        : BN_ZERO;
+        : util.bn(0);
     const tokenBaseAmount = baseAmount(tokenValue);
     this.withdrawData = {
       runeValue: runeBaseAmount,
@@ -1176,13 +1169,13 @@ class PoolStake extends React.Component<Props, State> {
     const source = 'rune';
     const target = getTickerFormat(symbol);
 
-    const runePrice = validBNOrZero(priceIndex?.RUNE);
+    const runePrice = util.validBNOrZero(priceIndex?.RUNE);
     const tokenPrice = _get(priceIndex, target.toUpperCase(), 0);
 
     const { stakeUnits, runeStaked, assetStaked }: StakersAssetData = stakeInfo;
-    const stakeUnitsBN = bnOrZero(stakeUnits);
-    const runeStakedBN = bnOrZero(runeStaked);
-    const assetStakedBN = bnOrZero(assetStaked);
+    const stakeUnitsBN = util.bnOrZero(stakeUnits);
+    const runeStakedBN = util.bnOrZero(runeStaked);
+    const assetStakedBN = util.bnOrZero(assetStaked);
     const loading = this.isLoading() || poolUnits === undefined;
 
     let poolShare: BigNumber | undefined;
@@ -1299,7 +1292,7 @@ class PoolStake extends React.Component<Props, State> {
                   <div className="your-share-info pool-share-info">
                     <Status
                       title="Pool Share"
-                      value={poolShare ? `${formatBN(poolShare)}%` : '...'}
+                      value={poolShare ? `${util.formatBN(poolShare)}%` : '...'}
                       loading={loading}
                     />
                   </div>

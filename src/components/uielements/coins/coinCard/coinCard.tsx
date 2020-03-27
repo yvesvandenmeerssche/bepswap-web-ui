@@ -3,6 +3,7 @@ import { Dropdown } from 'antd';
 import { sortBy as _sortBy } from 'lodash';
 
 import BigNumber from 'bignumber.js';
+import { util } from 'asgardex-common';
 import Label from '../../label';
 import Selection from '../../selection';
 import CoinInputAdvanced from '../coinInputAdvanced';
@@ -25,7 +26,6 @@ import {
 
 import Ref from '../../../../helpers/event/ref';
 import clickedInNode from '../../../../helpers/event/clickedInNode';
-import { formatBN, BN_ZERO } from '../../../../helpers/bnHelper';
 import { PriceDataIndex } from '../../../../redux/midgard/types';
 import { TokenAmount } from '../../../../types/token';
 import { tokenAmount } from '../../../../helpers/tokenHelper';
@@ -99,7 +99,7 @@ class CoinCard extends React.Component<Props, State> {
     asset: 'bnb',
     assetData: [],
     amount: tokenAmount(0),
-    price: BN_ZERO,
+    price: util.bn(0),
     unit: 'RUNE',
     title: '',
     withSelection: false,
@@ -288,7 +288,7 @@ class CoinCard extends React.Component<Props, State> {
                   <HorizontalDivider color="primary" />
                   <AssetCardFooter>
                     <FooterLabel>
-                      {`${unit} ${formatBN(amount.amount().multipliedBy(price))}`}
+                      {`${unit} ${util.formatBN(amount.amount().multipliedBy(price))}`}
                     </FooterLabel>
                     {slip !== undefined && (
                       <FooterLabel

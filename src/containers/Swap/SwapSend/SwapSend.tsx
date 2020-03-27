@@ -4,7 +4,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { Row, Col, Icon, notification, Popover } from 'antd';
-import { binance } from 'asgardex-common';
+import { binance, util } from 'asgardex-common';
 
 import { crypto } from '@binance-chain/javascript-sdk';
 import BigNumber from 'bignumber.js';
@@ -72,14 +72,6 @@ import {
 } from '../../../redux/midgard/types';
 import { RootState } from '../../../redux/store';
 import { getAssetFromString } from '../../../redux/midgard/utils';
-import {
-  BN_ZERO,
-  isValidBN,
-  bnOrZero,
-  bn,
-  validBNOrZero,
-  formatBN,
-} from '../../../helpers/bnHelper';
 import { tokenAmount } from '../../../helpers/tokenHelper';
 import { TokenAmount } from '../../../types/token';
 import { NET } from '../../../env';
@@ -241,7 +233,7 @@ class SwapSend extends React.Component<Props, State> {
       return false;
     });
 
-    const totalAmount = sourceAsset?.assetValue.amount() ?? BN_ZERO;
+    const totalAmount = sourceAsset?.assetValue.amount() ?? util.bn(0);
     // formula (totalAmount * percent) / 100
     const newValue = totalAmount.multipliedBy(percent).div(100);
 
@@ -285,7 +277,7 @@ class SwapSend extends React.Component<Props, State> {
       return false;
     });
 
-    const totalAmount = sourceAsset?.assetValue.amount() ?? BN_ZERO;
+    const totalAmount = sourceAsset?.assetValue.amount() ?? util.bn(0);
 
     if (totalAmount.isLessThanOrEqualTo(newValue.amount())) {
       this.setState({
@@ -634,7 +626,7 @@ class SwapSend extends React.Component<Props, State> {
       return;
     }
 
-    const totalAmount = sourceAsset.assetValue.amount() ?? BN_ZERO;
+    const totalAmount = sourceAsset.assetValue.amount() ?? util.bn(0);
     // formula (totalAmount * amount) / 100
     const xValueBN = totalAmount.multipliedBy(amount).div(100);
     this.setState({
@@ -662,15 +654,15 @@ class SwapSend extends React.Component<Props, State> {
 
     const { slip, outputAmount } = calcResult;
 
-    const Px = validBNOrZero(priceIndex?.RUNE);
-    const tokenPrice = validBNOrZero(priceIndex[swapTarget.toUpperCase()]);
+    const Px = util.validBNOrZero(priceIndex?.RUNE);
+    const tokenPrice = util.validBNOrZero(priceIndex[swapTarget.toUpperCase()]);
 
     const priceFrom: BigNumber = Px.multipliedBy(xValue.amount());
     const slipAmount = slip;
 
     const completed = !status && txResult !== Nothing;
     const refunded = txResult?.type === 'refund' ?? false;
-    const amountBN = bnOrZero(txResult?.amount);
+    const amountBN = util.bnOrZero(txResult?.amount);
     const targetToken = !completed
       ? swapTarget
       : getTickerFormat(txResult?.token);
@@ -753,7 +745,7 @@ class SwapSend extends React.Component<Props, State> {
     if (slip.isGreaterThanOrEqualTo(maxSlip)) {
       notification.error({
         message: 'Swap Invalid',
-        description: `Slip ${formatBN(slip)}% is too high, try less than ${maxSlip}%.`,
+        description: `Slip ${util.formatBN(slip)}% is too high, try less than ${maxSlip}%.`,
       });
       this.setState({
         dragReset: true,
@@ -820,7 +812,7 @@ class SwapSend extends React.Component<Props, State> {
       const tokenData = tokenInfo[tokenName];
       const assetStr = tokenData?.asset;
       const asset = assetStr ? getAssetFromString(assetStr) : null;
-      const price = bnOrZero(tokenData?.priceRune);
+      const price = util.bnOrZero(tokenData?.priceRune);
 
       return {
         asset: asset?.symbol ?? '',
@@ -828,7 +820,7 @@ class SwapSend extends React.Component<Props, State> {
       };
     });
 
-    const runePrice = validBNOrZero(priceIndex?.RUNE);
+    const runePrice = util.validBNOrZero(priceIndex?.RUNE);
 
     // add rune data in the target token list
     tokensData.push({
@@ -863,18 +855,18 @@ class SwapSend extends React.Component<Props, State> {
       return <></>;
     } else {
       const { slip, outputAmount, outputPrice } = this.calcResult;
-      const sourcePriceBN = bn(priceIndex[swapSource.toUpperCase()]);
-      const sourcePrice = isValidBN(sourcePriceBN)
+      const sourcePriceBN = util.bn(priceIndex[swapSource.toUpperCase()]);
+      const sourcePrice = util.isValidBN(sourcePriceBN)
         ? sourcePriceBN
         : outputPrice;
-      const targetPriceBN = bn(priceIndex[swapTarget.toUpperCase()]);
-      const targetPrice = isValidBN(targetPriceBN)
+      const targetPriceBN = util.bn(priceIndex[swapTarget.toUpperCase()]);
+      const targetPrice = util.isValidBN(targetPriceBN)
         ? targetPriceBN
         : outputPrice;
 
-      const ratio = !targetPrice.isEqualTo(BN_ZERO)
+      const ratio = !targetPrice.isEqualTo(util.bn(0))
         ? sourcePrice.div(targetPrice)
-        : BN_ZERO;
+        : util.bn(0);
 
       const ratioLabel = `1 ${swapSource.toUpperCase()} = ${ratio.toFixed(
         2,
