@@ -19,6 +19,8 @@
     "cy:run:dev": "CYPRESS_baseUrl=http://localhost:3000 yarn cy:run --browser chrome",
     "cy:open": "cypress open",
     "cy:open:dev": "CYPRESS_baseUrl=http://localhost:3000 yarn cy:open",
+    "cy:verify": "cypress verify",
+    "cy:info": "cypress info",
     "deploy": "firebase deploy",
     "lint": "yarn lint:js && yarn lint:ts",
     "lint:js": "eslint 'src/**/*.{js,jsx}' --fix",

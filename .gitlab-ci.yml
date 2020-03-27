@@ -25,15 +25,17 @@ test:develop:
     - bepswap-testnet-reskin
   image: cypress/base:10
   script:
+    - yarn cy:verify
+    - yarn cy:info
     - yarn test
   environment:
     name: develop
   artifacts:
-    expire_in: 5 min
     when: always
     paths:
-      - cypress/screenshots
-      - cypress/videos
+      - cypress/videos/**/*.mp4
+      - cypress/screenshots/**/*.png
+    expire_in: 1 day
 
 deploy:develop:
   stage: deploy
