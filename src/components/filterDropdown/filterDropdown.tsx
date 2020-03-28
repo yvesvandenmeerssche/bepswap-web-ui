@@ -6,7 +6,8 @@ import { EventDetailsTypeEnum } from '../../types/generated/midgard';
 import { Menu, DesktopButton, MobileButton } from './filterDropdown.style';
 
 type Props = {
-  onClick?: (key: string) => void;
+  value: EventDetailsTypeEnum | 'all';
+  onClick?: (key: EventDetailsTypeEnum | 'all') => void;
 };
 
 type MenuItem = {
@@ -18,7 +19,7 @@ type MenuItem = {
 type MenuItems = MenuItem[];
 
 const FilterDropdown: React.FC<Props> = (props: Props): JSX.Element => {
-  const { onClick } = props;
+  const { value, onClick } = props;
 
   const handleClickItem = useCallback(
     ({ key }: ClickParam) => {
@@ -52,7 +53,11 @@ const FilterDropdown: React.FC<Props> = (props: Props): JSX.Element => {
     ];
 
     return (
-      <Menu className="filterDropdown-menu-items" onClick={handleClickItem}>
+      <Menu
+        className="filterDropdown-menu-items"
+        onClick={handleClickItem}
+        selectedKeys={[value]}
+      >
         {items.map(item => {
           return (
             <Menu.Item key={item.key}>
