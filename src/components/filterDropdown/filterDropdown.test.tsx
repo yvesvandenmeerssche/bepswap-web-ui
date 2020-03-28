@@ -7,6 +7,7 @@ import FilterDropdown from './filterDropdown';
 describe('FilterDropdown', () => {
   const props = {
     onClick: jest.fn(),
+    value: 'swap',
   };
   const component = mount(<FilterDropdown {...props} />);
 

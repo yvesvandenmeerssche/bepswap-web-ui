@@ -5,15 +5,17 @@ import { ClickParam } from 'antd/lib/menu';
 import { EventDetailsTypeEnum } from '../../types/generated/midgard';
 import { Menu, DesktopButton, MobileButton } from './filterDropdown.style';
 
+type FilterValue = EventDetailsTypeEnum | 'all';
+
 type Props = {
-  value: EventDetailsTypeEnum | 'all';
-  onClick?: (key: EventDetailsTypeEnum | 'all') => void;
+  value: string;
+  onClick?: (key: string) => void;
 };
 
 type MenuItem = {
   icon: string;
   title: string;
-  key: EventDetailsTypeEnum | 'all';
+  key: FilterValue;
 };
 
 type MenuItems = MenuItem[];
