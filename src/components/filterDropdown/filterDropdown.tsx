@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import { Dropdown, Icon } from 'antd';
 import { ClickParam } from 'antd/lib/menu';
 
+import { EventDetailsTypeEnum } from '../../types/generated/midgard';
 import { Menu, DesktopButton, MobileButton } from './filterDropdown.style';
 
 type Props = {
@@ -11,7 +12,7 @@ type Props = {
 type MenuItem = {
   icon: string;
   title: string;
-  key: string;
+  key: EventDetailsTypeEnum | 'all';
 };
 
 type MenuItems = MenuItem[];
@@ -36,17 +37,17 @@ const FilterDropdown: React.FC<Props> = (props: Props): JSX.Element => {
       {
         icon: 'swap',
         title: 'SWAP',
-        key: 'swap',
+        key: EventDetailsTypeEnum.Swap,
       },
       {
         icon: 'double-right',
         title: 'STAKE',
-        key: 'stake',
+        key: EventDetailsTypeEnum.Stake,
       },
       {
         icon: 'import',
         title: 'WITHDRAW',
-        key: 'withdraw',
+        key: EventDetailsTypeEnum.Unstake,
       },
     ];
 
