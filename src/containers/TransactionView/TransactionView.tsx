@@ -36,10 +36,11 @@ type ConnectedProps = {
 };
 
 type Props = ComponentProps & ConnectedProps;
+type FilterValue = EventDetailsTypeEnum | 'all';
 
 const Transaction: React.FC<Props> = (props): JSX.Element => {
   const { user, txData, getTxByAddress } = props;
-  const [filter, setFilter] = useState<EventDetailsTypeEnum | 'all'>('all');
+  const [filter, setFilter] = useState('all');
 
   useEffect(() => {
     const walletAddress = user?.wallet ?? null;
@@ -52,8 +53,11 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
   }, []);
 
   const renderTxTable = (data: EventDetails[], view: ViewType) => {
+    const filteredData = data.filter(
+      eventData => String(eventData.type) === filter,
+    );
     const sortedData = [
-      ...data.sort((a, b) => (b?.date ?? 0) - (a?.date ?? 0)),
+      ...filteredData.sort((a, b) => (b?.date ?? 0) - (a?.date ?? 0)),
     ];
 
     const filterCol = {
@@ -108,7 +112,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
           <MobileColumeHeader>
             <div className="mobile-col-title">history</div>
             <div className="mobile-col-filter">
-              <FilterDropdown />
+              <FilterDropdown value={filter} onClick={setFilter} />
             </div>
           </MobileColumeHeader>
         ),

@@ -10,7 +10,7 @@ storiesOf('Components/FilterDropdown', module).add('default', () => {
   return (
     <ThemeProvider theme={defaultTheme}>
       <AppHolder>
-        <FilterDropdown onClick={key => console.log(key)} />
+        <FilterDropdown onClick={key => console.log(key)} value="swap" />
       </AppHolder>
     </ThemeProvider>
   );
