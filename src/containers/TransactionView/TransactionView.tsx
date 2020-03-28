@@ -15,7 +15,10 @@ import {
   StyledPagination,
   MobileColumeHeader,
 } from './TransactionView.style';
-import { EventDetails } from '../../types/generated/midgard';
+import {
+  EventDetails,
+  EventDetailsTypeEnum,
+} from '../../types/generated/midgard';
 import { ViewType, Maybe } from '../../types/bepswap';
 
 import * as midgardActions from '../../redux/midgard/actions';
@@ -36,6 +39,7 @@ type Props = ComponentProps & ConnectedProps;
 
 const Transaction: React.FC<Props> = (props): JSX.Element => {
   const { user, txData, getTxByAddress } = props;
+  const [filter, setFilter] = useState<EventDetailsTypeEnum | 'all'>('all');
 
   useEffect(() => {
     const walletAddress = user?.wallet ?? null;
@@ -54,7 +58,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
 
     const filterCol = {
       key: 'filter',
-      title: <FilterDropdown />,
+      title: <FilterDropdown value={filter} onClick={setFilter} />,
       render: (text: string, rowData: EventDetails) => {
         const { type } = rowData;
 
