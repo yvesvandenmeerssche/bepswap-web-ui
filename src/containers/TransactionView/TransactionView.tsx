@@ -17,7 +17,6 @@ import {
 } from './TransactionView.style';
 import {
   EventDetails,
-  EventDetailsTypeEnum,
 } from '../../types/generated/midgard';
 import { ViewType, Maybe } from '../../types/bepswap';
 
@@ -36,7 +35,6 @@ type ConnectedProps = {
 };
 
 type Props = ComponentProps & ConnectedProps;
-type FilterValue = EventDetailsTypeEnum | 'all';
 
 const Transaction: React.FC<Props> = (props): JSX.Element => {
   const { user, txData, getTxByAddress } = props;

@@ -5,7 +5,7 @@ import { ClickParam } from 'antd/lib/menu';
 import { EventDetailsTypeEnum } from '../../types/generated/midgard';
 import { Menu, DesktopButton, MobileButton } from './filterDropdown.style';
 
-type FilterValue = EventDetailsTypeEnum | 'all';
+type FilterValue = EventDetailsTypeEnum.Swap | EventDetailsTypeEnum.Stake | EventDetailsTypeEnum.Unstake | 'all';
 
 type Props = {
   value: string;
