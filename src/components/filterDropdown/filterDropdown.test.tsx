@@ -2,10 +2,10 @@ import React from 'react';
 import { mount } from 'enzyme';
 import { create } from 'react-test-renderer';
 
-import { EventDetailsTypeEnum } from '../../types/generated/midgard';
+import { TxDetailsTypeEnum } from '../../types/generated/midgard';
 import FilterDropdown from './filterDropdown';
 
-type FilterValue = EventDetailsTypeEnum.Swap | EventDetailsTypeEnum.Stake | EventDetailsTypeEnum.Unstake | 'all';
+type FilterValue = TxDetailsTypeEnum.Swap | TxDetailsTypeEnum.Stake | TxDetailsTypeEnum.Unstake | 'all';
 
 describe('FilterDropdown', () => {
   const props: {
@@ -13,7 +13,7 @@ describe('FilterDropdown', () => {
     value: FilterValue,
   } = {
     onClick: jest.fn(),
-    value: EventDetailsTypeEnum.Swap,
+    value: TxDetailsTypeEnum.Swap,
   };
   const component = mount(<FilterDropdown {...props} />);
 

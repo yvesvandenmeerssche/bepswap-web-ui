@@ -5,7 +5,7 @@ import { ThemeProvider } from 'styled-components';
 import AppHolder from '../../AppStyle';
 import { defaultTheme } from '../../settings';
 import FilterDropdown from './filterDropdown';
-import { EventDetailsTypeEnum } from '../../types/generated/midgard';
+import { TxDetailsTypeEnum } from '../../types/generated/midgard';
 
 storiesOf('Components/FilterDropdown', module).add('default', () => {
   return (
@@ -13,7 +13,7 @@ storiesOf('Components/FilterDropdown', module).add('default', () => {
       <AppHolder>
         <FilterDropdown
           onClick={key => console.log(key)}
-          value={EventDetailsTypeEnum.Swap}
+          value={TxDetailsTypeEnum.Swap}
         />
       </AppHolder>
     </ThemeProvider>

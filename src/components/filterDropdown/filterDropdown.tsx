@@ -2,10 +2,10 @@ import React, { useCallback } from 'react';
 import { Dropdown, Icon } from 'antd';
 import { ClickParam } from 'antd/lib/menu';
 
-import { EventDetailsTypeEnum } from '../../types/generated/midgard';
+import { TxDetailsTypeEnum } from '../../types/generated/midgard';
 import { Menu, DesktopButton, MobileButton } from './filterDropdown.style';
 
-type FilterValue = EventDetailsTypeEnum.Swap | EventDetailsTypeEnum.Stake | EventDetailsTypeEnum.Unstake | 'all';
+type FilterValue = TxDetailsTypeEnum.Swap | TxDetailsTypeEnum.Stake | TxDetailsTypeEnum.Unstake | 'all';
 
 type Props = {
   value: string;
@@ -40,17 +40,17 @@ const FilterDropdown: React.FC<Props> = (props: Props): JSX.Element => {
       {
         icon: 'swap',
         title: 'SWAP',
-        key: EventDetailsTypeEnum.Swap,
+        key: TxDetailsTypeEnum.Swap,
       },
       {
         icon: 'double-right',
         title: 'STAKE',
-        key: EventDetailsTypeEnum.Stake,
+        key: TxDetailsTypeEnum.Stake,
       },
       {
         icon: 'import',
         title: 'WITHDRAW',
-        key: EventDetailsTypeEnum.Unstake,
+        key: TxDetailsTypeEnum.Unstake,
       },
     ];
 
