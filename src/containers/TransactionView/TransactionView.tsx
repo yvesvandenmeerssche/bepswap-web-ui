@@ -16,7 +16,7 @@ import {
   MobileColumeHeader,
 } from './TransactionView.style';
 import {
-  EventDetails,
+  TxDetails, InlineResponse200,
 } from '../../types/generated/midgard';
 import { ViewType, Maybe } from '../../types/bepswap';
 
@@ -50,7 +50,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const renderTxTable = (data: EventDetails[], view: ViewType) => {
+  const renderTxTable = (data: TxDetails[], view: ViewType) => {
     const filteredData = data.filter(
       eventData => String(eventData.type) === filter,
     );
@@ -61,7 +61,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
     const filterCol = {
       key: 'filter',
       title: <FilterDropdown value={filter} onClick={setFilter} />,
-      render: (text: string, rowData: EventDetails) => {
+      render: (text: string, rowData: TxDetails) => {
         const { type } = rowData;
 
         return <TxLabel type={type} />;
@@ -73,14 +73,14 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
       {
         key: 'history',
         title: 'history',
-        render: (text: string, rowData: EventDetails) => {
+        render: (text: string, rowData: TxDetails) => {
           return <TxInfo data={rowData} />;
         },
       },
       {
         key: 'date',
         title: 'date',
-        render: (text: string, rowData: EventDetails) => {
+        render: (text: string, rowData: TxDetails) => {
           const { date: timestamp = 0 } = rowData;
           const date = new Date(timestamp * 1000);
           return (
@@ -114,7 +114,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
             </div>
           </MobileColumeHeader>
         ),
-        render: (_: string, rowData: EventDetails) => {
+        render: (_: string, rowData: TxDetails) => {
           const { type, date: timestamp = 0, in: _in } = rowData;
           const date = new Date(timestamp * 1000);
 
@@ -155,12 +155,12 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
       <Table
         columns={columns}
         dataSource={sortedData}
-        rowKey={(record: EventDetails, index: number) => index}
+        rowKey={(record: TxDetails, index: number) => index}
       />
     );
   };
 
-  const pageContent = (data: EventDetails[]) => (
+  const pageContent = (data?: TxDetails[], count?: number) => (
     <>
       <ContentWrapper className="transaction-view-wrapper desktop-view">
         {renderTxTable(data, ViewType.DESKTOP)}
@@ -185,7 +185,10 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
             {error && <p>{error.toString()}</p>}
           </ContentWrapper>
         ),
-        (data: EventDetails[]): JSX.Element => pageContent(data),
+        (data: InlineResponse200): JSX.Element => {
+          const { count, txs } = data;
+          return pageContent(txs, count);
+        },
       )(txData);
     } else {
       return (

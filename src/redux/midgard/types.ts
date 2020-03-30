@@ -7,7 +7,7 @@ import {
   StakersAssetData,
   ThorchainEndpoints,
   ThorchainEndpoint,
-  EventDetails,
+  InlineResponse200,
 } from '../../types/generated/midgard';
 
 export type AssetDetailMap = {
@@ -32,32 +32,32 @@ export type PriceDataIndex = {
 };
 
 export type GetTxByAddressPayload = {
-  address: string,
-  offset?: number, // TODO(Veado): optional for now, should be required (not optional) as soon as we will implement pagination
-  limit?: number, //  TODO(Veado): optional for now, should be required (not optional) as soon as we will implement pagination
-}
+  address: string;
+  offset?: number; // TODO(Veado): optional for now, should be required (not optional) as soon as we will implement pagination
+  limit?: number; //  TODO(Veado): optional for now, should be required (not optional) as soon as we will implement pagination
+};
 
 export type GetTxByAddressTxIdPayload = {
   address: string;
   txId: string;
-  offset?: number, // TODO(Veado): optional for now, should be required (not optional) as soon as we will implement pagination
-  limit?: number, // TODO(Veado): optional for now, should be required (not optional) as soon as we will implement pagination
+  offset?: number; // TODO(Veado): optional for now, should be required (not optional) as soon as we will implement pagination
+  limit?: number; // TODO(Veado): optional for now, should be required (not optional) as soon as we will implement pagination
 };
 
 export type GetTxByAddressAssetPayload = {
   address: string;
   asset: string;
-  offset?: number, // TODO(Veado): optional for now, should be required (not optional) as soon as we will implement pagination
-  limit?: number, // TODO(Veado): optional for now, should be required (not optional) as soon as we will implement pagination
+  offset?: number; // TODO(Veado): optional for now, should be required (not optional) as soon as we will implement pagination
+  limit?: number; // TODO(Veado): optional for now, should be required (not optional) as soon as we will implement pagination
 };
 
 export type GetTxByAssetPayload = {
   asset: string;
-  offset?: number, // TODO(Veado): optional for now, should be required (not optional) as soon as we will implement pagination
-  limit?: number, // TODO(Veado): optional for now, should be required (not optional) as soon as we will implement pagination
+  offset?: number; // TODO(Veado): optional for now, should be required (not optional) as soon as we will implement pagination
+  limit?: number; // TODO(Veado): optional for now, should be required (not optional) as soon as we will implement pagination
 };
 
-export type TxDetailData = RemoteData<Error, EventDetails[]>;
+export type TxDetailData = RemoteData<Error, InlineResponse200>;
 
 export type State = {
   assets: AssetDetailMap;
