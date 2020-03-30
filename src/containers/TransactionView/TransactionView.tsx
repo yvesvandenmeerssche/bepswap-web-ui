@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import * as RD from '@devexperts/remote-data-ts';
@@ -15,9 +15,7 @@ import {
   StyledPagination,
   MobileColumeHeader,
 } from './TransactionView.style';
-import {
-  TxDetails, InlineResponse200,
-} from '../../types/generated/midgard';
+import { TxDetails, InlineResponse200 } from '../../types/generated/midgard';
 import { ViewType, Maybe } from '../../types/bepswap';
 
 import * as midgardActions from '../../redux/midgard/actions';
@@ -39,16 +37,38 @@ type Props = ComponentProps & ConnectedProps;
 const Transaction: React.FC<Props> = (props): JSX.Element => {
   const { user, txData, getTxByAddress } = props;
   const [filter, setFilter] = useState('all');
+  const [page, setPage] = useState(1);
+  const limit = 5;
 
   useEffect(() => {
     const walletAddress = user?.wallet ?? null;
 
     if (walletAddress) {
-      getTxByAddress({ address: walletAddress });
+      getTxByAddress({
+        address: walletAddress,
+        offset: page,
+        limit,
+      });
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleChangePage = useCallback(
+    (page: number) => {
+      setPage(page);
+
+      const address = user?.wallet ?? null;
+      if (address) {
+        getTxByAddress({
+          address,
+          offset: (page - 1) * limit + 1,
+          limit,
+        });
+      }
+    },
+    [getTxByAddress, user],
+  );
 
   const renderTxTable = (data: TxDetails[], view: ViewType) => {
     const filteredData = data.filter(
@@ -168,7 +188,11 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
       <ContentWrapper className="transaction-view-wrapper mobile-view">
         {renderTxTable(data, ViewType.MOBILE)}
       </ContentWrapper>
-      <StyledPagination defaultCurrent={1} total={count} />
+      <StyledPagination
+        current={page}
+        onChange={handleChangePage}
+        total={count}
+      />
     </>
   );
 
