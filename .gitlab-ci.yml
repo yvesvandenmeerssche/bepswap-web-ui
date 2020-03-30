@@ -12,7 +12,8 @@ cache:
 
 before_script:
   - echo "REACT_APP_MIDGARD_API_URL:" ${REACT_APP_MIDGARD_API_URL}
-  - yarn
+  - npm ci
+  - $(npm bin)/print-env CI
   - npm i -g firebase-tools
   - firebase -V
 
@@ -25,7 +26,11 @@ test:develop:
     - bepswap-testnet-reskin
   image: cypress/base:10
   script:
-    - yarn test
+    # check Cypress binary path and cached versions
+    # useful to make sure we are not carrying around old versions
+    - npx cypress cache path
+    - npx cypress cache list
+    - npm test
   environment:
     name: develop
   artifacts:

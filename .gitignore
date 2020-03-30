@@ -21,9 +21,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
-# we just keep yarn.lock
-package-lock.json
+yarn.lock
 
 # Firebase cache
 /.firebase
