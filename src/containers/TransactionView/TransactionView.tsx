@@ -160,7 +160,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
     );
   };
 
-  const pageContent = (data?: TxDetails[], count?: number) => (
+  const pageContent = (data: TxDetails[], count: number) => (
     <>
       <ContentWrapper className="transaction-view-wrapper desktop-view">
         {renderTxTable(data, ViewType.DESKTOP)}
@@ -168,7 +168,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
       <ContentWrapper className="transaction-view-wrapper mobile-view">
         {renderTxTable(data, ViewType.MOBILE)}
       </ContentWrapper>
-      <StyledPagination defaultCurrent={1} total={data?.length ?? 0} />
+      <StyledPagination defaultCurrent={1} total={count} />
     </>
   );
 
@@ -187,7 +187,8 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
         ),
         (data: InlineResponse200): JSX.Element => {
           const { count, txs } = data;
-          return pageContent(txs, count);
+
+          return pageContent(txs || [], count || 0);
         },
       )(txData);
     } else {
