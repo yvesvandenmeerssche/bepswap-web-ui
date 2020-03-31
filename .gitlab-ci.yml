@@ -24,7 +24,7 @@ test:develop:
   stage: test
   except:
     - bepswap-testnet-reskin
-  image: cypress/base:10
+  image: cypress/base:12.14.0
   script:
     # check Cypress binary path and cached versions
     # useful to make sure we are not carrying around old versions
