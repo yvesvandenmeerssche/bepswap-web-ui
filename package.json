@@ -6,28 +6,28 @@
     "fblogin": "firebase login",
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
-    "build:ci": "CI=true npm run build",
+    "build:ci": "CI=true yarn build",
     "pretest": "env",
-    "test": "npm run test:swagger && npm run test:unit && npm run test:feat",
+    "test": "yarn test:swagger && yarn test:unit && yarn test:feat",
     "test:feat:_no-build": "run-p -r cy:launch cy:run",
-    "pretest:feat": "npm run build",
-    "test:feat": "npm run test:feat:_no-build",
+    "pretest:feat": "yarn build",
+    "test:feat": "yarn test:feat:_no-build",
     "test:unit": "jest",
     "test:swagger": "node ./scripts/test-swagger",
     "cy:launch": "http-server build --silent",
     "cy:run": "./scripts/cypress-run",
-    "cy:run:dev": "CYPRESS_baseUrl=http://localhost:3000 npm run cy:run --browser chrome",
+    "cy:run:dev": "CYPRESS_baseUrl=http://localhost:3000 yarn cy:run --browser chrome",
     "cy:open": "cypress open",
-    "cy:open:dev": "CYPRESS_baseUrl=http://localhost:3000 npm run cy:open",
+    "cy:open:dev": "CYPRESS_baseUrl=http://localhost:3000 yarn cy:open",
     "cy:verify": "cypress verify",
     "deploy": "firebase deploy",
-    "lint": "npm run lint:js && npm run lint:ts",
+    "lint": "yarn lint:js && yarn lint:ts",
     "lint:js": "eslint 'src/**/*.{js,jsx}' --fix",
     "lint:ts": "eslint 'src/**/*.{ts,tsx}' --fix",
     "lint:watch": "esw --clear --watch --color src/**/*.{js,jsx,ts,tsx}",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook -o ./build/storybook",
-    "generate:types": "npm run clean:types:midgard && npm run generate:types:midgard",
+    "generate:types": "yarn clean:types:midgard && yarn generate:types:midgard",
     "generate:types:midgard": "openapi-generator generate -i http://159.89.252.210:8080/v1/swagger.json -g typescript-axios -o ./src/types/generated/midgard --reserved-words-mappings in=in",
     "clean:types:midgard": "rm -rf ./src/types/generated/midgard"
   },
@@ -180,7 +180,7 @@
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged",
-      "pre-push": "npm run lint"
+      "pre-push": "yarn lint"
     }
   },
   "lint-staged": {
