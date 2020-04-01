@@ -62,7 +62,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
       if (address) {
         getTxByAddress({
           address,
-          offset: (page - 1) * limit + 1,
+          offset: (page - 1) * limit,
           limit,
         });
       }
@@ -71,13 +71,6 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
   );
 
   const renderTxTable = (data: TxDetails[], view: ViewType) => {
-    const filteredData = data.filter(
-      eventData => String(eventData.type) === filter,
-    );
-    const sortedData = [
-      ...filteredData.sort((a, b) => (b?.date ?? 0) - (a?.date ?? 0)),
-    ];
-
     const filterCol = {
       key: 'filter',
       title: <FilterDropdown value={filter} onClick={setFilter} />,
@@ -174,27 +167,36 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
     return (
       <Table
         columns={columns}
-        dataSource={sortedData}
+        dataSource={data}
         rowKey={(record: TxDetails, index: number) => index}
       />
     );
   };
 
-  const pageContent = (data: TxDetails[], count: number) => (
-    <>
-      <ContentWrapper className="transaction-view-wrapper desktop-view">
-        {renderTxTable(data, ViewType.DESKTOP)}
-      </ContentWrapper>
-      <ContentWrapper className="transaction-view-wrapper mobile-view">
-        {renderTxTable(data, ViewType.MOBILE)}
-      </ContentWrapper>
-      <StyledPagination
-        current={page}
-        onChange={handleChangePage}
-        total={count}
-      />
-    </>
-  );
+  const pageContent = (data: TxDetails[], count: number) => {
+    // const filteredData = data.filter(eventData => eventData.type === filter);
+
+    return (
+      <>
+        <ContentWrapper className="transaction-view-wrapper desktop-view">
+          {renderTxTable(data, ViewType.DESKTOP)}
+        </ContentWrapper>
+        <ContentWrapper className="transaction-view-wrapper mobile-view">
+          {renderTxTable(data, ViewType.MOBILE)}
+        </ContentWrapper>
+        {count ? (
+          <StyledPagination
+            current={page}
+            onChange={handleChangePage}
+            pageSize={limit}
+            total={count}
+          />
+        ) : (
+          ''
+        )}
+      </>
+    );
+  };
 
   const renderPage = () => {
     const walletAddress = user?.wallet ?? null;
@@ -211,7 +213,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
         ),
         (data: InlineResponse200): JSX.Element => {
           const { count, txs } = data;
-
+          console.log(txs, count);
           return pageContent(txs || [], count || 0);
         },
       )(txData);
