@@ -68,7 +68,7 @@ import {
   baseAmount,
   baseToToken,
 } from '../../../helpers/tokenHelper';
-import { NET } from '../../../env';
+import { BINANCE_NET } from '../../../env';
 
 const { TabPane } = Tabs;
 
@@ -456,7 +456,7 @@ class PoolStake extends React.Component<Props, State> {
       });
 
       const data = this.getData();
-      const bncClient = await binance.client(NET);
+      const bncClient = await binance.client(BINANCE_NET);
 
       try {
         const { result } = await confirmStake({
@@ -560,11 +560,11 @@ class PoolStake extends React.Component<Props, State> {
 
       try {
         const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
-        const bncClient = await binance.client(NET);
+        const bncClient = await binance.client(BINANCE_NET);
         await bncClient.setPrivateKey(privateKey);
         const address = crypto.getAddressFromPrivateKey(
           privateKey,
-          binance.getPrefix(NET),
+          binance.getPrefix(BINANCE_NET),
         );
         if (wallet && wallet === address) {
           if (this.type === TxTypes.STAKE) {
@@ -649,7 +649,7 @@ class PoolStake extends React.Component<Props, State> {
         txResult: false,
       });
 
-      const bncClient = await binance.client(NET);
+      const bncClient = await binance.client(BINANCE_NET);
 
       try {
         const percent = withdrawRate * 100;

@@ -1,8 +1,8 @@
 import {
   getBinanceMainnetURL,
   getBinanceTestnetURL,
-  getMidgardURL,
   getHeaders,
+  getMidgardBasePathByIP,
 } from './apiHelper';
 
 describe('helpers/apiHelper', () => {
@@ -20,10 +20,10 @@ describe('helpers/apiHelper', () => {
       expect(result).toEqual('https://dex.binance.org/api/v1/tokens?limit=100');
     });
   });
-  describe('getMidgardURL', () => {
+  describe('getMidgardBasePathByIP', () => {
     it('should return a valid value', () => {
-      const result = getMidgardURL('pools/BNB');
-      expect(result).toEqual('http://localhost:8080/v1/pools/BNB');
+      const result = getMidgardBasePathByIP('121.0.0.1');
+      expect(result).toEqual('http://121.0.0.1:8080');
     });
   });
   describe('getHeaders', () => {

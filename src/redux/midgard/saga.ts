@@ -1,18 +1,18 @@
 import { all, takeEvery, put, fork, call } from 'redux-saga/effects';
 import { isEmpty as _isEmpty } from 'lodash';
 import * as actions from './actions';
-import { MIDGARD_API_URL } from '../../helpers/apiHelper';
+import * as api from '../../helpers/apiHelper';
 
 import {
   saveBasePriceAsset,
   getBasePriceAsset,
 } from '../../helpers/webStorageHelper';
 import { getAssetDetailIndex, getPriceIndex } from './utils';
-import { DefaultApi } from '../../types/generated/midgard';
 import { UnpackedPromise } from '../../types/util';
+import { isTestnet } from '../../env';
 
 /**
- * Helper type to infer types of Midgard API responses
+ * Helper type to infer types of `axios` (or any other promise based) responses
  * because `redux-saga` `call` functions need to know what the return type is.
  * Basicly it's a transformation from Promise<AnyValue>) to AxiosResponse<AnyValue>
  * by using `conditional types` and `infer` features of TypeScript
@@ -24,26 +24,42 @@ import { UnpackedPromise } from '../../types/util';
  * <R> Return type of midgards endpoint function
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type MidgardAPIResponse<F> = F extends (...args: any[]) => infer R
+export type UnpackPromiseResponse<F> = F extends (...args: any[]) => infer R
   ? UnpackedPromise<R>
   : F;
 
-const midgardApi = new DefaultApi({ basePath: MIDGARD_API_URL });
+export function* getApiBasePath(isTestnet: boolean) {
+  try {
+    yield put(actions.getApiBasePathPending());
+    const fn = api.getMidgardBasePath;
+    const basePath: UnpackPromiseResponse<typeof fn> = yield call(fn, isTestnet);
+    yield put(actions.getApiBasePathSuccess(basePath));
+    return basePath;
+  } catch (error) {
+    yield put(actions.getApiBasePathFailed(error));
+    throw new Error(error);
+  }
+}
 
 export function* getPools() {
   yield takeEvery(actions.GET_POOLS_REQUEST, function*() {
     try {
+      let basePath: string = yield call(getApiBasePath, isTestnet);
+      let midgardApi = api.getMidgardDefaultApi(basePath);
       const fn = midgardApi.getPools;
-      const { data }: MidgardAPIResponse<typeof fn> = yield call({
+      const { data }: UnpackPromiseResponse<typeof fn> = yield call({
         context: midgardApi,
         fn,
       });
 
       if (data && !_isEmpty(data)) {
+        // We do need to check `basePath` again here
+        basePath = yield call(getApiBasePath, isTestnet);
+        midgardApi = api.getMidgardDefaultApi(basePath);
         const fn = midgardApi.getAssetInfo;
         const {
           data: assetDetails,
-        }: MidgardAPIResponse<typeof fn> = yield call(
+        }: UnpackPromiseResponse<typeof fn> = yield call(
           {
             context: midgardApi,
             fn,
@@ -83,8 +99,10 @@ export function* getPoolData() {
   }: actions.GetPoolData) {
     const { assets, overrideAllPoolData } = payload;
     try {
+      const basePath: string = yield call(getApiBasePath, isTestnet);
+      const midgardApi = api.getMidgardDefaultApi(basePath);
       const fn = midgardApi.getPoolsData;
-      const { data }: MidgardAPIResponse<typeof fn> = yield call(
+      const { data }: UnpackPromiseResponse<typeof fn> = yield call(
         { context: midgardApi, fn },
         assets.join(),
       );
@@ -107,8 +125,10 @@ export function* getStakerPoolData() {
     const assetId = `BNB.${asset}`;
 
     try {
+      const basePath: string = yield call(getApiBasePath, isTestnet);
+      const midgardApi = api.getMidgardDefaultApi(basePath);
       const fn = midgardApi.getStakersAddressAndAssetData;
-      const { data }: MidgardAPIResponse<typeof fn> = yield call(
+      const { data }: UnpackPromiseResponse<typeof fn> = yield call(
         { context: midgardApi, fn },
         address,
         assetId,
@@ -124,8 +144,10 @@ export function* getStakerPoolData() {
 export function* getPoolAddress() {
   yield takeEvery(actions.GET_POOL_ADDRESSES_REQUEST, function*() {
     try {
+      const basePath: string = yield call(getApiBasePath, isTestnet);
+      const midgardApi = api.getMidgardDefaultApi(basePath);
       const fn = midgardApi.getThorchainProxiedEndpoints;
-      const { data }: MidgardAPIResponse<typeof fn> = yield call({
+      const { data }: UnpackPromiseResponse<typeof fn> = yield call({
         context: midgardApi,
         fn,
       });
@@ -144,8 +166,10 @@ export function* getTxByAddress() {
     try {
       // TODO (Veado) Remove optional values for offset / limit when we will implement pagination
       const { address, offset = 1, limit = 20 } = payload;
+      const basePath: string = yield call(getApiBasePath, isTestnet);
+      const midgardApi = api.getMidgardDefaultApi(basePath);
       const fn = midgardApi.getEvents;
-      const { data }: MidgardAPIResponse<typeof fn> = yield call(
+      const { data }: UnpackPromiseResponse<typeof fn> = yield call(
         { context: midgardApi, fn },
         offset,
         limit,
@@ -164,10 +188,12 @@ export function* getTxByAddressTxId() {
     payload,
   }: actions.GetTxByAddressTxId) {
     try {
+      const basePath: string = yield call(getApiBasePath, isTestnet);
+      const midgardApi = api.getMidgardDefaultApi(basePath);
       const fn = midgardApi.getEvents;
       // TODO (Veado) Remove optional values for offset / limit when we will implement pagination
       const { address, txId, offset = 1, limit = 20 } = payload;
-      const { data }: MidgardAPIResponse<typeof fn> = yield call(
+      const { data }: UnpackPromiseResponse<typeof fn> = yield call(
         {
           context: midgardApi,
           fn,
@@ -190,10 +216,12 @@ export function* getTxByAddressAsset() {
     payload,
   }: actions.GetTxByAddressAsset) {
     try {
+      const basePath: string = yield call(getApiBasePath, isTestnet);
+      const midgardApi = api.getMidgardDefaultApi(basePath);
       const fn = midgardApi.getEvents;
-            // TODO (Veado) Remove optional values for offset / limit when we will implement pagination
-      const { address, asset, offset = 1, limit = 20  } = payload;
-      const { data }: MidgardAPIResponse<typeof fn> = yield call(
+      // TODO (Veado) Remove optional values for offset / limit when we will implement pagination
+      const { address, asset, offset = 1, limit = 20 } = payload;
+      const { data }: UnpackPromiseResponse<typeof fn> = yield call(
         {
           context: midgardApi,
           fn,
@@ -218,9 +246,11 @@ export function* getTxByAsset() {
   }: actions.GetTxByAsset) {
     try {
       // TODO (Veado) Remove optional values for offset / limit when we will implement pagination
-      const { asset, offset = 1, limit = 20  } = payload;
+      const { asset, offset = 1, limit = 20 } = payload;
+      const basePath: string = yield call(getApiBasePath, isTestnet);
+      const midgardApi = api.getMidgardDefaultApi(basePath);
       const fn = midgardApi.getEvents;
-      const { data }: MidgardAPIResponse<typeof fn> = yield call(
+      const { data }: UnpackPromiseResponse<typeof fn> = yield call(
         {
           context: midgardApi,
           fn,

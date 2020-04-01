@@ -75,4 +75,5 @@ export type State = {
   poolLoading: boolean;
   stakerPoolDataLoading: boolean;
   txData: TxDetailData;
+  apiBasePath: RemoteData<Error, string>;
 };
