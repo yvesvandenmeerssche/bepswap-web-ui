@@ -4,7 +4,15 @@ import {
   getHeaders,
   getMidgardBasePathByIP,
   getHostnameFromUrl,
+  getMidgardBasePath,
+  axiosRequest,
 } from './apiHelper';
+
+jest.mock('axios', () => ({
+  create: jest.fn(() => ({
+    request: jest.fn(() => {}),
+  })),
+}));
 
 describe('helpers/apiHelper', () => {
   describe('getBinanceTestnetURL', () => {
@@ -50,6 +58,42 @@ describe('helpers/apiHelper', () => {
     it('returns Nothing if parsing failed', () => {
       const result = getHostnameFromUrl('any-invalid-url');
       expect(result).toBeNothing();
+    });
+  });
+  describe('getMidgardBasePath', () => {
+    afterEach(() => {
+      // axiosRequest has been mocked, it needs to be reset
+      axiosRequest.mockReset();
+    });
+    it('on other then testnet it returns a basepath for a given ip', async () => {
+      await expect(getMidgardBasePath(false, '121.0.0.1')).resolves.toEqual(
+        'http://121.0.0.1:8080',
+      );
+    });
+    it('on testnet it returns a basepath loaded from seed', async () => {
+      const response = { data: { active: ['1.2.3.4'] } };
+      response;
+      axiosRequest.mockImplementationOnce(() => Promise.resolve(response));
+
+      await expect(getMidgardBasePath(true)).resolves.toEqual(
+        'http://1.2.3.4:8080',
+      );
+    });
+    it('on testnet it rejects if no data available', async () => {
+      const response = {};
+      axiosRequest.mockImplementationOnce(() => Promise.resolve(response));
+      await expect(getMidgardBasePath(true)).rejects.toBeInstanceOf(Error);
+    });
+    it('on testnet it rejects if no active data available', async () => {
+      const response = { data: { active: [] } };
+      axiosRequest.mockImplementationOnce(() => Promise.resolve(response));
+      await expect(getMidgardBasePath(true)).rejects.toThrow();
+    });
+    it('on testnet it rejects if requests throws an error for any reason', async () => {
+      axiosRequest.mockImplementationOnce(() =>
+        Promise.reject(new Error('Request failed for any reason')),
+      );
+      await expect(getMidgardBasePath(true)).rejects.toThrow();
     });
   });
 });
