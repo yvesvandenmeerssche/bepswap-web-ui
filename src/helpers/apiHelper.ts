@@ -40,10 +40,14 @@ export type TestnetSeed = {
   whitelisted: string[];
 };
 
+export enum Protocol {
+  HTTP = 'http',
+  HTTPS = 'https'
+}
 /**
  * Helper to create basePath for Midgard by a givven IP
  */
-export const getMidgardBasePathByIP = (ip: string) => `http://${ip}:8080`;
+export const getMidgardBasePathByIP = (ip: string, protocol = Protocol.HTTP) => `${protocol}://${ip}:8080`;
 
 /**
  * Helper to get basePath for Midgard
@@ -62,7 +66,7 @@ export const getMidgardBasePath = async (
       });
       const activeList = response?.data?.active;
       if (activeList && activeList[0]) {
-        return getMidgardBasePathByIP(activeList[0]);
+        return getMidgardBasePathByIP(activeList[0], Protocol.HTTPS);
       } else {
         return Promise.reject(
           new Error(`Could not parse 'active' IP from response: ${response}`),
@@ -76,7 +80,7 @@ export const getMidgardBasePath = async (
       );
     }
   } else {
-    return Promise.resolve(getMidgardBasePathByIP(defaultIP));
+    return Promise.resolve(getMidgardBasePathByIP(defaultIP, Protocol.HTTP));
   }
 };
 

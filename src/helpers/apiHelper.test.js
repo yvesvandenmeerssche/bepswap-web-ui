@@ -1,4 +1,5 @@
 import {
+  Protocol,
   getBinanceMainnetURL,
   getBinanceTestnetURL,
   getHeaders,
@@ -44,6 +45,16 @@ describe('helpers/apiHelper', () => {
       });
     });
   });
+  describe('getMidgardBasePathByIP', () => {
+    it('creates a http base path ', () => {
+      const result = getMidgardBasePathByIP('121.0.0.1', Protocol.HTTP);
+      expect(result).toEqual('http://121.0.0.1:8080');
+    });
+    it('creates a https base path ', () => {
+      const result = getMidgardBasePathByIP('121.0.0.3', Protocol.HTTPS);
+      expect(result).toEqual('https://121.0.0.3:8080');
+    });
+  });
   describe('getHostnameFromUrl', () => {
     it('parses ip from url', () => {
       const result = getHostnameFromUrl('http://121.0.0.1:8080');
@@ -76,7 +87,7 @@ describe('helpers/apiHelper', () => {
       axiosRequest.mockImplementationOnce(() => Promise.resolve(response));
 
       await expect(getMidgardBasePath(true)).resolves.toEqual(
-        'http://1.2.3.4:8080',
+        'https://1.2.3.4:8080',
       );
     });
     it('on testnet it rejects if no data available', async () => {
