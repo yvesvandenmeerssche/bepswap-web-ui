@@ -8,25 +8,8 @@ import {
   getBasePriceAsset,
 } from '../../helpers/webStorageHelper';
 import { getAssetDetailIndex, getPriceIndex } from './utils';
-import { UnpackedPromise } from '../../types/util';
 import { isTestnet } from '../../env';
-
-/**
- * Helper type to infer types of `axios` (or any other promise based) responses
- * because `redux-saga` `call` functions need to know what the return type is.
- * Basicly it's a transformation from Promise<AnyValue>) to AxiosResponse<AnyValue>
- * by using `conditional types` and `infer` features of TypeScript
- *
- * Note: `call` of `redux-saga` would just return an `any` without using that helper type
- * and we would lost all type safety w/o using this helper type.
- *
- * <F> Type of midgard endpoint function
- * <R> Return type of midgards endpoint function
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type UnpackPromiseResponse<F> = F extends (...args: any[]) => infer R
-  ? UnpackedPromise<R>
-  : F;
+import { UnpackPromiseResponse } from '../../types/util';
 
 export function* getApiBasePath(isTestnet: boolean) {
   try {
@@ -126,16 +109,20 @@ export function* getStakerPoolData() {
 
     try {
       const basePath: string = yield call(getApiBasePath, isTestnet);
+      console.log('xxx getStakersAddressAndAssetData LOADING:', basePath);
       const midgardApi = api.getMidgardDefaultApi(basePath);
       const fn = midgardApi.getStakersAddressAndAssetData;
-      const { data }: UnpackPromiseResponse<typeof fn> = yield call(
+      const response: UnpackPromiseResponse<typeof fn> = yield call(
         { context: midgardApi, fn },
         address,
         assetId,
       );
+      console.log('xxx getStakersAddressAndAssetData response:', response);
+      const { data } = response;
 
       yield put(actions.getStakerPoolDataSuccess(data));
     } catch (error) {
+      console.log('xxx getStakersAddressAndAssetData FAILED:', error);
       yield put(actions.getStakerPoolDataFailed(error));
     }
   });
