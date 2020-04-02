@@ -31,7 +31,7 @@ export type PriceDataIndex = {
   [symbol: string]: BigNumber;
 };
 
-export type TxDetailType = 'swap' | 'stake' | 'unstake' | 'add' | 'refund';
+export type TxDetailType = 'swap' | 'stake' | 'unstake' | 'add' | 'refund' | undefined;
 
 export type GetTxByAddressPayload = {
   address: string;

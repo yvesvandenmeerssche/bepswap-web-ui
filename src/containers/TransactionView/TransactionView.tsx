@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import * as RD from '@devexperts/remote-data-ts';
@@ -38,44 +38,31 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
   const { user, txData, getTxByAddress } = props;
   const [filter, setFilter] = useState('all');
   const [page, setPage] = useState(1);
+
   const limit = 5;
   const txTypesPair: { [key: string]: TxDetailType } = {
     swap: 'swap',
     stake: 'stake',
-    withdraw: 'unstake',
+    unstake: 'unstake',
   };
 
-  useEffect(() => {
-    const walletAddress = user?.wallet ?? null;
+  const getTxDetails = () => {
+    const address = user?.wallet ?? null;
 
-    if (walletAddress) {
+    if (address) {
       getTxByAddress({
-        address: walletAddress,
-        offset: page,
+        address,
+        offset: (page - 1) * limit,
         limit,
         type: txTypesPair[filter],
       });
     }
+  };
 
+  useEffect(() => {
+    getTxDetails();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const handleChangePage = useCallback(
-    (page: number) => {
-      setPage(page);
-
-      const address = user?.wallet ?? null;
-      if (address) {
-        getTxByAddress({
-          address,
-          offset: (page - 1) * limit,
-          limit,
-          type: txTypesPair[filter],
-        });
-      }
-    },
-    [getTxByAddress, user],
-  );
+  }, [page, filter]);
 
   const renderTxTable = (data: TxDetails[], view: ViewType) => {
     const filterCol = {
@@ -194,7 +181,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
         {count ? (
           <StyledPagination
             current={page}
-            onChange={handleChangePage}
+            onChange={setPage}
             pageSize={limit}
             total={count}
           />
