@@ -88,7 +88,7 @@ describe('helpers/apiHelper', () => {
       axiosRequest.mockImplementationOnce(() => Promise.resolve(response));
 
       await expect(getMidgardBasePath(true)).resolves.toEqual(
-        'https://1.2.3.4:8080',
+        'http://1.2.3.4:8080',
       );
     });
     it('it rejects on testnet if no data is available', async () => {

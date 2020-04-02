@@ -66,7 +66,7 @@ export const getMidgardBasePath = async (
       });
       const activeList = response?.data?.active;
       if (activeList && activeList[0]) {
-        return getMidgardBasePathByIP(activeList[0], Protocol.HTTPS);
+        return getMidgardBasePathByIP(activeList[0]);
       } else {
         return Promise.reject(
           new Error(`Could not parse 'active' IP from response: ${response}`),
@@ -80,7 +80,7 @@ export const getMidgardBasePath = async (
       );
     }
   } else {
-    return Promise.resolve(getMidgardBasePathByIP(defaultIP, Protocol.HTTP));
+    return Promise.resolve(getMidgardBasePathByIP(defaultIP));
   }
 };
 
