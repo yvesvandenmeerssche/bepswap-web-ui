@@ -45,7 +45,7 @@ export enum Protocol {
   HTTPS = 'https'
 }
 /**
- * Helper to create basePath for Midgard by a givven IP
+ * Helper to create basePath for Midgard by given IP
  */
 export const getMidgardBasePathByIP = (ip: string, protocol = Protocol.HTTP) => `${protocol}://${ip}:8080`;
 
@@ -92,7 +92,7 @@ export const getMidgardDefaultApi = (basePath: string) =>
   new DefaultApi({ basePath });
 
 /**
- * Helper to get `DefaultApi` instance for Midgard
+ * Helper to get `hostname` from url
  */
 export const getHostnameFromUrl = (u: string): Maybe<string> => {
   const parsed = url.parse(u, true);
