@@ -1128,7 +1128,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             let baseOptions;
             if (configuration) {
                 baseOptions = configuration.baseOptions;
-            }
+            }  
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;

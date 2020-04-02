@@ -31,11 +31,13 @@ export type PriceDataIndex = {
   [symbol: string]: BigNumber;
 };
 
+export type TxDetailType = 'swap' | 'stake' | 'unstake' | 'add' | 'refund';
+
 export type GetTxByAddressPayload = {
   address: string;
   offset: number;
   limit: number;
-  type: string;
+  type: TxDetailType;
 };
 
 export type GetTxByAddressTxIdPayload = {
@@ -43,7 +45,7 @@ export type GetTxByAddressTxIdPayload = {
   txId: string;
   offset: number;
   limit: number;
-  type: string;
+  type: TxDetailType;
 };
 
 export type GetTxByAddressAssetPayload = {
@@ -51,14 +53,14 @@ export type GetTxByAddressAssetPayload = {
   asset: string;
   offset: number;
   limit: number;
-  type: string;
+  type: TxDetailType;
 };
 
 export type GetTxByAssetPayload = {
   asset: string;
   offset: number;
   limit: number;
-  type: string;
+  type: TxDetailType;
 };
 
 export type TxDetailData = RemoteData<Error, InlineResponse200>;
