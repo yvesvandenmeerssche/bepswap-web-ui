@@ -19,7 +19,7 @@ import { TxDetails, InlineResponse200 } from '../../types/generated/midgard';
 import { ViewType, Maybe } from '../../types/bepswap';
 
 import * as midgardActions from '../../redux/midgard/actions';
-import { TxDetailData } from '../../redux/midgard/types';
+import { TxDetailData, TxDetailType } from '../../redux/midgard/types';
 import { User } from '../../redux/wallet/types';
 import { RootState } from '../../redux/store';
 import AddWallet from '../../components/uielements/addWallet';
@@ -39,6 +39,11 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
   const [filter, setFilter] = useState('all');
   const [page, setPage] = useState(1);
   const limit = 5;
+  const txTypesPair: { [key: string]: TxDetailType } = {
+    swap: 'swap',
+    stake: 'stake',
+    withdraw: 'unstake',
+  };
 
   useEffect(() => {
     const walletAddress = user?.wallet ?? null;
@@ -48,6 +53,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
         address: walletAddress,
         offset: page,
         limit,
+        type: txTypesPair[filter],
       });
     }
 
@@ -64,6 +70,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
           address,
           offset: (page - 1) * limit,
           limit,
+          type: txTypesPair[filter],
         });
       }
     },
