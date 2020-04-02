@@ -7,18 +7,13 @@ import { binance } from 'asgardex-common';
 import ConnectionStatus from '../uielements/connectionStatus';
 
 import { BINANCE_NET } from '../../env';
-import { Maybe } from '../../types/bepswap';
-
-const getLocation = (href: string) => {
-  const l = document.createElement('a');
-  l.href = href;
-  return l;
-};
+import { Maybe, Nothing } from '../../types/bepswap';
+import { getHostnameFromUrl } from '../../helpers/apiHelper';
 
 type MenuItem = {
   key: string;
   label: string;
-  url: string;
+  url: Maybe<string>;
   status: string;
 };
 
@@ -35,13 +30,13 @@ const HeaderSetting: React.FC<Props> = (props: Props): JSX.Element => {
       {
         key: 'binance_chain',
         label: 'binance chain',
-        url: getLocation(binance.getBinanceUrl(BINANCE_NET)).hostname,
+        url: getHostnameFromUrl(binance.getBinanceUrl(BINANCE_NET)),
         status: 'green',
       },
       {
         key: 'midgard_api',
         label: 'midgard api',
-        url: midgardBasePath ? getLocation(midgardBasePath).hostname : '',
+        url: midgardBasePath ? getHostnameFromUrl(midgardBasePath) : Nothing,
         status: 'green',
       },
     ],
@@ -91,7 +86,7 @@ const HeaderSetting: React.FC<Props> = (props: Props): JSX.Element => {
                       textTransform: 'lowercase',
                     }}
                   >
-                    {url}
+                    {url || ''}
                   </span>
                 </Row>
               </div>

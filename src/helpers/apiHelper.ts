@@ -1,5 +1,7 @@
+import * as url from 'url';
 import axios, { AxiosResponse, Method } from 'axios';
 import { DefaultApi } from '../types/generated/midgard';
+import { Maybe, Nothing } from '../types/bepswap';
 
 export const BINANCE_TESTNET_URL =
   process.env.REACT_APP_BINANCE_TESTNET_URL ||
@@ -77,8 +79,18 @@ export const getMidgardBasePath = async (
     return Promise.resolve(getMidgardBasePathByIP(defaultIP));
   }
 };
+
 /**
  * Helper to get `DefaultApi` instance for Midgard
  */
+
 export const getMidgardDefaultApi = (basePath: string) =>
   new DefaultApi({ basePath });
+
+/**
+ * Helper to get `DefaultApi` instance for Midgard
+ */
+export const getHostnameFromUrl = (u: string): Maybe<string> => {
+  const parsed = url.parse(u, true);
+  return parsed?.hostname ?? Nothing;
+};
