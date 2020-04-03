@@ -17,7 +17,7 @@ export const TESTNET_TX_BASE_URL = 'https://testnet-explorer.binance.org/tx/';
 
 export const TESTNET_SEED_URL =
   process.env.REACT_APP_TESTNET_SEED_URL ||
-  'https://testnet-seed.thorchain.info';
+  'https://testnet-seed.thorchain.info/node_ip_list.json';
 
 export const getBinanceTestnetURL = (url: string) =>
   `${BINANCE_TESTNET_URL}/${url}`;
