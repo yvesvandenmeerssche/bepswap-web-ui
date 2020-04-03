@@ -8,6 +8,7 @@ import {
   ThorchainEndpoints,
   ThorchainEndpoint,
   InlineResponse200,
+  TxDetailsTypeEnum,
 } from '../../types/generated/midgard';
 
 export type AssetDetailMap = {
@@ -31,13 +32,15 @@ export type PriceDataIndex = {
   [symbol: string]: BigNumber;
 };
 
-export type TxDetailType = 'swap' | 'stake' | 'unstake' | 'add' | 'refund' | undefined;
+export type TxDetailType = TxDetailsTypeEnum.Swap
+ | TxDetailsTypeEnum.Stake | TxDetailsTypeEnum.Unstake
+ | TxDetailsTypeEnum.Add | TxDetailsTypeEnum.Refund;
 
 export type GetTxByAddressPayload = {
   address: string;
   offset: number;
   limit: number;
-  type: TxDetailType;
+  type?: TxDetailType;
 };
 
 export type GetTxByAddressTxIdPayload = {
@@ -45,7 +48,7 @@ export type GetTxByAddressTxIdPayload = {
   txId: string;
   offset: number;
   limit: number;
-  type: TxDetailType;
+  type?: TxDetailType;
 };
 
 export type GetTxByAddressAssetPayload = {
@@ -53,14 +56,14 @@ export type GetTxByAddressAssetPayload = {
   asset: string;
   offset: number;
   limit: number;
-  type: TxDetailType;
+  type?: TxDetailType;
 };
 
 export type GetTxByAssetPayload = {
   asset: string;
   offset: number;
   limit: number;
-  type: TxDetailType;
+  type?: TxDetailType;
 };
 
 export type TxDetailData = RemoteData<Error, InlineResponse200>;

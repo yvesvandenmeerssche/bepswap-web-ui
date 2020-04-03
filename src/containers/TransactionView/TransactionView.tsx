@@ -15,7 +15,7 @@ import {
   StyledPagination,
   MobileColumeHeader,
 } from './TransactionView.style';
-import { TxDetails, InlineResponse200 } from '../../types/generated/midgard';
+import { TxDetails, InlineResponse200, TxDetailsTypeEnum } from '../../types/generated/midgard';
 import { ViewType, Maybe } from '../../types/bepswap';
 
 import * as midgardActions from '../../redux/midgard/actions';
@@ -41,9 +41,9 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
 
   const limit = 5;
   const txTypesPair: { [key: string]: TxDetailType } = {
-    swap: 'swap',
-    stake: 'stake',
-    unstake: 'unstake',
+    swap: TxDetailsTypeEnum.Swap,
+    stake: TxDetailsTypeEnum.Stake,
+    unstake: TxDetailsTypeEnum.Unstake,
   };
 
   const getTxDetails = () => {
@@ -207,7 +207,6 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
         ),
         (data: InlineResponse200): JSX.Element => {
           const { count, txs } = data;
-          console.log(txs, count);
           return pageContent(txs || [], count || 0);
         },
       )(txData);

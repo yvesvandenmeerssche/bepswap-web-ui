@@ -3,9 +3,7 @@ import { mount } from 'enzyme';
 import { create } from 'react-test-renderer';
 
 import { TxDetailsTypeEnum } from '../../types/generated/midgard';
-import FilterDropdown from './filterDropdown';
-
-type FilterValue = TxDetailsTypeEnum.Swap | TxDetailsTypeEnum.Stake | TxDetailsTypeEnum.Unstake | 'all';
+import FilterDropdown, { FilterValue } from './filterDropdown';
 
 describe('FilterDropdown', () => {
   const props: {
