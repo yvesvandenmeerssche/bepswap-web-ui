@@ -4,6 +4,7 @@ const prod_hostnames = ['bepswap.com'];
 const dev_hostnames = ['localhost'];
 
 const hostname = window.location.hostname;
+
 const isMainnet = prod_hostnames.includes(hostname);
 const isTestnet = hostname.includes('testnet');
 const isDevnet = dev_hostnames.includes(hostname);

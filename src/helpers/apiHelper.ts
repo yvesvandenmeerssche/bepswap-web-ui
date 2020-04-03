@@ -33,21 +33,17 @@ export const getHeaders = () => ({
   'Content-Type': 'application/json',
 });
 
-export type TestnetSeed = {
-  active: string[];
-  standby: string[];
-  ready: string[];
-  whitelisted: string[];
-};
+export type TestnetSeedData = string[];
 
 export enum Protocol {
   HTTP = 'http',
-  HTTPS = 'https'
+  HTTPS = 'https',
 }
 /**
  * Helper to create basePath for Midgard by given IP
  */
-export const getMidgardBasePathByIP = (ip: string, protocol = Protocol.HTTP) => `${protocol}://${ip}:8080`;
+export const getMidgardBasePathByIP = (ip: string, protocol = Protocol.HTTP) =>
+  `${protocol}://${ip}:8080`;
 
 /**
  * Helper to get basePath for Midgard
@@ -59,14 +55,17 @@ export const getMidgardBasePath = async (
   // On testnet we need to load IP from testnet seed
   if (isTestnet) {
     try {
-      const response: AxiosResponse<TestnetSeed> = await axiosRequest({
+      const response: AxiosResponse<TestnetSeedData> = await axiosRequest({
         method: 'get' as Method,
         url: TESTNET_SEED_URL,
         headers: getHeaders(),
       });
-      const activeList = response?.data?.active;
-      if (activeList && activeList[0]) {
-        return getMidgardBasePathByIP(activeList[0]);
+      const activeList = response?.data;
+      if (activeList?.length) {
+        // get ip from list randomly
+        const index = Math.floor(Math.random() * (activeList.length - 1));
+        const ip = activeList[index];
+        return getMidgardBasePathByIP(ip);
       } else {
         return Promise.reject(
           new Error(`Could not parse 'active' IP from response: ${response}`),

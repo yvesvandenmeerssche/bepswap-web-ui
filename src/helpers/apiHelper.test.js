@@ -83,8 +83,7 @@ describe('helpers/apiHelper', () => {
       );
     });
     it('it returns on testnet a basepath loaded from seed', async () => {
-      const response = { data: { active: ['1.2.3.4'] } };
-      response;
+      const response = { data: ['1.2.3.4'] };
       axiosRequest.mockImplementationOnce(() => Promise.resolve(response));
 
       await expect(getMidgardBasePath(true)).resolves.toEqual(
