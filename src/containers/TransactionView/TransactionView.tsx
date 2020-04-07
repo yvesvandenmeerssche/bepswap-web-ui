@@ -79,6 +79,8 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
   ) => {
     const filterCol = {
       key: 'filter',
+      width: 200,
+      align: 'center',
       title: <FilterDropdown value={filter} onClick={handleSelectFilter} />,
       render: (text: string, rowData: TxDetails) => {
         const { type } = rowData;
@@ -92,6 +94,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
       {
         key: 'history',
         title: 'history',
+        align: 'center',
         render: (text: string, rowData: TxDetails) => {
           return <TxInfo data={rowData} />;
         },
@@ -99,6 +102,8 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
       {
         key: 'date',
         title: 'date',
+        align: 'center',
+        width: 200,
         render: (text: string, rowData: TxDetails) => {
           const { date: timestamp = 0 } = rowData;
           const date = new Date(timestamp * 1000);
@@ -125,6 +130,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
     const mobileColumns = [
       {
         key: 'history',
+        align: 'center',
         title: (
           <MobileColumeHeader>
             <div className="mobile-col-title">history</div>
