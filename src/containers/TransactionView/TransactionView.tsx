@@ -8,7 +8,6 @@ import Table from '../../components/uielements/table';
 import FilterDropdown from '../../components/filterDropdown';
 import TxLabel from '../../components/transaction/txLabel';
 import TxInfo from '../../components/transaction/txInfo';
-import TransactionLoader from '../../components/utility/loaders/transaction';
 
 import {
   ContentWrapper,
@@ -73,7 +72,11 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, filter]);
 
-  const renderTxTable = (data: TxDetails[], view: ViewType) => {
+  const renderTxTable = (
+    data: TxDetails[],
+    view: ViewType,
+    loading: boolean,
+  ) => {
     const filterCol = {
       key: 'filter',
       title: <FilterDropdown value={filter} onClick={handleSelectFilter} />,
@@ -172,20 +175,21 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
         columns={columns}
         dataSource={data}
         rowKey={(record: TxDetails, index: number) => index}
+        loading={loading}
       />
     );
   };
 
-  const pageContent = (data: TxDetails[], count: number) => {
+  const pageContent = (data: TxDetails[], count: number, loading: boolean) => {
     // const filteredData = data.filter(eventData => eventData.type === filter);
 
     return (
       <>
         <ContentWrapper className="transaction-view-wrapper desktop-view">
-          {renderTxTable(data, ViewType.DESKTOP)}
+          {renderTxTable(data, ViewType.DESKTOP, loading)}
         </ContentWrapper>
         <ContentWrapper className="transaction-view-wrapper mobile-view">
-          {renderTxTable(data, ViewType.MOBILE)}
+          {renderTxTable(data, ViewType.MOBILE, loading)}
         </ContentWrapper>
         {count ? (
           <StyledPagination
@@ -207,7 +211,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
     if (walletAddress) {
       return RD.fold(
         () => <div />, // initial
-        () => <TransactionLoader />,
+        () => pageContent([], 0, true),
         (error: Error) => (
           <ContentWrapper className="transaction-view-wrapper center-align">
             <h2>Loading of transaction history data failed.</h2>
@@ -216,7 +220,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
         ),
         (data: InlineResponse200): JSX.Element => {
           const { count, txs } = data;
-          return pageContent(txs || [], count || 0);
+          return pageContent(txs || [], count || 0, false);
         },
       )(txData);
     } else {
