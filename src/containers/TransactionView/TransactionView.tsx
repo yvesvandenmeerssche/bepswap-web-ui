@@ -190,7 +190,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
     // const filteredData = data.filter(eventData => eventData.type === filter);
 
     return (
-      <>
+      <ContentWrapper>
         <ContentWrapper className="transaction-view-wrapper desktop-view">
           {renderTxTable(data, ViewType.DESKTOP, loading)}
         </ContentWrapper>
@@ -207,7 +207,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
         ) : (
           ''
         )}
-      </>
+      </ContentWrapper>
     );
   };
 
