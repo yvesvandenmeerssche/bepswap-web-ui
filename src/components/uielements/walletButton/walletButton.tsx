@@ -2,15 +2,24 @@ import React from 'react';
 import { Icon } from 'antd';
 
 import Button from '../button';
+import { Props as ButtonProps } from '../button/button';
+import { Maybe } from '../../../types/bepswap';
 
-type Props = {
+type ComponentProps = {
   connected?: boolean;
-  value: string;
+  address?: Maybe<string>;
   className?: string;
 };
 
+type Props = ComponentProps & ButtonProps;
+
 const WalletButton: React.FC<Props> = (props: Props): JSX.Element => {
-  const { connected = false, value, className = '', ...otherProps } = props;
+  const {
+    connected = false,
+    address = '',
+    className = '',
+    ...otherProps
+  } = props;
 
   const getBtnValue = () => {
     if (!connected) {
@@ -32,12 +41,12 @@ const WalletButton: React.FC<Props> = (props: Props): JSX.Element => {
     }
 
     if (connected) {
-      if (value && value.length > 9) {
-        const first = value.substr(0, 6);
-        const last = value.substr(value.length - 3, 3);
+      if (address && address.length > 9) {
+        const first = address.substr(0, 6);
+        const last = address.substr(address.length - 3, 3);
         return `${first}...${last}`;
       }
-      return value;
+      return address;
     }
   };
 
@@ -45,7 +54,6 @@ const WalletButton: React.FC<Props> = (props: Props): JSX.Element => {
     <Button
       className={`${className} wallet-btn-wrapper`}
       sizevalue="normal"
-      color="primary"
       round="true"
       {...otherProps}
     >
