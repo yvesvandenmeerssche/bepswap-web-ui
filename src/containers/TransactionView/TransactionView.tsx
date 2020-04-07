@@ -15,7 +15,11 @@ import {
   StyledPagination,
   MobileColumeHeader,
 } from './TransactionView.style';
-import { TxDetails, InlineResponse200, TxDetailsTypeEnum } from '../../types/generated/midgard';
+import {
+  TxDetails,
+  InlineResponse200,
+  TxDetailsTypeEnum,
+} from '../../types/generated/midgard';
 import { ViewType, Maybe } from '../../types/bepswap';
 
 import * as midgardActions from '../../redux/midgard/actions';
@@ -59,6 +63,11 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
     }
   };
 
+  const handleSelectFilter = (value: string) => {
+    setFilter(value);
+    setPage(1);
+  };
+
   useEffect(() => {
     getTxDetails();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -67,7 +76,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
   const renderTxTable = (data: TxDetails[], view: ViewType) => {
     const filterCol = {
       key: 'filter',
-      title: <FilterDropdown value={filter} onClick={setFilter} />,
+      title: <FilterDropdown value={filter} onClick={handleSelectFilter} />,
       render: (text: string, rowData: TxDetails) => {
         const { type } = rowData;
 
@@ -117,7 +126,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
           <MobileColumeHeader>
             <div className="mobile-col-title">history</div>
             <div className="mobile-col-filter">
-              <FilterDropdown value={filter} onClick={setFilter} />
+              <FilterDropdown value={filter} onClick={handleSelectFilter} />
             </div>
           </MobileColumeHeader>
         ),
