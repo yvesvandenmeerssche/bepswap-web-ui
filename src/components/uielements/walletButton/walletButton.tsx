@@ -1,12 +1,18 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
 import { Icon } from 'antd';
+
 import Button from '../button';
 
-class WalletButton extends Component {
-  getBtnValue = () => {
-    const { connected, value } = this.props;
+type Props = {
+  connected?: boolean;
+  value: string;
+  className?: string;
+};
 
+const WalletButton: React.FC<Props> = (props: Props): JSX.Element => {
+  const { connected = false, value, className = '', ...otherProps } = props;
+
+  const getBtnValue = () => {
     if (!connected) {
       return (
         <span>
@@ -35,32 +41,17 @@ class WalletButton extends Component {
     }
   };
 
-  render() {
-    const { connected, value, className, ...props } = this.props;
-
-    return (
-      <Button
-        className={`${className} wallet-btn-wrapper`}
-        sizevalue="normal"
-        color="primary"
-        round="true"
-        {...props}
-      >
-        {this.getBtnValue()}
-      </Button>
-    );
-  }
-}
-
-WalletButton.propTypes = {
-  connected: PropTypes.bool,
-  value: PropTypes.string,
-  className: PropTypes.string,
-};
-
-WalletButton.defaultProps = {
-  connected: false,
-  className: '',
+  return (
+    <Button
+      className={`${className} wallet-btn-wrapper`}
+      sizevalue="normal"
+      color="primary"
+      round="true"
+      {...otherProps}
+    >
+      {getBtnValue()}
+    </Button>
+  );
 };
 
 export default WalletButton;
