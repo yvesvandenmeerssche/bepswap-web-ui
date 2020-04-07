@@ -28,7 +28,7 @@ class WalletButton extends Component {
     if (connected) {
       if (value && value.length > 9) {
         const first = value.substr(0, 6);
-        const last = value.substr(value.length - 4, 3);
+        const last = value.substr(value.length - 3, 3);
         return `${first}...${last}`;
       }
       return value;
