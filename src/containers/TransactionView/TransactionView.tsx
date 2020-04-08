@@ -32,7 +32,7 @@ type ComponentProps = {};
 type ConnectedProps = {
   user: Maybe<User>;
   txData: TxDetailData;
-  txCurData: InlineResponse200;
+  txCurData: Maybe<InlineResponse200>;
   getTxByAddress: typeof midgardActions.getTxByAddress;
 };
 
@@ -219,11 +219,10 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
       return RD.fold(
         () => <div />, // initial
         () => {
-          const { count, txs } = txCurData;
-          const txDetails = txs || [];
-          const countValue = count || 0;
+          const count = txCurData?.count ?? 0;
+          const txs = txCurData?.txs ?? [];
 
-          return pageContent(txDetails, countValue, true);
+          return pageContent(txs, count, true);
         },
         (error: Error) => (
           <ContentWrapper className="transaction-view-wrapper center-align">
@@ -232,11 +231,9 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
           </ContentWrapper>
         ),
         (data: InlineResponse200): JSX.Element => {
-          const { count, txs } = data;
-          const txDetails = txs || [];
-          const countValue = count || 0;
+          const { count = 0, txs = [] } = data;
 
-          return pageContent(txDetails, countValue, false);
+          return pageContent(txs, count, false);
         },
       )(txData);
     } else {
