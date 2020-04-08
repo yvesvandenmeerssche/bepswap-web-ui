@@ -32,13 +32,14 @@ type ComponentProps = {};
 type ConnectedProps = {
   user: Maybe<User>;
   txData: TxDetailData;
+  txCurData: InlineResponse200;
   getTxByAddress: typeof midgardActions.getTxByAddress;
 };
 
 type Props = ComponentProps & ConnectedProps;
 
 const Transaction: React.FC<Props> = (props): JSX.Element => {
-  const { user, txData, getTxByAddress } = props;
+  const { user, txData, txCurData, getTxByAddress } = props;
   const [filter, setFilter] = useState('all');
   const [page, setPage] = useState(1);
 
@@ -217,7 +218,13 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
     if (walletAddress) {
       return RD.fold(
         () => <div />, // initial
-        () => pageContent([], 0, true),
+        () => {
+          const { count, txs } = txCurData;
+          const txDetails = txs || [];
+          const countValue = count || 0;
+
+          return pageContent(txDetails, countValue, true);
+        },
         (error: Error) => (
           <ContentWrapper className="transaction-view-wrapper center-align">
             <h2>Loading of transaction history data failed.</h2>
@@ -226,7 +233,10 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
         ),
         (data: InlineResponse200): JSX.Element => {
           const { count, txs } = data;
-          return pageContent(txs || [], count || 0, false);
+          const txDetails = txs || [];
+          const countValue = count || 0;
+
+          return pageContent(txDetails, countValue, false);
         },
       )(txData);
     } else {
@@ -246,6 +256,7 @@ export default compose(
     (state: RootState) => ({
       user: state.Wallet.user,
       txData: state.Midgard.txData,
+      txCurData: state.Midgard.txCurData,
     }),
     {
       getTxByAddress: midgardActions.getTxByAddress,
