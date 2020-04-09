@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Layout } from 'antd';
+import AppLayout from './AppLayout';
 
 import Header from '../../components/header';
 import Footer from '../../components/footer';
@@ -13,13 +13,13 @@ class App extends Component {
     const { url } = this.props.match;
 
     return (
-      <Layout data-test="bepswap-app">
+      <AppLayout data-test="bepswap-app">
         <Header title="SWAP AND STAKE BEP2 ASSETS" />
         <ContentWrapper>
           <AppRouter url={url} />
         </ContentWrapper>
         <Footer commitHash={COMMIT_HASH} />
-      </Layout>
+      </AppLayout>
     );
   }
 }
