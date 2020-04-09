@@ -46,7 +46,7 @@ import { RootState } from '../../../redux/store';
 import { TxStatus, TxTypes } from '../../../redux/app/types';
 import { State as BinanceState } from '../../../redux/binance/types';
 import { PriceDataIndex, PoolDataMap } from '../../../redux/midgard/types';
-import { Maybe, FixmeType, AssetPair } from '../../../types/bepswap';
+import { Maybe, AssetPair } from '../../../types/bepswap';
 import { User, AssetData } from '../../../redux/wallet/types';
 
 import { TokenAmount } from '../../../types/token';
@@ -56,7 +56,6 @@ import { BINANCE_NET } from '../../../env';
 
 type ComponentProps = {
   symbol: string;
-  assets: FixmeType; // PropTypes.object
 };
 
 type ConnectedProps = {
