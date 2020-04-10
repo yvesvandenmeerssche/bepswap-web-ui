@@ -14,7 +14,7 @@ import { UnpackPromiseResponse } from '../../types/util';
 
 export function* getApiBasePath(net: NET) {
   if (net === NET.DEV) {
-    return Promise.resolve(api.getMidgardBasePathByIP(api.MIDGARD_DEV_API_DEV_IP));
+    return api.getMidgardBasePathByIP(api.MIDGARD_DEV_API_DEV_IP);
   }
 
   try {
