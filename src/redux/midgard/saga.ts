@@ -1,6 +1,6 @@
 import { all, takeEvery, put, fork, call } from 'redux-saga/effects';
 import { isEmpty as _isEmpty } from 'lodash';
-import byzantine from '@thorchain-core/byzantine-module';
+import byzantine from '@thorchain/byzantine-module';
 import * as actions from './actions';
 import * as api from '../../helpers/apiHelper';
 
