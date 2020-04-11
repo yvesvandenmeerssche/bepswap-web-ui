@@ -8,9 +8,14 @@ export const Menu = styled(Unstyled)`
   i {
     color: ${palette('primary', 1)};
   }
+  
+  .ant-dropdown-menu-item-selected {
+    color: ${palette('text', 0)};
+    background: ${palette('background', 6)};
+  }
   .ant-dropdown-menu-item:hover,
   .ant-dropdown-menu-submenu-title:hover {
-    background: #f4f5f7;
+    background: ${palette('background', 6)};
   }
 `;
 
