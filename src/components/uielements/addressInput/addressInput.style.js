@@ -15,7 +15,7 @@ export const AddressInputWrapper = styled.div`
     border-radius: 50%;
     color: #fff;
     background: ${props =>
-      props.status ? palette('error', 0) : palette('primary', 1)};
+      props.status ? palette('error', 0) : palette('primary', 0)};
     cursor: pointer;
 
     i {

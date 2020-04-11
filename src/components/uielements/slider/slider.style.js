@@ -10,11 +10,11 @@ export const SliderWrapper = styled(Slider)`
 
     .ant-slider-rail {
       height: 4px;
-      background: ${palette('background', 8)};
+      background: ${palette('gray', 1)};
     }
 
     .ant-slider-track {
-      background: ${palette('primary', 0)};
+      background: ${palette('gradient', 0)};
     }
 
     .ant-slider-handle {
@@ -32,7 +32,7 @@ export const SliderWrapper = styled(Slider)`
 
     &:hover {
       .ant-slider-track {
-        background: ${palette('primary', 1)};
+        background: ${palette('primary', 0)};
       }
     }
   }

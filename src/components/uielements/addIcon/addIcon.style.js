@@ -7,7 +7,7 @@ export const IconWrapper = styled.div`
   border: none;
   border-radius: 50%;
   color: #fff;
-  background: ${palette('primary', 1)};
+  background: ${palette('primary', 0)};
   cursor: pointer;
 
   span {

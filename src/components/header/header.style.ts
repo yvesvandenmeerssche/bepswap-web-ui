@@ -28,7 +28,7 @@ export const StyledHeader = styled.div`
   .ant-dropdown-link {
     display: flex;
     align-items: center;
-    color: ${palette('text', 1)};
+    color: ${palette('text', 0)};
     font-weight: bold;
     i {
       padding: 0 5px;
@@ -75,7 +75,7 @@ export const HeaderTitle = styled.p`
   ${media.sm`
     display:block;
   `}
-  color: ${palette('text', 1)};
+  color: ${palette('text', 0)};
   font-size: ${key('sizes.font.big', '15px')};
   letter-spacing: 0.9px;
   white-space: nowrap;
@@ -111,9 +111,9 @@ export const HeaderActionButtons = styled.div`
       height: 30px;
       min-width: 30px;
       border-radius: 50%;
-      border: 1px solid ${palette('primary', 1)};
+      border: 1px solid ${palette('primary', 0)};
       padding: 4px 7px;
-      color: ${palette('primary', 1)};
+      color: ${palette('primary', 0)};
       ${media.sm`
         display: none;
       `}

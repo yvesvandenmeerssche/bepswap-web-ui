@@ -51,11 +51,11 @@ type ColorGroups = {
 
 const colorGroups: ColorGroups = {
   primary: {
-    main: palette('primary', 0),
-    darken: palette('secondary', 0),
-    lighten: palette('secondary', 1),
-    text: palette('primary', 1),
-    borderBottom: palette('primary', 0),
+    main: palette('gradient', 0),
+    darken: palette('gradient', 1),
+    lighten: palette('gradient', 2),
+    text: palette('primary', 0),
+    borderBottom: palette('gradient', 0),
   },
   success: {
     main: palette('success', 0),
@@ -140,8 +140,8 @@ const getThemes = () => {
       },
     };
     value.ghost = {
-      text: palette('text', 3),
-      border: palette('primary', 5),
+      text: palette('text', 2),
+      border: palette('gray', 0),
       background: '#fff',
       action: {
         text: main,
@@ -154,15 +154,15 @@ const getThemes = () => {
     };
     value.normal = {
       text: palette('text', 0),
-      border: palette('border', 0),
+      border: palette('gray', 0),
       background: '#fff',
       action: {
         text: palette('text', 0),
-        border: palette('border', 0),
+        border: palette('gray', 0),
         background: '#fff',
       },
       focus: {
-        border: palette('border', 0),
+        border: palette('gray', 0),
         borderBottom,
       },
     };

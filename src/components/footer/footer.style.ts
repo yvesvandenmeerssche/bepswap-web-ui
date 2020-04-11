@@ -60,7 +60,7 @@ export const StyledFooter = styled.div`
     a {
       font-family: 'Montserrat Bold';
       font-size: ${key('sizes.font.normal', '12px')};
-      color: ${palette('text', 6)};
+      color: ${palette('text', 1)};
       letter-spacing: 1px;
       cursor: pointer;
       padding-left: 50px;
@@ -77,7 +77,7 @@ export const StyledFooter = styled.div`
 
     a {
       font-size: 18px;
-      color: ${palette('text', 6)};
+      color: ${palette('text', 1)};
       cursor: pointer;
     }
   }

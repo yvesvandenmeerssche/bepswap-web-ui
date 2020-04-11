@@ -21,7 +21,7 @@ export const TokenInfoWrapper = styled.div`
     top: 0px;
     border-bottom-left-radius: 3px;
     border-top-left-radius: 3px;
-    background: ${palette('primary', 0)};
+    background: ${palette('gradient', 0)};
   }
 
   .label-wrapper {
@@ -35,7 +35,7 @@ export const TokenInfoWrapper = styled.div`
     text-transform: uppercase;
 
     .pool-label {
-      color: ${palette('text', 8)};
+      color: ${palette('text', 0)};
     }
   }
 `;

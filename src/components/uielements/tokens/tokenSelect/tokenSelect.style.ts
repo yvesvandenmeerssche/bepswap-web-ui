@@ -11,7 +11,7 @@ export const TokenSelectWrapper = styled.div`
 
   width: 216px;
   height: 60px;
-  border: 1px solid ${palette('border', 0)};
+  border: 1px solid ${palette('gray', 0)};
   border-radius: 2px;
   text-transform: uppercase;
   ${transition()};
@@ -30,7 +30,7 @@ export const DropdownIcon = styled(IconBase)`
 
   &.caret-down {
     font-size: 22px;
-    color: ${palette('primary', 0)};
+    color: ${palette('gradient', 0)};
   }
 `;
 

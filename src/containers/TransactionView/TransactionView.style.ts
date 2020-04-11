@@ -77,17 +77,17 @@ export const StyledPagination = styled(Pagination)`
   padding: 20px 0;
 
   li.ant-pagination-item.ant-pagination-item-active {
-    border-color: ${palette('primary', 1)};
+    border-color: ${palette('primary', 0)};
     a {
-      color: ${palette('primary', 1)};
+      color: ${palette('primary', 0)};
     }
   }
 
   li.ant-pagination-item {
     &:hover {
-      border-color: ${palette('primary', 1)};
+      border-color: ${palette('primary', 0)};
       a {
-        color: ${palette('primary', 1)};
+        color: ${palette('primary', 0)};
         ${transition()};
       }
       ${transition()};

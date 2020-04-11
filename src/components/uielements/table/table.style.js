@@ -7,8 +7,8 @@ export const TableWrapper = styled(Table)`
     height: 70px;
     border-top: none;
     font-size: ${key('sizes.font.normal', '12px')};
-    color: ${palette('text', 5)};
-    background-color: #fff;
+    color: ${palette('text', 2)};
+    background-color: ${palette('background', 1)};
     text-transform: uppercase;
     text-align: center;
 
@@ -20,7 +20,7 @@ export const TableWrapper = styled(Table)`
   .ant-table-tbody > tr > td {
     height: 64px;
     text-transform: uppercase;
-    background-color: #fff;
+    background-color: ${palette('background', 1)};
     text-align: center;
   }
 

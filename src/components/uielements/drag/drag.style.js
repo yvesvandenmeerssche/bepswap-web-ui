@@ -9,7 +9,7 @@ export const DragWrapper = styled.div`
   align-items: center;
   width: 244px;
   height: 40px;
-  border: 1px solid ${palette('primary', 1)};
+  border: 1px solid ${palette('primary', 0)};
   ${props => props.success && `border: 1px solid ${palette('success', 0)}`};
 
   border-radius: 20px;

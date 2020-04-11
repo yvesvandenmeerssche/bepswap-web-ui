@@ -23,11 +23,11 @@ export const StyledTab = component => styled(component)`
     .ant-tabs-tab a {
       padding-top: 18px;
       letter-spacing: 2.5px;
-      color: ${palette('text', 1)};
+      color: ${palette('text', 0)};
       font-weight: bold;
 
       &:hover {
-        color: ${palette('primary', 1)};
+        color: ${palette('primary', 0)};
       }
     }
 
@@ -39,7 +39,7 @@ export const StyledTab = component => styled(component)`
     .ant-tabs-ink-bar {
       bottom: 0px;
       height: 3px;
-      background: ${palette('primary', 0)};
+      background: ${palette('gradient', 0)};
     }
   }
 

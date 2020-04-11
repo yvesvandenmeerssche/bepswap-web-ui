@@ -79,7 +79,7 @@ export const ContentWrapper = styled(ContentView)`
           align-items: center;
           .label-wrapper {
             padding: 0;
-            color: ${palette('primary', 1)};
+            color: ${palette('primary', 0)};
           }
         }
 

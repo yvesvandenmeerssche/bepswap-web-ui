@@ -25,15 +25,15 @@ const fontSettings = {
 };
 
 const colors = {
-  primary: palette('primary', 0),
+  primary: palette('gradient', 0),
   success: palette('success', 0),
   warning: palette('warning', 0),
   error: palette('error', 0),
   normal: palette('text', 0),
-  light: palette('text', 3),
-  dark: palette('text', 2),
-  gray: palette('text', 4),
-  input: palette('text', 5),
+  light: palette('text', 2),
+  dark: palette('text', 1),
+  gray: palette('text', 2),
+  input: palette('text', 2),
   white: '#fff',
 };
 

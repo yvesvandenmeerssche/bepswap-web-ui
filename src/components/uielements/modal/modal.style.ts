@@ -7,7 +7,7 @@ export const ModalWrapper = styled(Modal)`
   .ant-modal-header {
     padding: 10px 14px;
     text-align: center;
-    background: ${palette('primary', 0)};
+    background: ${palette('gradient', 0)};
     text-transform: uppercase;
     letter-spacing: 1.5px;
     .ant-modal-title {
@@ -47,18 +47,18 @@ export const ModalWrapper = styled(Modal)`
     &:hover,
     &:active,
     &:focus {
-      color: ${palette('primary', 1)};
+      color: ${palette('primary', 0)};
     }
 
     &.ant-btn-primary {
       background: #fff;
-      color: ${palette('primary', 1)};
-      border-color: ${palette('primary', 0)};
+      color: ${palette('primary', 0)};
+      border-color: ${palette('gradient', 0)};
       &:hover,
       &:active,
       &:focus {
-        background-color: ${palette('secondary', 0)};
-        border-color: ${palette('secondary', 0)};
+        background-color: ${palette('gradient', 1)};
+        border-color: ${palette('gradient', 1)};
       }
     }
   }

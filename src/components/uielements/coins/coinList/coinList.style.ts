@@ -26,7 +26,7 @@ export const CoinListWrapper = styled.div`
 
     &.active,
     &:hover {
-      background-color: ${palette('primary', 3)};
+      background-color: ${palette('secondary', 1)};
     }
   }
 `;

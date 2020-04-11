@@ -8,7 +8,7 @@ export const ContentTitleWrapper = styled.div`
   width: 100%;
   height: 52px;
 
-  background: ${palette('primary', 0)};
+  background: ${palette('gradient', 0)};
   color: #fff;
   font-size: ${key('sizes.font.big', '15px')};
   font-weight: 500;

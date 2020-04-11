@@ -6,16 +6,16 @@ import { media } from '../../helpers/styleHelper';
 
 export const Menu = styled(Unstyled)`
   i {
-    color: ${palette('primary', 1)};
+    color: ${palette('primary', 0)};
   }
   
   .ant-dropdown-menu-item-selected {
     color: ${palette('text', 0)};
-    background: ${palette('background', 6)};
+    background: ${palette('gray', 1)};
   }
   .ant-dropdown-menu-item:hover,
   .ant-dropdown-menu-submenu-title:hover {
-    background: ${palette('background', 6)};
+    background: ${palette('gray', 1)};
   }
 `;
 

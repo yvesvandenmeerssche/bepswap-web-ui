@@ -30,5 +30,5 @@ export const DynamicCoinWrapper = styled.div`
     `background: linear-gradient(45deg, ${props.startCol}, ${props.stopCol})`};
   color: white;
   text-transform: uppercase;
-  box-shadow: 0px 4px 5px ${palette('primary', 3)};
+  box-shadow: 0px 4px 5px ${palette('secondary', 1)};
 `;

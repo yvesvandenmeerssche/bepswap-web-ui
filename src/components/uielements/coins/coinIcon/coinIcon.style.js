@@ -19,7 +19,7 @@ export const CoinIconWrapper = styled.div`
   .blue-circle {
     width: ${props => sizes[props.size]};
     height: ${props => sizes[props.size]};
-    background-color: ${palette('background', 5)};
+    background-color: ${palette('secondary', 0)};
     border-radius: 50%;
   }
   .confirm-circle {

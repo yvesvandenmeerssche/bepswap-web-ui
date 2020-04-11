@@ -6,7 +6,7 @@ export const IconWrapper = styled.div`
   height: 100px;
   border: none;
   border-radius: 50%;
-  background-color: ${palette('primary', 0)};
+  background-color: ${palette('gradient', 0)};
 
   i {
     color: #fff;

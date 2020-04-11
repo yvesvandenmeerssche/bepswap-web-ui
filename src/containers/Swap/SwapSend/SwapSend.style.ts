@@ -38,12 +38,12 @@ export const ArrowContainer = styled(BaseArrowContainer)`
     align-items: center;
     width: 54px;
     height: 40px;
-    border: 1px solid ${palette('primary', 0)};
+    border: 1px solid ${palette('gradient', 0)};
     border-radius: 5px;
     cursor: pointer;
 
     i {
-      color: ${palette('primary', 0)};
+      color: ${palette('gradient', 0)};
       ${transition()}
     }
 
@@ -222,7 +222,7 @@ export const SwapModalContent = styled.div`
     align-items: center;
     width: 100%;
     padding: 30px 0;
-    border-bottom: 1px solid ${palette('border', 0)};
+    border-bottom: 1px solid ${palette('gray', 0)};
 
     .timer-container {
       display: flex;
@@ -261,12 +261,12 @@ export const SwapModalContent = styled.div`
         justify-content: center;
         align-items: center;
 
-        border: 1px solid ${palette('primary', 0)};
+        border: 1px solid ${palette('gradient', 0)};
         border-radius: 6px;
         padding: 1px 4px;
         margin-right: 6px;
         margin-bottom: 16px;
-        color: ${palette('primary', 0)};
+        color: ${palette('gradient', 0)};
         cursor: pointer;
 
         .view-btn {
@@ -295,7 +295,7 @@ export const SwapStatusPanel = styled.div`
   i {
     transform: rotate(-90deg);
     font-size: 24px;
-    color: ${palette('primary', 1)};
+    color: ${palette('primary', 0)};
     cursor: pointer;
 
     &:hover {

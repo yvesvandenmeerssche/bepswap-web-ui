@@ -26,7 +26,7 @@ export const CardBorderWrapper = styled.div`
   display: flex;
   flex-direction: column;
 
-  border: 1px solid ${palette('border', 0)};
+  border: 1px solid ${palette('gray', 0)};
   border-radius: 3px;
   background-color: #fff;
 `;
@@ -54,7 +54,7 @@ export const DropdownIcon = styled(IconBase)`
 
   &.caret-down {
     font-size: 22px;
-    color: ${palette('primary', 0)};
+    color: ${palette('gradient', 0)};
   }
 `;
 
@@ -150,7 +150,7 @@ export const HorizontalDivider = styled<React.SFC<DividerProps & HorizontalDivid
     margin: ${props => (props?.color === 'primary' ? '4px 0' : '2px 0')};
 
     background: ${props =>
-      props?.color === 'primary' ? palette('success', 0) : palette('border', 0)};
+      props?.color === 'primary' ? palette('success', 0) : palette('gray', 0)};
   }
 `;
 

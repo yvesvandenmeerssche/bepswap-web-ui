@@ -15,7 +15,7 @@ export const AddWalletWrapper = styled.div`
     height: 100px;
     margin-bottom: 20px;
     border-radius: 50%;
-    background: ${palette('background', 2)};
+    background: ${palette('background', 1)};
     i {
       svg {
         width: 60px;

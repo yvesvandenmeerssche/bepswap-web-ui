@@ -57,13 +57,13 @@ const AppHolder = styled.div`
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     &::selection {
-      background: ${palette('primary', 1)};
-      color: #fff;
+      background: ${palette('primary', 0)};
+      color: ${palette('background', 1)};
     }
   }
 
   section.ant-layout {
-    background: ${palette('background', 2)};
+    background: ${palette('background', 1)};
   }
 
   .ant-row:not(.ant-form-item) {
