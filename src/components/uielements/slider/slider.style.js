@@ -23,7 +23,7 @@ export const SliderWrapper = styled(Slider)`
       margin-top: -6px;
       margin-left: -6px;
       border: 3px solid ${palette('success', 0)};
-      background: #fff;
+      background: ${palette('background', 1)};
     }
 
     .ant-slider-dot {

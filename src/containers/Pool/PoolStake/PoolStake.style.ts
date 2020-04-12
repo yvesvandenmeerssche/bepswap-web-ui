@@ -445,7 +445,7 @@ export const ContentWrapper = styled(ContentView)`
   .your-share-wrapper,
   .share-detail-wrapper {
     height: 100%;
-    background: #ffffff;
+    background: ${palette('background', 1)};
     box-shadow: 0px 1px 3px ${palette('gray', 0)};
     border-radius: 3px;
   }

@@ -8,7 +8,7 @@ export const TokenInfoWrapper = styled.div`
   flex-direction: column;
   height: 100px;
   padding: 8px 12px 8px 16px;
-  background: #fff;
+  background: ${palette('background', 1)};
   box-shadow: 0px 1px 3px ${palette('gray', 0)};
   border-radius: 3px;
 

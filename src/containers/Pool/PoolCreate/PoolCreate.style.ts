@@ -24,7 +24,7 @@ export const ContentWrapper = styled(ContentView)`
     .token-detail-container,
     .create-detail-wrapper {
       height: 100%;
-      background: #ffffff;
+      background: ${palette('background', 1)};
       box-shadow: 0px 1px 3px ${palette('gray')};
       border-radius: 3px;
     }

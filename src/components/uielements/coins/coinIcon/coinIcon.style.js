@@ -31,7 +31,7 @@ export const CoinIconWrapper = styled.div`
     background-color: ${palette('success', 0)};
     border-radius: 50%;
     i {
-      color: white;
+      color: ${palette('background', 1)};
     }
   }
 `;

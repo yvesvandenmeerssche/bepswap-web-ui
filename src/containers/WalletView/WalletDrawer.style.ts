@@ -71,7 +71,7 @@ export const Drawer = styled(AntdDrawer)`
       margin-right: 6px;
       font-size: 12px;
       color: ${palette('gradient', 0)};
-      background: #f4f5f7;
+      background: ${palette('background', 2)};
       border-radius: 4px;
       cursor: pointer;
     }

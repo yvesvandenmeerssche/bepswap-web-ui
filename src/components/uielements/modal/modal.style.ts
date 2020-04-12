@@ -51,7 +51,7 @@ export const ModalWrapper = styled(Modal)`
     }
 
     &.ant-btn-primary {
-      background: #fff;
+      background: ${palette('background', 1)};
       color: ${palette('primary', 0)};
       border-color: ${palette('gradient', 0)};
       &:hover,
