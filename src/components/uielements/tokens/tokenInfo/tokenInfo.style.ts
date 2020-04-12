@@ -9,7 +9,7 @@ export const TokenInfoWrapper = styled.div`
   height: 100px;
   padding: 8px 12px 8px 16px;
   background: #fff;
-  box-shadow: 0px 1px 3px rgba(47, 83, 151, 0.1);
+  box-shadow: 0px 1px 3px ${palette('gray', 0)};
   border-radius: 3px;
 
   &:before {

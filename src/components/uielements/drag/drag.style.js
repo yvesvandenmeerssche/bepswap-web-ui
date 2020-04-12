@@ -13,7 +13,7 @@ export const DragWrapper = styled.div`
   ${props => props.success && `border: 1px solid ${palette('success', 0)}`};
 
   border-radius: 20px;
-  background-color: #fff;
+  background-color: ${palette('background', 1)};
   ${props => props.dragging && boxShadow('0px 0px 4px 1px #50E3C2')};
   ${props => props.success && boxShadow('0px 0px 4px 1px #50E3C2')};
 

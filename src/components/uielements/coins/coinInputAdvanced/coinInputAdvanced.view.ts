@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { palette } from 'styled-theme';
 
 import { Input } from 'antd';
 
@@ -15,6 +16,6 @@ export const CoinInputAdvancedView = styled(Input)`
     }
   }
   &.ant-input.ant-input-disabled {
-    background-color: #fff;
+    background-color: ${palette('background', 1)};
   }
 `;

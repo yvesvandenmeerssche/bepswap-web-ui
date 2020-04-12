@@ -20,7 +20,7 @@ export const StyledHeader = styled.div`
   > *:last-child {
     margin-right: 0;
   }
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid ${palette('gray', 0)};
   background-color: ${palette('background', 0)};
 
   /* HACK: this override hack should be in the 

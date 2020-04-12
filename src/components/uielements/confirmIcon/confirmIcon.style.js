@@ -9,7 +9,7 @@ export const IconWrapper = styled.div`
   background-color: ${palette('gradient', 0)};
 
   i {
-    color: #fff;
+    color: ${palette('text', 3)};
     font-size: 50px;
     padding: 25px;
   }

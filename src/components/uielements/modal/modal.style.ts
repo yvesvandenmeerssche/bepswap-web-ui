@@ -11,7 +11,7 @@ export const ModalWrapper = styled(Modal)`
     text-transform: uppercase;
     letter-spacing: 1.5px;
     .ant-modal-title {
-      color: #fff;
+      color: ${palette('text', 3)};
     }
   }
   .ant-modal-body {
@@ -22,7 +22,7 @@ export const ModalWrapper = styled(Modal)`
       width: 44px;
       height: 48px;
       line-height: 48px;
-      color: #fff;
+      color: ${palette('text', 3)};
     }
   }
   .ant-modal-footer {

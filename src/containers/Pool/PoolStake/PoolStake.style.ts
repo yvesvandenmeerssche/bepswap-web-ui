@@ -276,7 +276,6 @@ export const ContentWrapper = styled(ContentView)`
           }
 
           .your-share-info {
-
             & > div {
               text-align: center;
             }
@@ -447,7 +446,7 @@ export const ContentWrapper = styled(ContentView)`
   .share-detail-wrapper {
     height: 100%;
     background: #ffffff;
-    box-shadow: 0px 1px 3px rgba(47, 83, 151, 0.1);
+    box-shadow: 0px 1px 3px ${palette('gray', 0)};
     border-radius: 3px;
   }
 `;

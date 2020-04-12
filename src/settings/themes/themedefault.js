@@ -46,7 +46,7 @@ theme.palette = {
   ],
   gray: [
     dark[1], // 0: Border
-    dark[3], // 0: step bar bg
+    dark[2], // 0: step bar, txstatus bg
   ],
   background: [
     '#fff', // 0: header, footer bg
@@ -57,6 +57,7 @@ theme.palette = {
     dark[7], // 0: Normal Text (normal)
     dark[9], // 1: Active (dark)
     dark[2], // 2: light text
+    '#fff', // 3: white text
   ],
 };
 

@@ -52,7 +52,7 @@ export const StyledTab = component => styled(component)`
 
   .ant-tabs-nav .ant-tabs-tab-disabled,
   .ant-tabs-nav .ant-tabs-tab-disabled:hover {
-    color: rgba(0, 0, 0, 0.25);
+    color: ${palette('text', 2)};
     cursor: not-allowed;
   }
 `;

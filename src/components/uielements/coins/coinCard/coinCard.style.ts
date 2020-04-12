@@ -28,7 +28,7 @@ export const CardBorderWrapper = styled.div`
 
   border: 1px solid ${palette('gray', 0)};
   border-radius: 3px;
-  background-color: #fff;
+  background-color: ${palette('background', 1)};
 `;
 
 export const CardTopRow = styled.div`

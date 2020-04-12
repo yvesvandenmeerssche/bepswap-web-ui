@@ -13,7 +13,7 @@ export const AddressInputWrapper = styled.div`
     height: 21px;
     border: none;
     border-radius: 50%;
-    color: #fff;
+    color: ${palette('text', 3)};
     background: ${props =>
       props.status ? palette('error', 0) : palette('primary', 0)};
     cursor: pointer;
@@ -22,7 +22,7 @@ export const AddressInputWrapper = styled.div`
       position: relative;
       top: 1px;
       left: 3px;
-      color: #fff;
+      color: ${palette('text', 3)};
       font-size: 15px;
       font-weight: bold;
     }

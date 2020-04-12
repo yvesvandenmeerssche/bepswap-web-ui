@@ -49,7 +49,7 @@ export const ArrowContainer = styled(BaseArrowContainer)`
 
     &:hover {
       i {
-        color: #fff;
+        color: ${palette('text', 3)};
       }
     }
   }
@@ -124,13 +124,6 @@ export const ContentWrapper = styled(ContentView)`
       }
     }
   }
-`;
-
-export const CardFormArrowIcon = styled.div`
-  &:before {
-    content: '⮑';
-  }
-  color: #ccc;
 `;
 
 export const CardFormHolder = styled.div`

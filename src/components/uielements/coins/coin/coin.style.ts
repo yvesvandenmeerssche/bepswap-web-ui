@@ -41,7 +41,7 @@ export const CoinsWrapper = styled.div`
     position: relative;
     border-radius: 50%;
     box-shadow: 0px 4px 5px ${palette('secondary', 1)};
-    background-color: #fff;
+    background-color: ${palette('background', 1)};
 
     .coinIcon-wrapper {
       width: 100%;

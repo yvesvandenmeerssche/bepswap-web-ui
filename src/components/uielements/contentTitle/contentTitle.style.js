@@ -9,7 +9,7 @@ export const ContentTitleWrapper = styled.div`
   height: 52px;
 
   background: ${palette('gradient', 0)};
-  color: #fff;
+  color: ${palette('text', 3)};
   font-size: ${key('sizes.font.big', '15px')};
   font-weight: 500;
   letter-spacing: 2px;
