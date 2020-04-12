@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Icon, Popover } from 'antd';
 
-import { AddressInputWrapper } from './addressInput.style';
+import { AddressInputWrapper, PopoverContent } from './addressInput.style';
 import Input from '../input';
 
 class AddressInput extends Component {
@@ -15,17 +15,7 @@ class AddressInput extends Component {
   };
 
   renderPopoverContent = () => {
-    return (
-      <div
-        style={{
-          fontFamily: 'Roboto, sans-serif',
-          fontSize: '11px',
-          color: '#50E3C2',
-        }}
-      >
-        Add Recipient Address
-      </div>
-    );
+    return <PopoverContent>Add Recipient Address</PopoverContent>;
   };
 
   render() {

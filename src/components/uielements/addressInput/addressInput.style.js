@@ -33,3 +33,9 @@ export const AddressInputWrapper = styled.div`
     margin-left: 10px;
   }
 `;
+
+export const PopoverContent = styled.div`
+  font-family: 'Roboto, sans-serif';
+  font-size: '11px';
+  color: ${palette('primary', 0)};
+`;
