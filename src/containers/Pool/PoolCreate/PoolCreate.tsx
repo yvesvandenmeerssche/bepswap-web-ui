@@ -694,7 +694,7 @@ class PoolCreate extends React.Component<Props, State> {
         <ConfirmModal
           title={modalTitle}
           closeIcon={
-            <Icon type={coinCloseIconType} style={{ color: '#33CCFF' }} />
+            <Icon type={coinCloseIconType} style={{ color: '#fff' }} />
           }
           visible={openCreateModal}
           footer={null}

@@ -28,6 +28,7 @@ import {
   CardFormItem,
   CardFormItemError,
   SwapStatusPanel,
+  PopoverContent,
 } from './SwapSend.style';
 import {
   getTickerFormat,
@@ -120,7 +121,7 @@ type State = {
   maxSlip: number;
   txResult: Maybe<TxResult>;
   timerFinished: boolean;
-}
+};
 
 type TxResult = {
   type: string;
@@ -210,7 +211,7 @@ class SwapSend extends React.Component<Props, State> {
     const { txResult, timerFinished } = this.state;
     const { txStatus } = this.props;
     return !txStatus.status && (txResult !== Nothing || timerFinished);
-  }
+  };
 
   handleChangePassword = (password: string) => {
     this.setState({
@@ -653,7 +654,7 @@ class SwapSend extends React.Component<Props, State> {
     this.setState({
       xValue: tokenAmount(0),
       timerFinished: false,
-   });
+    });
     resetTxStatus();
   };
 
@@ -766,7 +767,9 @@ class SwapSend extends React.Component<Props, State> {
     if (slip.isGreaterThanOrEqualTo(maxSlip)) {
       notification.error({
         message: 'Swap Invalid',
-        description: `Slip ${util.formatBN(slip)}% is too high, try less than ${maxSlip}%.`,
+        description: `Slip ${util.formatBN(
+          slip,
+        )}% is too high, try less than ${maxSlip}%.`,
       });
       this.setState({
         dragReset: true,
@@ -777,17 +780,7 @@ class SwapSend extends React.Component<Props, State> {
   };
 
   renderProtectPopoverContent = () => {
-    return (
-      <div
-        style={{
-          fontFamily: 'Roboto, sans-serif',
-          fontSize: '11px',
-          color: '#50E3C2',
-        }}
-      >
-        Protect my price (within 3%)
-      </div>
-    );
+    return <PopoverContent>Protect my price (within 3%)</PopoverContent>;
   };
 
   render() {
@@ -1004,7 +997,6 @@ class SwapSend extends React.Component<Props, State> {
                           sizevalue="small"
                           typevalue="outline"
                           focused={slipProtection}
-                          style={{ borderColor: '#33CCFF' }}
                         >
                           <Icon type={slipProtection ? 'lock' : 'unlock'} />
                         </Button>

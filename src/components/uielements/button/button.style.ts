@@ -113,11 +113,11 @@ const getThemes = () => {
     ];
 
     value.default = {
-      text: '#fff',
+      text: palette('text', 3),
       border: text,
       background: main,
       action: {
-        text: '#fff',
+        text: palette('text', 3),
         border: darken,
         background: darken,
       },
@@ -129,9 +129,9 @@ const getThemes = () => {
     value.outline = {
       text,
       border: text,
-      background: '#fff',
+      background: palette('background', 1),
       action: {
-        text: '#fff',
+        text: palette('text', 3),
         border: text,
         background: main,
       },
@@ -142,7 +142,7 @@ const getThemes = () => {
     value.ghost = {
       text: palette('text', 2),
       border: palette('gray', 0),
-      background: '#fff',
+      background: palette('background', 1),
       action: {
         text: main,
         border: main,
@@ -155,11 +155,11 @@ const getThemes = () => {
     value.normal = {
       text: palette('text', 0),
       border: palette('gray', 0),
-      background: '#fff',
+      background: palette('background', 1),
       action: {
         text: palette('text', 0),
         border: palette('gray', 0),
-        background: '#fff',
+        background: palette('background', 1),
       },
       focus: {
         border: palette('gray', 0),

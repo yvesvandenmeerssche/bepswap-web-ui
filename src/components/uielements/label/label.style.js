@@ -25,7 +25,8 @@ const fontSettings = {
 };
 
 const colors = {
-  primary: palette('gradient', 0),
+  gradient: palette('gradient', 0),
+  primary: palette('primary', 0),
   success: palette('success', 0),
   warning: palette('warning', 0),
   error: palette('error', 0),

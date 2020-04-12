@@ -24,7 +24,7 @@ const Connector = props => {
   const ledgerConnect = async () => {
     setConnecting(true);
     message.success(
-      <Label style={{ color: '#50E3C2' }}>Please approve on your ledger</Label>,
+      <Label color="primary">Please approve on your ledger</Label>,
       5,
     );
 

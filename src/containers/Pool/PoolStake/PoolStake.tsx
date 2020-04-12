@@ -1462,7 +1462,7 @@ class PoolStake extends React.Component<Props, State> {
             <ConfirmModal
               title={withdrawText}
               closeIcon={
-                <Icon type={coinCloseIconType} style={{ color: '#33CCFF' }} />
+                <Icon type={coinCloseIconType} style={{ color: '#fff' }} />
               }
               visible={openWithdrawModal}
               footer={null}
@@ -1473,7 +1473,7 @@ class PoolStake extends React.Component<Props, State> {
             <ConfirmModal
               title={stakeTitle}
               closeIcon={
-                <Icon type={coinCloseIconType} style={{ color: '#33CCFF' }} />
+                <Icon type={coinCloseIconType} style={{ color: '#fff' }} />
               }
               visible={openStakeModal}
               footer={null}

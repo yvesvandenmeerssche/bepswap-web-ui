@@ -129,13 +129,13 @@ const Keystore: React.FC<Props> = (props: Props): JSX.Element => {
               <Icon
                 type="check-circle"
                 theme="twoTone"
-                twoToneColor="#52c41a"
+                twoToneColor="#50E3C2"
               />
             )}
           </div>
         </FilePicker>
         {keystoreError && (
-          <span style={{ color: '#FF4136' }}>{keystoreError}</span>
+          <span style={{ color: '#FF4954' }}>{keystoreError}</span>
         )}
         <FormGroup
           className={invalideStatus ? 'has-error' : ''}
