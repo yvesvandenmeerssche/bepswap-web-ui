@@ -162,3 +162,15 @@ export const HeaderActionButtons = styled.div`
     }
   }
 `;
+
+export const ConnectionMenuItem = styled.div`
+  .connection-server-label {
+    padding-left: 10px;
+    font-weight: bold;
+  }
+  .connection-server-url {
+    padding-left: 10px;
+    color: ${palette('text', 2)};
+    text-transform: lowercase;
+  }
+`;

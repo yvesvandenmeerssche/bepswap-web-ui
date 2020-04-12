@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
 import { Menu, Dropdown, Icon, Row } from 'antd';
-
 import { ClickParam } from 'antd/lib/menu';
 import { keyBy } from 'lodash';
 import { binance } from 'asgardex-common';
@@ -9,6 +8,8 @@ import ConnectionStatus from '../uielements/connectionStatus';
 import { BINANCE_NET } from '../../env';
 import { Maybe, Nothing } from '../../types/bepswap';
 import { getHostnameFromUrl } from '../../helpers/apiHelper';
+
+import { ConnectionMenuItem } from './header.style';
 
 type MenuItem = {
   key: string;
@@ -72,24 +73,16 @@ const HeaderSetting: React.FC<Props> = (props: Props): JSX.Element => {
               key={key}
             >
               <ConnectionStatus color={status} />
-              <div>
+              <ConnectionMenuItem>
                 <Row>
-                  <span style={{ paddingLeft: '10px', fontWeight: 'bold' }}>
+                  <span className="connection-server-label">
                     {label}
                   </span>
                 </Row>
                 <Row>
-                  <span
-                    style={{
-                      paddingLeft: '10px',
-                      color: '#808080',
-                      textTransform: 'lowercase',
-                    }}
-                  >
-                    {url || ''}
-                  </span>
+                  <span className="connection-server-url">{url || ''}</span>
                 </Row>
-              </div>
+              </ConnectionMenuItem>
             </Menu.Item>
           );
         })}
