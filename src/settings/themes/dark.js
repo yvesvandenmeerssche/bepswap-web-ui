@@ -9,8 +9,8 @@ const darkTheme = cloneDeep(lightTheme);
 darkTheme.palette = {
   ...darkTheme.palette,
   gray: [
-    dark[8], // 0: Border
-    dark[7], // 0: step bar, txstatus bg
+    dark[7], // 0: Border
+    dark[6], // 0: step bar, txstatus bg
   ],
   background: [
     dark[9], // 0: header, footer bg
