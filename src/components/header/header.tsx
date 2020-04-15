@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { connect } from 'react-redux';
 import { Link, useRouteMatch } from 'react-router-dom';
-import { Button, Tooltip, Icon } from 'antd';
+import { Tooltip, Icon } from 'antd';
 
 import * as RD from '@devexperts/remote-data-ts';
 import Tabs from '../uielements/tabs';
@@ -13,6 +13,7 @@ import HeaderSetting from './headerSetting';
 import WalletDrawer from '../../containers/WalletView/WalletDrawer';
 
 import * as appActions from '../../redux/app/actions';
+import Button from '../uielements/button';
 import WalletButton from '../uielements/walletButton';
 import BasePriceSelector from './basePriceSelector';
 import { MAX_VALUE } from '../../redux/app/const';
@@ -109,7 +110,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
         </Link>
         <Link to="/introduction">
           <Tooltip title="Introduction?">
-            <Button shape="circle" size="small" icon="question" />
+            <Button className="intro-btn" typevalue="outline" shape="circle" size="small" icon="question" />
           </Tooltip>
         </Link>
       </LogoWrapper>
