@@ -39,6 +39,7 @@ import {
   MIDGARD_MAX_RETRY,
   MIDGARD_RETRY_DELAY,
 } from '../midgard/saga';
+import { UnpackPromiseResponse } from '../../types/util';
 
 export function* saveWalletSaga() {
   yield takeEvery(actions.SAVE_WALLET, function*({
@@ -165,42 +166,72 @@ export function* getUserStakeData(
   return stakeDataList;
 }
 
+function* tryRefreshStakes(address: Address) {
+  for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
+    try {
+      const noCache = i > 0;
+      // Unsafe type match of `basePath`: Can't be inferred by `tsc` from a return value of a Generator function - known TS/Generator/Saga issue
+      const basePath: string = yield call(getApiBasePath, getNet(), noCache);
+      const midgardApi = api.getMidgardDefaultApi(basePath);
+      const fn = midgardApi.getStakersAddressData;
+      const { data }: UnpackPromiseResponse<typeof fn> = yield call(
+        { context: midgardApi, fn },
+        address,
+      );
+      return data;
+    } catch (error) {
+      if (i < MIDGARD_MAX_RETRY - 1) {
+        yield delay(MIDGARD_RETRY_DELAY);
+      }
+    }
+  }
+  throw new Error('Midard API request failed to get stakers address data');
+}
+
+export function* tryGetUserStakeData(address: Address, pools: string[]) {
+  for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
+    try {
+      const noCache = i > 0;
+      // Unsafe type match of `basePath`: Can't be inferred by `tsc` from a return value of a Generator function - known TS/Generator/Saga issue
+      const basePath: string = yield call(getApiBasePath, getNet(), noCache);
+      // Unsafe: `StakeData[]` can't be inferred by `tsc` from a return value of a Generator function - known TS/Generator/Saga issue
+      const result: StakeData[] = yield call(
+        getUserStakeData,
+        {
+          address,
+          assets: pools,
+        },
+        basePath,
+      );
+      return result;
+    } catch (error) {
+      if (i < MIDGARD_MAX_RETRY - 1) {
+        yield delay(MIDGARD_RETRY_DELAY);
+      }
+    }
+  }
+  throw new Error('Midard API request failed to get user staked data');
+}
+
 export function* refreshStakes() {
   yield takeEvery(actions.REFRESH_STAKES, function*({
-    payload,
+    payload: address,
   }: actions.RefreshStakes) {
-    const address = payload;
+    try {
+      const data: StakersAddressData = yield call(tryRefreshStakes, address);
 
-    for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
-      try {
-        const noCache = i > 0;
-        const basePath: string = yield call(getApiBasePath, getNet(), noCache);
-        const midgardApi = api.getMidgardDefaultApi(basePath);
-        const { data }: AxiosResponse<StakersAddressData> = yield call(
-          { context: midgardApi, fn: midgardApi.getStakersAddressData },
+      if (data?.poolsArray && !_isEmpty(data?.poolsArray)) {
+        const result = yield call(
+          tryGetUserStakeData,
           address,
+          data.poolsArray,
         );
-
-        if (data.poolsArray && !_isEmpty(data?.poolsArray)) {
-          const result: StakeData[] = yield call(
-            getUserStakeData,
-            {
-              address,
-              assets: data?.poolsArray,
-            },
-            basePath,
-          );
-          yield put(actions.refreshStakeSuccess(result));
-        } else {
-          yield put(actions.refreshStakeSuccess([]));
-        }
-      } catch (error) {
-        if (i < MIDGARD_MAX_RETRY - 1) {
-          yield delay(MIDGARD_RETRY_DELAY);
-        } else {
-          yield put(actions.refreshStakeFailed(error));
-        }
+        yield put(actions.refreshStakeSuccess(result));
+      } else {
+        yield put(actions.refreshStakeSuccess([]));
       }
+    } catch (error) {
+      yield put(actions.refreshStakeFailed(error));
     }
   });
 }
