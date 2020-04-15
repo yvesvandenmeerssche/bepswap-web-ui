@@ -23,6 +23,21 @@ export const TableWrapper = styled(Table)`
     }
   }
 
+  .ant-table-placeholder {
+    background-color: ${palette('background', 1)} !important;
+    border-color: ${palette('gray', 0)};
+
+    .ant-empty-normal {
+      color: ${palette('text', 2)};
+      .ant-empty-image svg {
+        color: ${palette('text', 2)};
+        path {
+          fill: ${palette('background', 1)};
+        }
+      }
+    }
+  }
+
   .ant-table-tbody > tr > td {
     height: 64px;
     border-color: ${palette('gray', 0)};
