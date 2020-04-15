@@ -31,6 +31,7 @@ export const Drawer = styled(AntdDrawer)`
   .ant-drawer-body {
     height: 100%;
     padding: 24px 12px;
+  background-color: ${palette('background', 1)};
   }
 
   .ant-tabs-bar {
@@ -45,7 +46,7 @@ export const Drawer = styled(AntdDrawer)`
     position: absolute;
     top: 15px;
     right: 24px;
-    color: ${palette('gradient', 0)};
+    color: ${palette('primary', 0)};
     z-index: 999;
     cursor: pointer;
   }
@@ -58,7 +59,7 @@ export const Drawer = styled(AntdDrawer)`
     display: flex;
     align-items: center;
     z-index: 999;
-    border: 0.5px solid #e2ebf0;
+    border: 0.5px solid ${palette('gray', 0)};
     border-radius: 4px;
 
     .copy-btn-wrapper {
@@ -70,7 +71,7 @@ export const Drawer = styled(AntdDrawer)`
       padding: 4px;
       margin-right: 6px;
       font-size: 12px;
-      color: ${palette('gradient', 0)};
+      color: ${palette('primary', 0)};
       background: ${palette('background', 2)};
       border-radius: 4px;
       cursor: pointer;
