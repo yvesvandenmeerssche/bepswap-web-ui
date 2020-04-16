@@ -1,5 +1,7 @@
 import styled from 'styled-components';
 import { palette } from 'styled-theme';
+import { Popover } from 'antd';
+
 import { transition } from '../../../settings/style-util';
 
 export const AddressInputWrapper = styled.div`
@@ -40,4 +42,11 @@ export const PopoverContent = styled.div`
   font-family: 'Roboto, sans-serif';
   font-size: '11px';
   color: ${palette('primary', 0)};
+`;
+
+export const PopoverContainer = styled(Popover)`
+  .ant-popover-arrow,
+  .ant-popover-inner {
+    background-color: ${palette('background', 1)} !important;
+  }
 `;

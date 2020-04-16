@@ -66,6 +66,15 @@ const AppHolder = styled.div`
     background: ${palette('background', 1)};
   }
 
+  .ant-popover {
+    .ant-popover-arrow {
+      border-color: ${palette('background', 1)};
+    }
+    .ant-popover-inner {
+      background-color: ${palette('background', 1)};
+    }
+  }
+
   .ant-row:not(.ant-form-item) {
     ${'' /* margin-left: -8px;
     margin-right: -8px; */};

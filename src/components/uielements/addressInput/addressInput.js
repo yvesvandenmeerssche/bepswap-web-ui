@@ -1,8 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Icon, Popover } from 'antd';
+import { Icon } from 'antd';
 
-import { AddressInputWrapper, PopoverContent } from './addressInput.style';
+import {
+  AddressInputWrapper,
+  PopoverContainer,
+  PopoverContent,
+} from './addressInput.style';
 import Input from '../input';
 
 class AddressInput extends Component {
@@ -28,8 +32,11 @@ class AddressInput extends Component {
         {...props}
       >
         {!status && (
-          <Popover
+          <PopoverContainer
             content={this.renderPopoverContent()}
+            getPopupContainer={() =>
+              document.getElementsByClassName('addressInput-wrapper')[0]
+            }
             placement="right"
             trigger={[]}
             visible
@@ -47,7 +54,7 @@ class AddressInput extends Component {
             >
               <Icon type="plus" />
             </div>
-          </Popover>
+          </PopoverContainer>
         )}
         {status && (
           <>
