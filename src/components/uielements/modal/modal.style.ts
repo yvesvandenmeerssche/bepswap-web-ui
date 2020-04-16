@@ -16,6 +16,12 @@ export const ModalWrapper = styled(Modal)`
   }
   .ant-modal-body {
     padding: 46px 32px;
+    background: ${palette('background', 1)};
+    border-color: ${palette('gray', 0)};
+
+    .ant-input-prefix {
+      color: ${palette('gray', 0)};
+    }
   }
   .ant-modal-close {
     .ant-modal-close-x {
@@ -28,6 +34,8 @@ export const ModalWrapper = styled(Modal)`
   .ant-modal-footer {
     height: 46px;
     padding: 0;
+    background: ${palette('background', 1)};
+    border-color: ${palette('gray', 0)};
     & > div {
       display: flex;
       flex-direction: row;
@@ -41,8 +49,10 @@ export const ModalWrapper = styled(Modal)`
     height: 100%;
     border: none;
     border-radius: 0px;
+    background: ${palette('background', 1)};
+
     &:first-child {
-      border-right: 1px solid #d3dbe7;
+      border-right: 1px solid ${palette('gray', 0)};
     }
     &:hover,
     &:active,
@@ -51,14 +61,13 @@ export const ModalWrapper = styled(Modal)`
     }
 
     &.ant-btn-primary {
-      background: ${palette('background', 1)};
       color: ${palette('primary', 0)};
-      border-color: ${palette('gradient', 0)};
+      border-color: ${palette('gray', 0)};
       &:hover,
       &:active,
       &:focus {
         background-color: ${palette('gradient', 1)};
-        border-color: ${palette('gradient', 1)};
+        border-color: ${palette('gray', 1)};
       }
     }
   }

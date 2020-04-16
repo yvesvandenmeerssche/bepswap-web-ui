@@ -84,6 +84,12 @@ export const StyledPagination = styled(Pagination)`
   }
 
   li.ant-pagination-item {
+    background: ${palette('background', 1)};
+    border-color: ${palette('gray', 0)};
+    a {
+      color: ${palette('text', 0)};
+    }
+
     &:hover {
       border-color: ${palette('primary', 0)};
       a {
@@ -91,6 +97,20 @@ export const StyledPagination = styled(Pagination)`
         ${transition()};
       }
       ${transition()};
+    }
+  }
+
+  li.ant-pagination-prev,
+  li.ant-pagination-next {
+    a {
+      background: ${palette('background', 1)};
+      border-color: ${palette('gray', 0)};
+      color: ${palette('text', 0)};
+      &:hover {
+        border-color: ${palette('primary', 0)};
+        color: ${palette('primary', 0)};
+        ${transition()};
+      }
     }
   }
 `;
