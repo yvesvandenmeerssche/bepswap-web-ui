@@ -1,9 +1,10 @@
 import React from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { Menu, Dropdown, Icon } from 'antd';
+import { Dropdown, Icon } from 'antd';
 import { ClickParam } from 'antd/lib/menu';
 
+import Menu from '../uielements/menu';
 import AssetInfo from '../uielements/tokens/assetInfo';
 import Label from '../uielements/label';
 import { getTickerFormat } from '../../helpers/stringHelper';
