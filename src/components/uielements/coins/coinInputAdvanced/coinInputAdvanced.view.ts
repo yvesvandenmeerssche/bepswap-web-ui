@@ -6,6 +6,8 @@ import { Input } from 'antd';
 export const CoinInputAdvancedView = styled(Input)`
   width: 100%;
   /* TODO: move these styles to a uielement */
+  background: ${palette('background', 1)};
+  color: ${palette('text', 0)};
   &.ant-input {
     border: none;
     padding: 0;
@@ -17,5 +19,6 @@ export const CoinInputAdvancedView = styled(Input)`
   }
   &.ant-input.ant-input-disabled {
     background-color: ${palette('background', 1)};
+    color: ${palette('text', 0)};
   }
 `;
