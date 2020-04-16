@@ -1,8 +1,10 @@
 import React, { useState, useMemo } from 'react';
-import { Menu, Dropdown, Icon, Row } from 'antd';
+import { Dropdown, Icon, Row } from 'antd';
 import { ClickParam } from 'antd/lib/menu';
 import { keyBy } from 'lodash';
 import { binance } from 'asgardex-common';
+
+import Menu from '../uielements/menu';
 import ConnectionStatus from '../uielements/connectionStatus';
 
 import { BINANCE_NET } from '../../env';
@@ -75,9 +77,7 @@ const HeaderSetting: React.FC<Props> = (props: Props): JSX.Element => {
               <ConnectionStatus color={status} />
               <ConnectionMenuItem>
                 <Row>
-                  <span className="connection-server-label">
-                    {label}
-                  </span>
+                  <span className="connection-server-label">{label}</span>
                 </Row>
                 <Row>
                   <span className="connection-server-url">{url || ''}</span>
