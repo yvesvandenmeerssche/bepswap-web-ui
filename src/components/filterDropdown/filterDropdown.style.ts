@@ -5,12 +5,16 @@ import Button from '../uielements/button';
 import { media } from '../../helpers/styleHelper';
 
 export const Menu = styled(Unstyled)`
+  background: ${palette('background', 1)};
+  li {
+    color: ${palette('text', 0)};
+  }
   i {
     color: ${palette('primary', 0)};
   }
-  
+
   .ant-dropdown-menu-item-selected {
-    color: ${palette('text', 0)};
+    color: ${palette('text', 1)};
     background: ${palette('gray', 1)};
   }
   .ant-dropdown-menu-item:hover,
