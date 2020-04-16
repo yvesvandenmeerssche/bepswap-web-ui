@@ -31,6 +31,8 @@ export const AddressInputWrapper = styled.div`
   .address-input {
     margin-top: 8px;
     margin-left: 10px;
+    background: ${palette('background', 1)};
+    color: ${palette('text', 0)};
   }
 `;
 
