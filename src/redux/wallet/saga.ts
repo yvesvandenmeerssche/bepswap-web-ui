@@ -185,7 +185,7 @@ function* tryRefreshStakes(address: Address) {
       }
     }
   }
-  throw new Error('Midard API request failed to get stakers address data');
+  throw new Error('Midgard API request failed to get stakers address data');
 }
 
 export function* tryGetUserStakeData(address: Address, pools: string[]) {
@@ -210,7 +210,7 @@ export function* tryGetUserStakeData(address: Address, pools: string[]) {
       }
     }
   }
-  throw new Error('Midard API request failed to get user staked data');
+  throw new Error('Midgard API request failed to get user staked data');
 }
 
 export function* refreshStakes() {

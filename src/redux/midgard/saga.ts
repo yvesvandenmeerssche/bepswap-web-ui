@@ -82,7 +82,7 @@ function* tryGetPools() {
       }
     }
   }
-  throw new Error('Midard API request failed to get pools');
+  throw new Error('Midgard API request failed to get pools');
 }
 
 export function* getPools() {
@@ -133,7 +133,7 @@ function* tryGetPoolData(assets: string[]) {
       }
     }
   }
-  throw new Error('Midard API request failed to get pool data');
+  throw new Error('Midgard API request failed to get pool data');
 }
 
 export function* getPoolData() {
@@ -174,15 +174,14 @@ function* tryGetStakerPoolData(payload: GetStakerPoolDataPayload) {
         assetId,
       );
       const { data } = response;
-
-      yield put(actions.getStakerPoolDataSuccess(data));
+      return data;
     } catch (error) {
       if (i < MIDGARD_MAX_RETRY - 1) {
         yield delay(MIDGARD_RETRY_DELAY);
       }
     }
   }
-  throw new Error('Midard API request failed to get stakers pool data');
+  throw new Error('Midgard API request failed to get stakers pool data');
 }
 
 export function* getStakerPoolData() {
@@ -217,7 +216,7 @@ function* tryGetPoolAddressRequest() {
       }
     }
   }
-  throw new Error('Midard API request failed to get pool addresses');
+  throw new Error('Midgard API request failed to get pool addresses');
 }
 
 export function* getPoolAddress() {
