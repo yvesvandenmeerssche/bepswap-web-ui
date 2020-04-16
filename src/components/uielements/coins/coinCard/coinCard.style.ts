@@ -54,7 +54,7 @@ export const DropdownIcon = styled(IconBase)`
 
   &.caret-down {
     font-size: 22px;
-    color: ${palette('gradient', 0)};
+    color: ${palette('gray', 1)};
   }
 `;
 

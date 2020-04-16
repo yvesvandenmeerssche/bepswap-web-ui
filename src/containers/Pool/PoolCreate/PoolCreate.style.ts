@@ -25,7 +25,7 @@ export const ContentWrapper = styled(ContentView)`
     .create-detail-wrapper {
       height: 100%;
       background: ${palette('background', 1)};
-      box-shadow: 0px 1px 3px ${palette('gray')};
+      box-shadow: 0px 1px 3px ${palette('gray', 1)};
       border-radius: 3px;
     }
 

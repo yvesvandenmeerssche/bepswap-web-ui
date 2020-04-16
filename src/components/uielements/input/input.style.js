@@ -39,6 +39,10 @@ export const InputWrapper = styled(Input)`
     ${props => props.typevalue === 'ghost' && 'border: none;'};
     ${props => props.typevalue === 'ghost' && 'background: #F0F3F7;'};
 
+    border: 1px solid ${palette('gray', 0)};
+    background: ${palette('background', 1)};
+    color: ${palette('text', 0)};
+
     &:hover,
     &:focus {
       border-color: ${props => colors[props.color]};
