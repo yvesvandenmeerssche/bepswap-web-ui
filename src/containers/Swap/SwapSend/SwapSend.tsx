@@ -3,7 +3,7 @@ import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { Row, Col, Icon, notification, Popover } from 'antd';
+import { Row, Col, Icon, notification } from 'antd';
 import { binance, util } from 'asgardex-common';
 
 import { crypto } from '@binance-chain/javascript-sdk';
@@ -29,6 +29,7 @@ import {
   CardFormItemError,
   SwapStatusPanel,
   PopoverContent,
+  PopoverContainer,
 } from './SwapSend.style';
 import {
   getTickerFormat,
@@ -779,6 +780,10 @@ class SwapSend extends React.Component<Props, State> {
     return true;
   };
 
+  getPopupContainer = () => {
+    return document.getElementsByClassName('slip-protection')[0] as HTMLElement;
+  };
+
   renderProtectPopoverContent = () => {
     return <PopoverContent>Protect my price (within 3%)</PopoverContent>;
   };
@@ -981,8 +986,9 @@ class SwapSend extends React.Component<Props, State> {
                   </CardFormHolder>
                   <CardFormHolder className="slip-protection">
                     <CardForm>
-                      <Popover
+                      <PopoverContainer
                         content={this.renderProtectPopoverContent()}
+                        getPopupContainer={this.getPopupContainer}
                         placement="left"
                         visible
                         overlayClassName="protectPrice-popover"
@@ -1000,7 +1006,7 @@ class SwapSend extends React.Component<Props, State> {
                         >
                           <Icon type={slipProtection ? 'lock' : 'unlock'} />
                         </Button>
-                      </Popover>
+                      </PopoverContainer>
                     </CardForm>
                   </CardFormHolder>
                 </div>

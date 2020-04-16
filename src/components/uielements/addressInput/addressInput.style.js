@@ -9,6 +9,11 @@ export const AddressInputWrapper = styled.div`
 
   ${transition()}
 
+  .ant-popover-arrow {
+    border-top: none;
+    border-right: none;
+  }
+
   .addressInput-icon {
     margin-top: 12px;
     min-width: 21px;
@@ -33,6 +38,7 @@ export const AddressInputWrapper = styled.div`
   .address-input {
     margin-top: 8px;
     margin-left: 10px;
+    border-color: ${palette('gray', 0)};
     background: ${palette('background', 1)};
     color: ${palette('text', 0)};
   }

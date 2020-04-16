@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Icon } from 'antd';
+import { Icon, Popover } from 'antd';
 import { palette } from 'styled-theme';
 import ContentView from '../../../components/utility/contentView';
 import Modal from '../../../components/uielements/modal';
@@ -135,6 +135,11 @@ export const CardFormHolder = styled.div`
   }
 
   &.slip-protection {
+    .ant-popover-arrow {
+      border-bottom: none;
+      border-left: none;
+    }
+
     .slip-input {
       width: 50px;
       margin: 0 8px;
@@ -154,6 +159,8 @@ export const CardFormHolder = styled.div`
     }
   }
 `;
+
+export const PopoverContainer = styled(Popover)``;
 
 export const CardForm = styled.div`
   display: flex;

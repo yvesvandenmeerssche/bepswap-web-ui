@@ -18,6 +18,10 @@ class AddressInput extends Component {
     this.props.onChange(e);
   };
 
+  getPopupContainer = () => {
+    return document.getElementsByClassName('addressInput-wrapper')[0];
+  };
+
   renderPopoverContent = () => {
     return <PopoverContent>Add Recipient Address</PopoverContent>;
   };
@@ -34,9 +38,7 @@ class AddressInput extends Component {
         {!status && (
           <PopoverContainer
             content={this.renderPopoverContent()}
-            getPopupContainer={() =>
-              document.getElementsByClassName('addressInput-wrapper')[0]
-            }
+            getPopupContainer={this.getPopupContainer}
             placement="right"
             trigger={[]}
             visible
