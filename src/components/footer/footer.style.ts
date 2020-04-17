@@ -3,7 +3,15 @@ import { size, key, palette } from 'styled-theme';
 import { Layout } from 'antd';
 import { media } from '../../helpers/styleHelper';
 
-export const FooterItem = styled.div``;
+export const FooterItem = styled.div`
+  .footer-logo {
+    #Thorchain_logo-copy {
+      > :not(:first-child) {
+        fill: ${palette('text', 1)};
+      }
+    }
+  }
+`;
 
 export const FooterContainer = styled(Layout.Footer).attrs({
   style: { padding: 0 },

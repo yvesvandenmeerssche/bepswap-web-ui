@@ -65,7 +65,7 @@ export const LogoWrapper = styled.div`
     margin-right: 20px;
     display: flex;
   `}
-  img {
+  svg {
     max-height: 24px;
   }
 
