@@ -5,6 +5,8 @@ export const StyledTab = component => styled(component)`
   .ant-tabs-bar {
     width: ${props => (props.action ? 'auto' : '100%')};
     border-bottom-width: ${props => (props.withBorder ? '1px' : '0px')};
+    border-color: ${palette('gray', 0)};
+
     .ant-tabs-nav-container,
     .ant-tabs-nav-wrap,
     .ant-tabs-nav-scroll,
