@@ -4,6 +4,8 @@ import { Modal } from 'antd';
 
 export const ModalWrapper = styled(Modal)`
   text-transform: uppercase;
+  border-color: ${palette('gray', 0)};
+
   .ant-modal-header {
     padding: 10px 14px;
     text-align: center;
