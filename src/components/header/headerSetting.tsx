@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { Dropdown, Icon, Row } from 'antd';
+import { Dropdown, Row } from 'antd';
+import { DownOutlined } from '@ant-design/icons';
 import { ClickParam } from 'antd/lib/menu';
 import { keyBy } from 'lodash';
 import { binance } from 'asgardex-common';
@@ -95,7 +96,7 @@ const HeaderSetting: React.FC<Props> = (props: Props): JSX.Element => {
     <Dropdown overlay={menu} trigger={['click']}>
       <a className="ant-dropdown-link" href="/">
         <ConnectionStatus color={status} />
-        <Icon type="down" />
+        <DownOutlined />
       </a>
     </Dropdown>
   );

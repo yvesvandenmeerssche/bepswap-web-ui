@@ -36,7 +36,7 @@ export const BackLink = styled.div`
   `}
   cursor: pointer;
 
-  i {
+  svg {
     margin-right: 6px;
     font-size: 22px;
     font-weight: bold;

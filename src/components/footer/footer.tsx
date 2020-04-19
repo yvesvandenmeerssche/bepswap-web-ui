@@ -1,13 +1,19 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Icon } from 'antd';
+import Icon, {
+  TwitterOutlined,
+  RedditOutlined,
+  MediumOutlined,
+  GithubOutlined,
+  BranchesOutlined,
+} from '@ant-design/icons';
 import { TelegramIcon } from '../icons/telegramicon';
 
 import Logo from '../uielements/logo';
 import { StyledFooter, FooterContainer, FooterItem } from './footer.style';
 
 type Props = {
-  commitHash?: string
+  commitHash?: string;
 };
 
 const Footer: React.FC<Props> = ({ commitHash }): JSX.Element => {
@@ -37,21 +43,21 @@ const Footer: React.FC<Props> = ({ commitHash }): JSX.Element => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Icon type="twitter" />
+              <TwitterOutlined />
             </a>
             <a
               href="https://reddit.com/r/thorchain"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Icon type="reddit" />
+              <RedditOutlined />
             </a>
             <a
               href="https://medium.com/thorchain"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Icon type="medium" />
+              <MediumOutlined />
             </a>
             <a
               href="https://t.me/thorchain_org"
@@ -65,7 +71,7 @@ const Footer: React.FC<Props> = ({ commitHash }): JSX.Element => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Icon type="github" />
+              <GithubOutlined />
             </a>
             {commitHash && (
               <a
@@ -73,7 +79,7 @@ const Footer: React.FC<Props> = ({ commitHash }): JSX.Element => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Icon type="branches" />
+                <BranchesOutlined />
               </a>
             )}
           </div>

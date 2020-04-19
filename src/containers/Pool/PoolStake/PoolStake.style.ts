@@ -111,7 +111,7 @@ export const ContentWrapper = styled(ContentView)`
           letter-spacing: 2.5px;
         `}
 
-        i {
+        svg {
           ${media.lg`
             padding-right: 8px;
             font-size: 16px;
@@ -242,12 +242,10 @@ export const ContentWrapper = styled(ContentView)`
           margin-bottom: 20px;
           border-radius: 50%;
           background: ${palette('background', 1)};
-          i {
             svg {
               width: 60px;
               height: 60px;
             }
-          }
         }
 
         .share-info-title {

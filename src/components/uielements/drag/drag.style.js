@@ -31,7 +31,7 @@ export const DragWrapper = styled.div`
       height: 100%;
     }
     div {
-      i {
+      svg {
         font-size: 18px;
       }
     }

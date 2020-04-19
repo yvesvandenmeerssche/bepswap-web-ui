@@ -30,10 +30,6 @@ export const StyledHeader = styled.div`
     align-items: center;
     color: ${palette('text', 0)};
     font-weight: bold;
-    i {
-      padding: 0 5px;
-      font-size: 14px;
-    }
   }
 
   .header-tab-container {
@@ -50,9 +46,10 @@ export const StyledHeader = styled.div`
     }
 
     .ant-tabs-tab {
-      margin-right: 5px;
+      padding-right: 5px;
       ${media.sm`
-        margin-right: 32px;
+        padding-left: 16px;
+        padding-right: 16px;
       `}
     }
   }
@@ -165,6 +162,10 @@ export const HeaderActionButtons = styled.div`
       width: 42px;
       text-align: center;
       text-transform: uppercase;
+    }
+
+    .anticon-down {
+      margin-left: 8px;
     }
   }
 `;

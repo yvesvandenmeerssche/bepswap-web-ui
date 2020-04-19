@@ -1,13 +1,14 @@
 import React from 'react';
 import ContentLoader from 'react-content-loader';
+import { palette } from 'styled-theme';
 
 const PoolLoader = () => (
   <ContentLoader
     height={400}
     width={1000}
-    speed={2}
-    primarycolor="#F8F9FA"
-    secondarycolor="#ECEEEF"
+    speed={1}
+    backgroundColor={palette('background', 2)}
+    foregroundColor={palette('gray', 1)}
   >
     <rect x="0" y="20" rx="4" ry="4" width="80%" height="65" />
     <rect x="0" y="85" rx="4" ry="4" width="80%" height="65" />

@@ -1,14 +1,15 @@
 import React from 'react';
 import ContentLoader from 'react-content-loader';
+import { palette } from 'styled-theme';
 
 const TokenInfoLoader = () => (
   <ContentLoader
     className="content-loader"
     height={110}
     width={230}
-    speed={2}
-    primarycolor="#F8F9FA"
-    secondarycolor="#ECEEEF"
+    speed={1}
+    backgroundColor={palette('background', 2)}
+    foregroundColor={palette('gray', 1)}
   >
     <rect x="10" y="10" rx="2" ry="2" width="100" height="20" />
     <rect x="180" y="10" rx="2" ry="2" width="34" height="20" />

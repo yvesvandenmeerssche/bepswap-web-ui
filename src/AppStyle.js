@@ -51,6 +51,8 @@ const AppHolder = styled.div`
   span,
   div,
   img,
+  th,
+  td,
   svg {
     margin-bottom: 0;
     text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);

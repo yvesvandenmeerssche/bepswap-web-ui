@@ -25,7 +25,7 @@ export const AddressInputWrapper = styled.div`
       props.status ? palette('error', 0) : palette('primary', 0)};
     cursor: pointer;
 
-    i {
+    svg {
       position: relative;
       top: 1px;
       left: 3px;

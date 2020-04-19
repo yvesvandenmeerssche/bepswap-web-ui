@@ -9,6 +9,9 @@ export const ContentWrapper = styled(ContentView)`
   ${media.sm`
     padding: 0 30px;
   `}
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   .connect-view-header {
     display: flex;
@@ -51,6 +54,7 @@ export const ContentWrapper = styled(ContentView)`
     padding-bottom: 30px;
 
     .keystore-connect-wrapper {
+      width: 300px;
       .file-upload-wrapper {
         display: flex;
         align-items: center;

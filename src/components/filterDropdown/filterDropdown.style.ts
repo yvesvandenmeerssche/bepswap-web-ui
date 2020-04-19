@@ -9,7 +9,7 @@ export const Menu = styled(Unstyled)`
   li {
     color: ${palette('text', 0)};
   }
-  i {
+  svg {
     color: ${palette('primary', 0)};
   }
 

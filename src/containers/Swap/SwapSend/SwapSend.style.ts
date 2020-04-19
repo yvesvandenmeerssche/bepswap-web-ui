@@ -1,5 +1,6 @@
 import styled from 'styled-components';
-import { Icon, Popover } from 'antd';
+import { Popover } from 'antd';
+import Icon from '@ant-design/icons';
 import { palette } from 'styled-theme';
 import ContentView from '../../../components/utility/contentView';
 import Modal from '../../../components/uielements/modal';
@@ -42,13 +43,13 @@ export const ArrowContainer = styled(BaseArrowContainer)`
     border-radius: 5px;
     cursor: pointer;
 
-    i {
+    svg {
       color: ${palette('gradient', 0)};
       ${transition()}
     }
 
     &:hover {
-      i {
+      svg {
         color: ${palette('text', 3)};
       }
     }
@@ -153,7 +154,7 @@ export const CardFormHolder = styled.div`
       padding-right: 4px;
       border-radius: 50%;
 
-      i {
+      svg {
         font-size: 15px;
       }
     }
@@ -250,6 +251,9 @@ export const SwapModalContent = styled.div`
   }
 
   .swap-info-wrapper {
+    display: flex;
+    flex-direction: column;
+
     padding: 20px 0;
     .hash-address {
       display: flex;
@@ -292,7 +296,7 @@ export const SwapStatusPanel = styled.div`
   margin-left: auto;
   margin-right: 10px;
 
-  i {
+  svg {
     transform: rotate(-90deg);
     font-size: 24px;
     color: ${palette('primary', 0)};

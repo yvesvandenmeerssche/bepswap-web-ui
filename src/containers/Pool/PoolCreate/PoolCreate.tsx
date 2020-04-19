@@ -3,7 +3,8 @@ import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, Link } from 'react-router-dom';
-import { Row, Col, notification, Icon } from 'antd';
+import { Row, Col, notification } from 'antd';
+import { FullscreenExitOutlined, CloseOutlined } from '@ant-design/icons';
 import { crypto } from '@binance-chain/javascript-sdk';
 import { get as _get } from 'lodash';
 
@@ -45,10 +46,7 @@ import TokenDetailLoader from '../../../components/utility/loaders/tokenDetail';
 import { RootState } from '../../../redux/store';
 import { TxStatus, TxTypes } from '../../../redux/app/types';
 import { State as BinanceState } from '../../../redux/binance/types';
-import {
-  PriceDataIndex,
-  PoolDataMap,
-} from '../../../redux/midgard/types';
+import { PriceDataIndex, PoolDataMap } from '../../../redux/midgard/types';
 import { Maybe, FixmeType, AssetPair } from '../../../types/bepswap';
 import { User, AssetData } from '../../../redux/wallet/types';
 
@@ -679,7 +677,11 @@ class PoolCreate extends React.Component<Props, State> {
     const openCreateModal = txStatus.type === 'create' ? txStatus.modal : false;
     const completed = txStatus.value !== null && !txStatus.status;
     const modalTitle = !completed ? 'CREATING POOL' : 'POOL CREATED';
-    const coinCloseIconType = txStatus.status ? 'fullscreen-exit' : 'close';
+    const coinCloseIconType = txStatus.status ? (
+      <FullscreenExitOutlined style={{ color: '#fff' }} />
+    ) : (
+      <CloseOutlined style={{ color: '#fff' }} />
+    );
 
     return (
       <ContentWrapper className="pool-new-wrapper" transparent>
@@ -693,9 +695,7 @@ class PoolCreate extends React.Component<Props, State> {
         </Row>
         <ConfirmModal
           title={modalTitle}
-          closeIcon={
-            <Icon type={coinCloseIconType} style={{ color: '#fff' }} />
-          }
+          closeIcon={coinCloseIconType}
           visible={openCreateModal}
           footer={null}
           onCancel={this.handleCloseModal}

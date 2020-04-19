@@ -1,7 +1,8 @@
 import React from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { Dropdown, Icon } from 'antd';
+import { Dropdown } from 'antd';
+import { DownOutlined } from '@ant-design/icons';
 import { ClickParam } from 'antd/lib/menu';
 
 import Menu from '../uielements/menu';
@@ -102,7 +103,7 @@ class BasePriceSelector extends React.Component<Props, State> {
             <BitcoinIcon />
           </div>
           <Label>{baseAsset}</Label>
-          <Icon type="down" />
+          <DownOutlined />
         </a>
       </Dropdown>
     );

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Icon, Row, Col, message, InputNumber } from 'antd';
+import { Row, Col, message, InputNumber } from 'antd';
+import { ArrowRightOutlined } from '@ant-design/icons';
 import { ledger, crypto } from '@binance-chain/javascript-sdk';
 import u2f_transport from '@ledgerhq/hw-transport-u2f';
 
@@ -160,7 +161,7 @@ const Connector = props => {
             loading={connecting}
             round="true"
           >
-            Connect to Ledger <Icon type="arrow-right" />
+            Connect to Ledger <ArrowRightOutlined />
           </Button>
         </Col>
       </Row>

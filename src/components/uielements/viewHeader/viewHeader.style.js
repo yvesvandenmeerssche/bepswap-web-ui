@@ -16,7 +16,7 @@ export const HeaderWrapper = styled.div`
     text-transform: uppercase;
     letter-spacing: 2.5px;
 
-    i {
+    svg
       padding: 0 8px;
       font-size: 16px;
     }

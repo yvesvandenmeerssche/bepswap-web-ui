@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Icon } from 'antd';
+import { PlusOutlined, DeleteFilled } from '@ant-design/icons';
 
 import {
   AddressInputWrapper,
@@ -54,14 +54,14 @@ class AddressInput extends Component {
               onClick={this.setStatus(true)}
               data-test="add-recipient-address-button"
             >
-              <Icon type="plus" />
+              <PlusOutlined />
             </div>
           </PopoverContainer>
         )}
         {status && (
           <>
             <div className="addressInput-icon" onClick={this.setStatus(false)}>
-              <Icon type="delete" theme="filled" />
+              <DeleteFilled />
             </div>
             <Input
               className="address-input"

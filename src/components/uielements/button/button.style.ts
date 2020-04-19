@@ -264,7 +264,7 @@ export const ButtonWrapper = styled(Button)<Props>`
       }
     }
 
-    i {
+    svg {
       display: flex;
       font-size: 18px;
     }

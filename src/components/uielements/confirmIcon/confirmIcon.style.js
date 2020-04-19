@@ -8,7 +8,7 @@ export const IconWrapper = styled.div`
   border-radius: 50%;
   background-color: ${palette('gradient', 0)};
 
-  i {
+  svg {
     color: ${palette('text', 3)};
     font-size: 50px;
     padding: 25px;

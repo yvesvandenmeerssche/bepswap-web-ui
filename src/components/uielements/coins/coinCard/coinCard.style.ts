@@ -1,7 +1,8 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
 import { palette } from 'styled-theme';
-import { Icon, Divider } from 'antd';
+import { Divider } from 'antd';
+import { CaretDownOutlined } from '@ant-design/icons';
 import { DividerProps } from 'antd/lib/divider';
 import Label from '../../label';
 import { cleanTag } from '../../../../helpers/styleHelper';
@@ -45,14 +46,14 @@ export const AssetCardFooter = styled.div`
   align-items: center;
 `;
 
-const IconBase = cleanTag(Icon, ['open']);
+const IconBase = cleanTag(CaretDownOutlined, ['open']);
 export const DropdownIcon = styled(IconBase)`
   transition: transform 0.2s ease-in-out;
   ${({ open }) =>
     open ? 'transform: rotate(180deg);' : 'transform: rotate(0);'}
   font-size: 18px;
 
-  &.caret-down {
+  svg {
     font-size: 22px;
     color: ${palette('gray', 1)};
   }

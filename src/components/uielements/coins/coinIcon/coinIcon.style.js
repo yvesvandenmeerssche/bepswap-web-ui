@@ -30,7 +30,7 @@ export const CoinIconWrapper = styled.div`
     height: ${props => sizes[props.size]};
     background-color: ${palette('success', 0)};
     border-radius: 50%;
-    i {
+    svg {
       color: ${palette('background', 1)};
     }
   }

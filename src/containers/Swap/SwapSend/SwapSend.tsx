@@ -3,7 +3,8 @@ import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { Row, Col, Icon, notification } from 'antd';
+import { Row, Col, notification } from 'antd';
+import { SwapOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons';
 import { binance, util } from 'asgardex-common';
 
 import { crypto } from '@binance-chain/javascript-sdk';
@@ -912,7 +913,7 @@ class SwapSend extends React.Component<Props, State> {
             >
               <SwapStatusPanel>
                 <Status title="exchange rate" value={ratioLabel} />
-                <Icon type="swap" onClick={this.handleReversePair} />
+                <SwapOutlined onClick={this.handleReversePair} />
                 <StepBar />
               </SwapStatusPanel>
             </Col>
@@ -1004,7 +1005,11 @@ class SwapSend extends React.Component<Props, State> {
                           typevalue="outline"
                           focused={slipProtection}
                         >
-                          <Icon type={slipProtection ? 'lock' : 'unlock'} />
+                          {slipProtection ? (
+                            <LockOutlined />
+                          ) : (
+                            <UnlockOutlined />
+                          )}
                         </Button>
                       </PopoverContainer>
                     </CardForm>
