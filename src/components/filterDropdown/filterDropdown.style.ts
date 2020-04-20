@@ -15,11 +15,11 @@ export const Menu = styled(Unstyled)`
 
   .ant-dropdown-menu-item-selected {
     color: ${palette('text', 1)};
-    background: ${palette('gray', 1)};
+    background: ${palette('secondary', 1)};
   }
   .ant-dropdown-menu-item:hover,
   .ant-dropdown-menu-submenu-title:hover {
-    background: ${palette('gray', 1)};
+    background: ${palette('secondary', 1)};
   }
 `;
 

@@ -7,7 +7,7 @@ const { Item } = AntdMenu;
 export const MenuItem = styled(Item)`
   ${({ disabled }) => (disabled ? 'opacity: 0.5' : '')}
   &:hover {
-    background: ${palette('gray', 1)};
+    background: ${palette('secondary', 1)};
   }
 `;
 

@@ -11,7 +11,7 @@ export const CoinWrapper = styled.div`
   width: ${(props: CoinWrapperProps) => (props.size === 'small' ? '32px' : '40px')};
   height: ${(props: CoinWrapperProps) => (props.size === 'small' ? '32px' : '40px')};
   border-radius: 50%;
-  box-shadow: 0px 2px 4px ${palette('gray', 1)};
+  box-shadow: 0px 2px 4px ${palette('secondary', 1)};
 
   .coinIcon-wrapper {
     width: 100%;

@@ -24,7 +24,7 @@ theme.palette = {
   ],
   secondary: [
     secondary[3], // 0 secondary
-    secondary[1], // 1 box-shadow, hover
+    secondary[0], // 1 box-shadow, hover
   ],
   warning: [
     '#F3BA2F', // 0: Warning

@@ -2,12 +2,16 @@ import { cloneDeep } from 'lodash';
 import lightTheme from './light';
 import { palette } from './palette';
 
-const { dark } = palette;
+const { secondary, dark } = palette;
 
 const darkTheme = cloneDeep(lightTheme);
 
 darkTheme.palette = {
   ...darkTheme.palette,
+  secondary: [
+    secondary[3], // 0 secondary
+    dark[6], // 1 box-shadow, hover
+  ],
   gray: [
     dark[7], // 0: Border
     dark[6], // 0: step bar, txstatus bg

@@ -8,8 +8,8 @@ const TransactionLoader: React.FC = (): JSX.Element => (
     height={400}
     width="100%"
     speed={1}
-    backgroundColor={palette('background', 2)}
-    foregroundColor={palette('gray', 1)}
+    backgroundColor={palette('background', 1)}
+    foregroundColor={palette('background', 2)}
   >
     <rect x="0" y="10" rx="4" ry="4" width="100%" height="60" />
     <rect x="0" y="90" rx="4" ry="4" width="100%" height="60" />

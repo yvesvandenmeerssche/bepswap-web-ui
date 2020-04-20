@@ -9,7 +9,7 @@ export const Menu = styled(AntdMenu)`
     &:hover,
     &.ant-dropdown-menu-item-selected {
       color: ${palette('text', 1)};
-      background: ${palette('gray', 1)};
+      background: ${palette('secondary', 1)};
     }
   }
 `;

@@ -7,8 +7,8 @@ export const AssetLoader = () => (
     height={300}
     width={300}
     speed={2}
-    backgroundColor={palette('background', 2)}
-    foregroundColor={palette('gray', 1)}
+    backgroundColor={palette('background', 1)}
+    foregroundColor={palette('background', 2)}
   >
     <circle cx="32" cy="46" r="18" />
     <rect x="60" y="30" rx="2" ry="2" width="60" height="14" />
@@ -30,8 +30,8 @@ export const StakeLoader = () => (
     height={400}
     width={300}
     speed={2}
-    backgroundColor={palette('background', 2)}
-    foregroundColor={palette('gray', 1)}
+    backgroundColor={palette('background', 1)}
+    foregroundColor={palette('background', 2)}
   >
     <circle cx="32" cy="46" r="18" />
     <circle cx="50" cy="46" r="18" />
