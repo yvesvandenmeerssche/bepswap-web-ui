@@ -4,7 +4,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { SwapOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons';
-import { Row, Col, Icon, notification, Popover } from 'antd';
+import { Row, Col, notification } from 'antd';
 import {
   client as binanceClient,
   getPrefix,
