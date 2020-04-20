@@ -43,6 +43,12 @@ const AddressInput: React.FC<Props> = (props: Props): JSX.Element => {
     }
   };
 
+  const getPopupContainer = () => {
+    return document.getElementsByClassName(
+      'addressInput-wrapper',
+    )[0] as HTMLElement;
+  };
+
   const renderPopoverContent = () => {
     return <PopoverContent>Add Recipient Address</PopoverContent>;
   };
@@ -57,6 +63,7 @@ const AddressInput: React.FC<Props> = (props: Props): JSX.Element => {
     >
       {!status && (
         <PopoverContainer
+          getPopupContainer={getPopupContainer}
           content={renderPopoverContent()}
           placement="right"
           visible

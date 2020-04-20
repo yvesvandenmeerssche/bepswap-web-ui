@@ -31,7 +31,6 @@ export const AddressInputWrapper = styled.div`
 
     svg {
       position: relative;
-      top: 1px;
       left: 3px;
       color: ${palette('text', 3)};
       font-size: 15px;

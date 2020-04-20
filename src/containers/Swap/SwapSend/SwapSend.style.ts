@@ -150,6 +150,7 @@ export const CardFormHolder = styled.div`
       width: 21px;
       height: 21px;
       min-width: 0px;
+      padding-top: 2px;
       padding-left: 4px;
       padding-right: 4px;
       border-radius: 50%;
