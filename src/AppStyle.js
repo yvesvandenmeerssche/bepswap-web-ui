@@ -77,6 +77,14 @@ const AppHolder = styled.div`
     }
   }
 
+  .ant-popover-inner-content {
+    padding: 6px;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    font-family: 'Montserrat';
+    src: url(${normalFont});
+  }
+
   .ant-row:not(.ant-form-item) {
     ${'' /* margin-left: -8px;
     margin-right: -8px; */};
