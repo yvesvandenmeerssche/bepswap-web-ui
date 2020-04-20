@@ -4,7 +4,7 @@ import { withRouter, Link, RouteComponentProps } from 'react-router-dom';
 import { Row, Col } from 'antd';
 import { ArrowRightOutlined } from '@ant-design/icons';
 
-import { util } from 'asgardex-common';
+import { formatBNCurrency, formatBN } from '@thorchain/asgardex-util';
 import { ContentWrapper } from './Swap.style';
 import Centered from '../../../../components/utility/centered';
 import Label from '../../../../components/uielements/label';
@@ -70,7 +70,7 @@ class Swap extends React.Component<Props, State> {
     // formula: Px * (X / Y);
     const divXY = X.amount().multipliedBy(Y.amount());
     const initPy = Px.multipliedBy(divXY);
-    const initPyFormatted = util.formatBNCurrency(initPy);
+    const initPyFormatted = formatBNCurrency(initPy);
     // formula: (xValue + X) ** 2;
     const times = xValue
       .amount()
@@ -87,7 +87,7 @@ class Swap extends React.Component<Props, State> {
     const xValueX = X.amount().plus(xValue.amount());
     const yValueO = Y.amount().minus(outputToken.amount());
     const outputPy = Px.multipliedBy(xValueX).div(yValueO);
-    const outputPyFormatted = util.formatBN(outputPy);
+    const outputPyFormatted = formatBN(outputPy);
 
     return (
       <div className="swap-flow-wrapper">
@@ -182,7 +182,7 @@ class Swap extends React.Component<Props, State> {
         </Centered>
         <Centered>
           <Label size="large" color="normal">
-            {util.formatBN(Px)}
+            {formatBN(Px)}
           </Label>
           <Label size="large" color="normal" />
           <Label className="contains-tooltip" size="large" color="normal">

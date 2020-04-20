@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import BigNumber from 'bignumber.js';
-import { util } from 'asgardex-common';
+import { bn, isValidBN } from '@thorchain/asgardex-util';
 import { CoinInputAdvancedView } from './coinInputAdvanced.view';
 import { emptyString } from '../../../../helpers/stringHelper';
 
@@ -14,7 +14,7 @@ const formatNumber = (value: string, minimumFractionDigits: number) => {
 function formatStringToBigNumber(value: string): BigNumber {
   // (Rudi) This will have a localisation problem
   const cleanValue = value.replace(/,/g, '');
-  return util.bn(cleanValue);
+  return bn(cleanValue);
 }
 
 export function isBroadcastable(value: string) {
@@ -23,7 +23,7 @@ export function isBroadcastable(value: string) {
     value !== undefined &&
     value !== null &&
     value !== '' &&
-    util.isValidBN(formatStringToBigNumber(value)) &&
+    isValidBN(formatStringToBigNumber(value)) &&
     !value.match(/\.$/)
   );
 }
@@ -47,13 +47,13 @@ export function useCoinCardInputBehaviour({
   minimumFractionDigits = 2,
 }: BehaviorProps) {
   // Note: Amount could be undefined|null, since we have not migrated everything to TS yet, so check it here
-  const valueAsString = !!amount && util.isValidBN(amount) ? amount.toString() : '0';
+  const valueAsString = !!amount && isValidBN(amount) ? amount.toString() : '0';
 
   const [focus, setFocus] = useState<boolean>(false);
   const [textFieldValue, setTextFieldValue] = useState<string | undefined>(
     DEFAULT_FIELD_VALUE,
   );
-  const broadcastRef = useRef<BigNumber>(util.bn(0));
+  const broadcastRef = useRef<BigNumber>(bn(0));
 
   const getOutval = useCallback(() => {
     const txtValue =
@@ -81,7 +81,7 @@ export function useCoinCardInputBehaviour({
     // Update '.'  to ' 0.'
     const ZERO_DECIMAL = '0.';
     val = val === '.' ? ZERO_DECIMAL : val;
-    const isValidNumber = util.isValidBN(util.bn(val));
+    const isValidNumber = isValidBN(bn(val));
     const validValue =
       isValidNumber || val === emptyString || val === ZERO_DECIMAL;
     if (validValue) {

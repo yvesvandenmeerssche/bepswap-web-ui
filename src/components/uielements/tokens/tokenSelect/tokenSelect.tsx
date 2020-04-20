@@ -2,7 +2,7 @@ import React from 'react';
 import { Dropdown } from 'antd';
 
 import BigNumber from 'bignumber.js';
-import { util } from 'asgardex-common';
+import { delay, formatBN } from '@thorchain/asgardex-util';
 import {
   TokenSelectWrapper,
   TokenDropdownButton,
@@ -118,7 +118,7 @@ class TokenSelect extends React.Component<Props, State> {
 
     if (onChangeAsset) {
       // Wait for the dropdown to close
-      await util.delay(500);
+      await delay(500);
       onChangeAsset(asset);
     }
   };
@@ -183,7 +183,7 @@ class TokenSelect extends React.Component<Props, State> {
           <TokenSelectWrapper className={`tokenSelect-wrapper ${className}`}>
             <TokenData
               asset={asset}
-              priceValue={util.formatBN(price)}
+              priceValue={formatBN(price)}
               priceUnit={priceUnit}
             />
             {this.renderDropDownButton()}

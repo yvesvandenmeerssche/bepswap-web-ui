@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { withRouter, Link } from 'react-router-dom';
 import { SyncOutlined, SwapOutlined } from '@ant-design/icons';
 
-import { util } from 'asgardex-common';
+import { bn, validBNOrZero } from '@thorchain/asgardex-util';
 import Label from '../../../components/uielements/label';
 import CoinButton from '../../../components/uielements/coins/coinButton';
 import CoinPair from '../../../components/uielements/coins/coinPair';
@@ -70,7 +70,7 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
         const {
           pool: { asset, target },
         } = record;
-        const URL = `/swap/detail/${asset.toLowerCase()}-${target.toLowerCase()}`;
+        const URL = `/swap/${asset.toLowerCase()}-${target.toLowerCase()}`;
         const dataTest = `swap-button-${target.toLowerCase()}`;
 
         return (
@@ -123,7 +123,7 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
         title: 'pool price',
         dataIndex: 'poolPrice',
         sorter: (a: SwapTableRowType, b: SwapTableRowType) =>
-          a.raw.poolPrice.minus(b.raw.poolPrice), // TODO(Veado): Does it work for sorting BN?
+          a.raw.poolPrice.minus(b.raw.poolPrice),
         sortDirections: ['descend', 'ascend'],
         defaultSortOrder: 'descend',
       },
@@ -132,7 +132,7 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
         title: 'depth',
         dataIndex: 'depth',
         sorter: (a: SwapTableRowType, b: SwapTableRowType) =>
-          a.raw.depth.minus(b.raw.depth), // TODO(Veado): Does it work for sorting BN?
+          a.raw.depth.minus(b.raw.depth),
         sortDirections: ['descend', 'ascend'],
       },
       {
@@ -140,7 +140,7 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
         title: '24h vol',
         dataIndex: 'volume',
         sorter: (a: SwapTableRowType, b: SwapTableRowType) =>
-          a.raw.volume.minus(b.raw.volume), // TODO(Veado): Does it work for sorting BN?
+          a.raw.volume.minus(b.raw.volume),
         sortDirections: ['descend', 'ascend'],
       },
       {
@@ -148,16 +148,16 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
         title: 'avg. transaction',
         dataIndex: 'transaction',
         sorter: (a: SwapTableRowType, b: SwapTableRowType) =>
-          a.raw.transaction.minus(b.raw.transaction), // TODO(Veado): Does it work for sorting BN?
+          a.raw.transaction.minus(b.raw.transaction),
         sortDirections: ['descend', 'ascend'],
       },
       {
         key: 'slip',
         title: 'avg. slip',
         dataIndex: 'slip',
-        render: (slip: string) => <Trend amount={util.bn(slip)} />,
+        render: (slip: string) => <Trend amount={bn(slip)} />,
         sorter: (a: SwapTableRowType, b: SwapTableRowType) =>
-          a.raw.slip.minus(b.raw.slip), // TODO(Veado): Does it work for sorting BN?,
+          a.raw.slip.minus(b.raw.slip),
         sortDirections: ['descend', 'ascend'],
       },
       {
@@ -165,7 +165,7 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
         title: 'no. of trades',
         dataIndex: 'trade',
         sorter: (a: SwapTableRowType, b: SwapTableRowType) =>
-          a.raw.trade.minus(b.raw.trade), // TODO(Veado): Does it work for sorting BN?,
+          a.raw.trade.minus(b.raw.trade),
         sortDirections: ['descend', 'ascend'],
       },
       btnCol,
@@ -206,7 +206,7 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
 
   const renderAssets = () => {
     const asset = 'rune';
-    const runePrice = util.validBNOrZero(priceIndex?.RUNE);
+    const runePrice = validBNOrZero(priceIndex?.RUNE);
 
     return (
       <CoinButton

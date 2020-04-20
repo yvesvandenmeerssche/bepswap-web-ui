@@ -4,6 +4,10 @@ import { Popover } from 'antd';
 
 import { transition } from '../../../settings/style-util';
 
+type AddressInputWrapperProps = {
+  status: boolean;
+};
+
 export const AddressInputWrapper = styled.div`
   display: flex;
 
@@ -21,8 +25,8 @@ export const AddressInputWrapper = styled.div`
     border: none;
     border-radius: 50%;
     color: ${palette('text', 3)};
-    background: ${props =>
-      props.status ? palette('error', 0) : palette('primary', 0)};
+    background: ${({ status }: AddressInputWrapperProps) =>
+      status ? palette('error', 0) : palette('primary', 0)};
     cursor: pointer;
 
     svg {

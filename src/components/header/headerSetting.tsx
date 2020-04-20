@@ -3,14 +3,14 @@ import { Dropdown, Row } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { ClickParam } from 'antd/lib/menu';
 import { keyBy } from 'lodash';
-import { binance } from 'asgardex-common';
+import { getBinanceUrl } from '@thorchain/asgardex-binance';
 
 import Menu from '../uielements/menu';
 import ConnectionStatus from '../uielements/connectionStatus';
 
-import { BINANCE_NET } from '../../env';
-import { Maybe, Nothing } from '../../types/bepswap';
-import { getHostnameFromUrl } from '../../helpers/apiHelper';
+import { BINANCE_NET, isDevnet } from '../../env';
+import { Maybe } from '../../types/bepswap';
+import { getHostnameFromUrl, MIDGARD_DEV_API_DEV_IP } from '../../helpers/apiHelper';
 
 import { ConnectionMenuItem } from './header.style';
 
@@ -29,22 +29,25 @@ const HeaderSetting: React.FC<Props> = (props: Props): JSX.Element => {
   const { midgardBasePath } = props;
   const [currentItem, setCurrentItem] = useState<string>('');
 
+  // Midgard IP on devnet OR on test|mainnet
+  const midgardUrl = isDevnet ? MIDGARD_DEV_API_DEV_IP : (midgardBasePath && getHostnameFromUrl(midgardBasePath));
+
   const menuItems: MenuItem[] = useMemo(
     () => [
       {
         key: 'binance_chain',
         label: 'binance chain',
-        url: getHostnameFromUrl(binance.getBinanceUrl(BINANCE_NET)),
+        url: getHostnameFromUrl(getBinanceUrl(BINANCE_NET)),
         status: 'green',
       },
       {
         key: 'midgard_api',
         label: 'midgard api',
-        url: midgardBasePath ? getHostnameFromUrl(midgardBasePath) : Nothing,
+        url: midgardUrl,
         status: 'green',
       },
     ],
-    [midgardBasePath],
+    [midgardUrl],
   );
   const items = keyBy(menuItems, 'key');
   const { status = 'green' } = items[currentItem] || {};
@@ -81,7 +84,15 @@ const HeaderSetting: React.FC<Props> = (props: Props): JSX.Element => {
                   <span className="connection-server-label">{label}</span>
                 </Row>
                 <Row>
-                  <span className="connection-server-url">{url || ''}</span>
+                  <span
+                    style={{
+                      paddingLeft: '10px',
+                      color: '#808080',
+                      textTransform: 'lowercase',
+                    }}
+                  >
+                    {url || 'unknown'}
+                  </span>
                 </Row>
               </ConnectionMenuItem>
             </Menu.Item>

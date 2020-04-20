@@ -10,7 +10,8 @@ import {
   CheckCircleTwoTone,
 } from '@ant-design/icons';
 
-import { binance, util } from 'asgardex-common';
+import { getPrefix } from '@thorchain/asgardex-binance';
+import { delay } from '@thorchain/asgardex-util';
 import { ContentWrapper } from './ConnectView.style';
 
 import Label from '../../components/uielements/label';
@@ -77,12 +78,12 @@ const Keystore: React.FC<Props> = (props: Props): JSX.Element => {
   const unlock = useCallback(async () => {
     setProcessing(true);
     // Short delay to render processing message`
-    await util.delay(200);
+    await delay(200);
     try {
       const privateKey = crypto.getPrivateKeyFromKeyStore(keystore, password);
       const address = crypto.getAddressFromPrivateKey(
         privateKey,
-        binance.getPrefix(BINANCE_NET),
+        getPrefix(BINANCE_NET),
       );
 
       saveWallet({

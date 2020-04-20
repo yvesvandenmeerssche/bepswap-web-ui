@@ -2,14 +2,15 @@ import React from 'react';
 import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { withRouter, Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { Row, Col, notification } from 'antd';
 import { FullscreenExitOutlined, CloseOutlined } from '@ant-design/icons';
 import { crypto } from '@binance-chain/javascript-sdk';
 import { get as _get } from 'lodash';
 
 import BigNumber from 'bignumber.js';
-import { binance, util } from 'asgardex-common';
+import { client as binanceClient, getPrefix } from '@thorchain/asgardex-binance';
+import { validBNOrZero, formatBN, bnOrZero, formatBNCurrency, bn, delay } from '@thorchain/asgardex-util';
 
 import Button from '../../../components/uielements/button';
 import Label from '../../../components/uielements/label';
@@ -47,7 +48,7 @@ import { RootState } from '../../../redux/store';
 import { TxStatus, TxTypes } from '../../../redux/app/types';
 import { State as BinanceState } from '../../../redux/binance/types';
 import { PriceDataIndex, PoolDataMap } from '../../../redux/midgard/types';
-import { Maybe, FixmeType, AssetPair } from '../../../types/bepswap';
+import { Maybe, AssetPair } from '../../../types/bepswap';
 import { User, AssetData } from '../../../redux/wallet/types';
 
 import { TokenAmount } from '../../../types/token';
@@ -57,7 +58,6 @@ import { BINANCE_NET } from '../../../env';
 
 type ComponentProps = {
   symbol: string;
-  assets: FixmeType; // PropTypes.object
 };
 
 type ConnectedProps = {
@@ -137,7 +137,7 @@ class PoolCreate extends React.Component<Props, State> {
     const { symbol, poolAddress, priceIndex } = this.props;
     const { runeAmount, tokenAmount } = this.state;
 
-    const runePrice = util.validBNOrZero(priceIndex?.RUNE);
+    const runePrice = validBNOrZero(priceIndex?.RUNE);
 
     return getCreatePoolCalc({
       tokenSymbol: symbol,
@@ -306,7 +306,7 @@ class PoolCreate extends React.Component<Props, State> {
     if (user) {
       // start timer modal
       this.handleStartTimer();
-      const bncClient = await binance.client(BINANCE_NET);
+      const bncClient = await binanceClient(BINANCE_NET);
       try {
         const { poolAddress, tokenSymbol } = this.getData();
         const { result } = await confirmCreatePool({
@@ -358,18 +358,18 @@ class PoolCreate extends React.Component<Props, State> {
     if (user) {
       this.setState({ validatingPassword: true });
       // Short delay to render latest state changes of `validatingPassword`
-      await util.delay(200);
+      await delay(200);
 
       try {
         const privateKey = crypto.getPrivateKeyFromKeyStore(
           user.keystore,
           password,
         );
-        const bncClient = await binance.client(BINANCE_NET);
+        const bncClient = await binanceClient(BINANCE_NET);
         await bncClient.setPrivateKey(privateKey);
         const address = crypto.getAddressFromPrivateKey(
           privateKey,
-          binance.getPrefix(BINANCE_NET),
+          getPrefix(BINANCE_NET),
         );
         if (user.wallet === address) {
           this.handleConfirmCreate();
@@ -432,6 +432,16 @@ class PoolCreate extends React.Component<Props, State> {
     });
   };
 
+  handleFinishTx = () => {
+    notification.open({
+      message: 'Pool Created Successfully!',
+      description:
+        'It may take a few moments until a new pool appears in the pool list!',
+    });
+
+    this.props.history.push('/pools');
+  };
+
   renderAssetView = () => {
     const { symbol, priceIndex, basePriceAsset, assetData, pools } = this.props;
 
@@ -448,7 +458,7 @@ class PoolCreate extends React.Component<Props, State> {
     const source = 'rune';
     const target = getTickerFormat(symbol);
 
-    const runePrice = util.validBNOrZero(priceIndex?.RUNE);
+    const runePrice = validBNOrZero(priceIndex?.RUNE);
     const tokensData = getCreatePoolTokens(assetData, pools);
     // AssetDetail[] -> AssetPair[]
     const coinDardData = tokensData.map<AssetPair>((detail: AssetDetail) => ({
@@ -463,12 +473,12 @@ class PoolCreate extends React.Component<Props, State> {
       {
         key: 'price',
         title: 'Pool Price',
-        value: `${basePriceAsset} ${util.formatBN(poolPrice)}`,
+        value: `${basePriceAsset} ${formatBN(poolPrice)}`,
       },
       {
         key: 'depth',
         title: 'Pool Depth',
-        value: `${basePriceAsset} ${util.formatBN(depth)}`,
+        value: `${basePriceAsset} ${formatBN(depth)}`,
       },
       { key: 'share', title: 'Your Share', value: `${share}%` },
     ];
@@ -555,8 +565,8 @@ class PoolCreate extends React.Component<Props, State> {
 
     const token = binanceToken?.name ?? target;
     const ticker = binanceToken?.original_symbol ?? target;
-    const totalSupply = util.bnOrZero(binanceToken?.total_supply);
-    const marketPrice = util.bnOrZero(binanceMarket?.list_price);
+    const totalSupply = bnOrZero(binanceToken?.total_supply);
+    const marketPrice = bnOrZero(binanceMarket?.list_price);
 
     return (
       <div className="token-detail-container">
@@ -586,12 +596,12 @@ class PoolCreate extends React.Component<Props, State> {
                 />
                 <Status
                   title="Market Price"
-                  value={`${util.formatBNCurrency(marketPrice)}`}
+                  value={`${formatBNCurrency(marketPrice)}`}
                   direction="horizontal"
                 />
                 <Status
                   title="Total Supply"
-                  value={util.formatBN(totalSupply)}
+                  value={formatBN(totalSupply)}
                   direction="horizontal"
                 />
               </>
@@ -613,7 +623,7 @@ class PoolCreate extends React.Component<Props, State> {
 
     const source = 'rune';
     const target = getTickerFormat(symbol);
-    const runePrice = util.validBNOrZero(priceIndex?.RUNE);
+    const runePrice = validBNOrZero(priceIndex?.RUNE);
 
     const completed = hash && !status;
     const txURL = TESTNET_TX_BASE_URL + hash;
@@ -645,7 +655,7 @@ class PoolCreate extends React.Component<Props, State> {
                 data-test="stakeconfirm-coin-data-target"
                 asset={target}
                 assetValue={tokenAmount}
-                price={util.bn(0)}
+                price={bn(0)}
                 priceUnit={basePriceAsset}
               />
             </div>
@@ -655,11 +665,13 @@ class PoolCreate extends React.Component<Props, State> {
           {completed && (
             <div className="hash-address">
               <div className="copy-btn-wrapper">
-                <Link to="/pools">
-                  <Button className="view-btn" color="success">
-                    FINISH
-                  </Button>
-                </Link>
+                <Button
+                  className="view-btn"
+                  color="success"
+                  onClick={this.handleFinishTx}
+                >
+                  FINISH
+                </Button>
                 <a href={txURL} target="_blank" rel="noopener noreferrer">
                   VIEW TRANSACTION
                 </a>

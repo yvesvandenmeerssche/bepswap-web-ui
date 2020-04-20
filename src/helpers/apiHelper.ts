@@ -1,5 +1,5 @@
 import * as url from 'url';
-import axios, { AxiosResponse, Method } from 'axios';
+import axios from 'axios';
 import { DefaultApi } from '../types/generated/midgard';
 import { Maybe, Nothing } from '../types/bepswap';
 
@@ -46,44 +46,6 @@ export const getMidgardBasePathByIP = (ip: string, protocol = Protocol.HTTP) =>
   `${protocol}://${ip}:8080`;
 
 /**
- * Helper to get basePath for Midgard
- */
-export const getMidgardBasePath = async (
-  isTestnet: boolean,
-  defaultIP = MIDGARD_DEV_API_DEV_IP,
-) => {
-  // On testnet we need to load IP from testnet seed
-  if (isTestnet) {
-    try {
-      const response: AxiosResponse<TestnetSeedData> = await axiosRequest({
-        method: 'get' as Method,
-        url: TESTNET_SEED_URL,
-        headers: getHeaders(),
-      });
-      const activeList = response?.data;
-      if (activeList?.length) {
-        // get ip from list randomly
-        const index = Math.floor(Math.random() * (activeList.length - 1));
-        const ip = activeList[index];
-        return getMidgardBasePathByIP(ip);
-      } else {
-        return Promise.reject(
-          new Error(`Could not parse 'active' IP from response: ${response}`),
-        );
-      }
-    } catch (error) {
-      return Promise.reject(
-        new Error(
-          `Could not load seed data from testnet seed url: ${TESTNET_SEED_URL}`,
-        ),
-      );
-    }
-  } else {
-    return Promise.resolve(getMidgardBasePathByIP(defaultIP));
-  }
-};
-
-/**
  * Helper to get `DefaultApi` instance for Midgard
  */
 
@@ -94,6 +56,10 @@ export const getMidgardDefaultApi = (basePath: string) =>
  * Helper to get `hostname` from url
  */
 export const getHostnameFromUrl = (u: string): Maybe<string> => {
-  const parsed = url.parse(u, true);
-  return parsed?.hostname ?? Nothing;
+  // we do need a runtime check here, TS can't help here, since u could be anything
+  if (typeof u === 'string') {
+    const parsed = url.parse(u, true);
+    return parsed?.hostname ?? Nothing;
+  }
+  return Nothing;
 };
