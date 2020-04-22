@@ -3,6 +3,8 @@ import React from 'react';
 import { SwitchProps } from 'antd/lib/switch';
 import { StyledSwitch, EmojiIcon } from './themeSwitch.style';
 
+import { useTheme } from '../../../hooks/useTheme';
+
 type ComponentProps = {
   className?: string;
 };
@@ -11,6 +13,8 @@ type Props = ComponentProps & SwitchProps;
 
 const AssetInfo: React.FC<Props> = (props: Props): JSX.Element => {
   const { className = '', ...otherProps } = props;
+  const [isLight, toggleTheme] = useTheme();
+
   const sunIcon = (
     <EmojiIcon role="img" aria-label="sun">
       ☀️
@@ -25,6 +29,8 @@ const AssetInfo: React.FC<Props> = (props: Props): JSX.Element => {
   return (
     <StyledSwitch
       className={`themeSwitch-wrapper ${className}`}
+      checked={isLight}
+      onChange={toggleTheme}
       checkedChildren={sunIcon}
       unCheckedChildren={moonIcon}
       {...otherProps}

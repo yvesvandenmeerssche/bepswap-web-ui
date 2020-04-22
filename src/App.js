@@ -6,18 +6,29 @@ import { IntlProvider } from 'react-intl';
 import { store as reduxStore, history } from './redux/store';
 
 import PublicRoutes from './router';
-import AppHolder from './AppStyle';
-import { defaultTheme } from './settings';
+import { DarkApp, LightApp } from './settings/appStyle';
+import { lightTheme, darkTheme } from './settings';
+import { useTheme } from './hooks/useTheme';
+
+const Main = () => {
+  const [isLight] = useTheme();
+  const defaultTheme = isLight ? lightTheme : darkTheme;
+  const AppHolder = isLight ? LightApp : DarkApp;
+
+  return (
+    <ThemeProvider theme={defaultTheme}>
+      <AppHolder>
+        <PublicRoutes history={history} />
+      </AppHolder>
+    </ThemeProvider>
+  );
+};
 
 function App() {
   return (
     <ReduxProvider store={reduxStore}>
       <IntlProvider locale={navigator.language}>
-        <ThemeProvider theme={defaultTheme}>
-          <AppHolder>
-            <PublicRoutes history={history} />
-          </AppHolder>
-        </ThemeProvider>
+        <Main />
       </IntlProvider>
     </ReduxProvider>
   );
