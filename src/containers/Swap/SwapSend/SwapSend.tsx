@@ -822,7 +822,7 @@ class SwapSend extends React.Component<Props, State> {
       !Object.keys(tokenInfo).length ||
       !isValidSwap(swapPair, pools)
     ) {
-      return '';
+      this.props.history.push('/swap'); // redirect if swap is invalid
     }
 
     const { source: swapSource, target: swapTarget } = swapPair;
