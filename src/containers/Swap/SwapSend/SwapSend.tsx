@@ -54,6 +54,7 @@ import {
   confirmSwap,
   getTxResult,
   validatePair,
+  isValidSwap,
 } from '../utils';
 import { withBinanceTransferWS } from '../../../HOC/websocket/WSBinance';
 
@@ -102,6 +103,7 @@ type ConnectedProps = {
   poolAddress: string;
   assets: AssetDetailMap;
   poolData: PoolDataMap;
+  pools: string[];
   basePriceAsset: string;
   priceIndex: PriceDataIndex;
   user: Maybe<User>;
@@ -790,6 +792,7 @@ class SwapSend extends React.Component<Props, State> {
       txStatus,
       assets: tokenInfo,
       poolData,
+      pools,
       poolAddress,
       assetData,
       priceIndex,
@@ -816,7 +819,8 @@ class SwapSend extends React.Component<Props, State> {
     if (
       !swapPair.source ||
       !swapPair.target ||
-      !Object.keys(tokenInfo).length
+      !Object.keys(tokenInfo).length ||
+      !isValidSwap(swapPair, pools)
     ) {
       return '';
     }
@@ -1068,6 +1072,7 @@ export default compose(
       poolAddress: state.Midgard.poolAddress,
       assets: state.Midgard.assets,
       poolData: state.Midgard.poolData,
+      pools: state.Midgard.pools,
       priceIndex: state.Midgard.priceIndex,
       basePriceAsset: state.Midgard.basePriceAsset,
     }),
