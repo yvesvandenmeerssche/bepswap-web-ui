@@ -823,6 +823,7 @@ class SwapSend extends React.Component<Props, State> {
       !isValidSwap(swapPair, pools)
     ) {
       this.props.history.push('/swap'); // redirect if swap is invalid
+      return;
     }
 
     const { source: swapSource, target: swapTarget } = swapPair;
