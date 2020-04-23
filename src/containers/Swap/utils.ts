@@ -56,7 +56,6 @@ export const isValidSwap = (pair: Pair, pools: string[]) => {
   const RUNE = 'rune';
   const poolTickers = pools.map(poolSymbol => getTickerFormat(poolSymbol));
   poolTickers.push(RUNE);
-  console.log(poolTickers, pair);
   if (target === source || !target || !source) {
     return false;
   }
