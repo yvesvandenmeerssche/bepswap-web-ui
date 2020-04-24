@@ -1,17 +1,18 @@
 import React from 'react';
-import { Provider as ReduxProvider } from 'react-redux';
+import { Provider as ReduxProvider, useSelector } from 'react-redux';
 import { ThemeProvider } from 'styled-components';
 
 import { IntlProvider } from 'react-intl';
-import { store as reduxStore, history } from './redux/store';
+import { store as reduxStore, history, RootState } from './redux/store';
 
 import PublicRoutes from './router';
 import { DarkApp, LightApp } from './settings/appStyle';
 import { lightTheme, darkTheme } from './settings';
-import { useTheme } from './hooks/useTheme';
+import { LIGHT_THEME } from './settings/themes';
 
 const Main = () => {
-  const [isLight] = useTheme();
+  const themeType = useSelector((state: RootState) => state.App.themeType);
+  const isLight = themeType === LIGHT_THEME;
   const defaultTheme = isLight ? lightTheme : darkTheme;
   const AppHolder = isLight ? LightApp : DarkApp;
 
