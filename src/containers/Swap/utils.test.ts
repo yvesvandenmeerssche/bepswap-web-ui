@@ -131,34 +131,48 @@ describe('swap/utils/isValidSwap', () => {
   it('should return false for source invalid pair', () => {
     const sourceInvalidPair: Pair = {
       source: '',
-      target: 'RUNE',
+      target: 'rune',
     };
     expect(isValidSwap(sourceInvalidPair, pools)).toBeFalsy();
   });
   it('should return false for target invalid pair', () => {
     const targetInvalidPair: Pair = {
-      source: 'RUNE',
+      source: 'rune',
       target: '',
     };
     expect(isValidSwap(targetInvalidPair, pools)).toBeFalsy();
   });
   it('should return false for invalid pair', () => {
     const invalidPair: Pair = {
-      source: 'RUNE',
-      target: 'RUNE',
+      source: 'rune',
+      target: 'rune',
     };
     expect(isValidSwap(invalidPair, pools)).toBeFalsy();
   });
   it('should return false in case the asset is unlisted!', () => {
     const invalidPair: Pair = {
-      source: 'RUNE',
-      target: 'BTC',
+      source: 'rune',
+      target: 'btc',
     }; const invalidPair2: Pair = {
-      source: 'ETH',
-      target: 'BTC',
+      source: 'eth',
+      target: 'btc',
     };
     expect(isValidSwap(invalidPair, pools)).toBeFalsy();
     expect(isValidSwap(invalidPair2, pools)).toBeFalsy();
+  });
+  it('should return true for a valid pair', () => {
+    const validPair: Pair = {
+      source: 'rune',
+      target: 'bnb',
+    };
+    expect(isValidSwap(validPair, pools)).toBeTruthy();
+  });
+  it('should return true for a valid pair', () => {
+    const validPair: Pair = {
+      source: 'lok',
+      target: 'tusdb',
+    };
+    expect(isValidSwap(validPair, pools)).toBeTruthy();
   });
 });
 
