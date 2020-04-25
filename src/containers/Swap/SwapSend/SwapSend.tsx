@@ -994,18 +994,20 @@ class SwapSend extends React.Component<Props, State> {
                           animation: 'none !important',
                         }}
                       >
-                        <Button
-                          onClick={this.handleSwitchSlipProtection}
-                          sizevalue="small"
-                          typevalue="outline"
-                          focused={slipProtection}
-                        >
-                          {slipProtection ? (
-                            <LockOutlined />
-                          ) : (
-                            <UnlockOutlined />
-                          )}
-                        </Button>
+                        <div>
+                          <Button
+                            onClick={this.handleSwitchSlipProtection}
+                            sizevalue="small"
+                            typevalue="outline"
+                            focused={slipProtection}
+                          >
+                            {slipProtection ? (
+                              <LockOutlined />
+                            ) : (
+                              <UnlockOutlined />
+                            )}
+                          </Button>
+                        </div>
                       </PopoverContainer>
                     </CardForm>
                   </CardFormHolder>

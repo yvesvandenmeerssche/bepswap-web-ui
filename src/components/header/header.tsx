@@ -121,8 +121,8 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
         <Link to="/">
           <Logo name="bepswap" type="long" />
         </Link>
-        <Link to="/introduction">
-          <Tooltip title="Introduction?">
+        <Tooltip title="Introduction?">
+          <Link to="/introduction">
             <Button
               className="intro-btn"
               typevalue="outline"
@@ -130,8 +130,8 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
               size="small"
               icon={<QuestionOutlined />}
             />
-          </Tooltip>
-        </Link>
+          </Link>
+        </Tooltip>
       </LogoWrapper>
       {renderHeader}
       <HeaderActionButtons>
