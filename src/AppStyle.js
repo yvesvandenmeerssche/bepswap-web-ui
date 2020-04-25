@@ -7,6 +7,7 @@ import lightFont from './assets/font/Montserrat-Light.otf';
 import mediumFont from './assets/font/Montserrat-Medium.otf';
 import boldFont from './assets/font/Montserrat-Bold.otf';
 import italicFont from './assets/font/Montserrat-LightItalic.otf';
+import 'antd/dist/antd.css';
 
 const AppHolder = styled.div`
   @font-face {

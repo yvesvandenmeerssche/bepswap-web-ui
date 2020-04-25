@@ -64,6 +64,16 @@ const AppHolder = styled.div`
     }
   }
 
+  a,
+  button,
+  input,
+  .ant-slider > div,
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td,
+  .ant-tabs-nav .ant-tabs-tab {
+    transition: none;
+  }
+
   section.ant-layout {
     background: ${palette('background', 1)};
   }
