@@ -6,7 +6,7 @@ import { IntlProvider } from 'react-intl';
 import { store as reduxStore, history, RootState } from './redux/store';
 
 import PublicRoutes from './router';
-import { DarkApp, LightApp } from './settings/appStyle';
+import { AppHolder, GlobalStyle } from './settings/appStyle';
 import { lightTheme, darkTheme } from './settings';
 import { LIGHT_THEME } from './settings/themes';
 
@@ -14,11 +14,11 @@ const Main = () => {
   const themeType = useSelector((state: RootState) => state.App.themeType);
   const isLight = themeType === LIGHT_THEME;
   const defaultTheme = isLight ? lightTheme : darkTheme;
-  const AppHolder = isLight ? LightApp : DarkApp;
 
   return (
     <ThemeProvider theme={defaultTheme}>
-      <AppHolder>
+      <GlobalStyle isLight />
+      <AppHolder id="app-global">
         <PublicRoutes history={history} />
       </AppHolder>
     </ThemeProvider>

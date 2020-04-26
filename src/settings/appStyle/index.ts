@@ -1,4 +1,3 @@
-import LightApp from './LightApp';
-import DarkApp from './DarkApp';
+import { AppHolder, GlobalStyle } from './appStyle';
 
-export { LightApp, DarkApp };
+export { AppHolder, GlobalStyle };
