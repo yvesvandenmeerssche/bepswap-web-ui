@@ -48,7 +48,7 @@ export const StyledFooter = styled.div`
     padding: 0 30px;
   `}
 
-  border-top: 1px solid ${palette('gray', 0)};
+  /* border-top: 1px solid ${palette('gray', 0)}; */
   background-color: ${palette('background', 0)};
 
   /* TODO: Refactor these to avoid using classnames */
