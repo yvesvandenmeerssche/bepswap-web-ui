@@ -66,8 +66,8 @@ export const StyledFooter = styled.div`
 
 
     a {
-      font-family: 'Montserrat Bold';
       font-size: ${key('sizes.font.normal', '12px')};
+      font-weight: bold;
       color: ${palette('text', 1)};
       letter-spacing: 1px;
       cursor: pointer;

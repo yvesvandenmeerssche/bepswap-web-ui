@@ -106,7 +106,7 @@ theme.sizes = {
 };
 
 theme.fonts = {
-  primary: 'Roboto, sans-serif',
+  primary: 'Exo 2',
   pre: 'Consolas, Liberation Mono, Menlo, Courier, monospace',
 };
 
