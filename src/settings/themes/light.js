@@ -59,7 +59,8 @@ theme.palette = {
   background: [
     '#fff', // 0: header, footer bg
     '#fff', // 1: main bg
-    dark[0], // 2: content bg, hover
+    dark[0], // 2: hover
+    dark[0], // 3: content bg
   ],
   text: [
     dark[8], // 0: Normal Text (normal)

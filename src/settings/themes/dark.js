@@ -19,7 +19,8 @@ darkTheme.palette = {
   background: [
     dark[9], // 0: header, footer bg
     dark[9], // 1: main bg
-    dark[8], // 2: content bg, hover
+    dark[8], // 2: hover
+    '#000', // 3: content bg
   ],
   text: [
     '#fff', // 0: Normal Text (normal)
