@@ -3,22 +3,25 @@ import { Maybe, Nothing, FixmeType } from '../types/bepswap';
 
 type Message = FixmeType;
 
-interface Props {
+type Props = {
   url: string;
-  protocol: string;
-  reconnect: boolean;
-  onOpen: () => void;
-  onError: () => void;
-  onMessage: (message: Message) => void;
-  messageFilter: (message: Message) => boolean;
-  onClose: () => void;
-}
+  protocol?: string;
+  reconnect?: boolean;
+  onOpen?: () => void;
+  msgOnOpen?: string;
+  onError?: () => void;
+  onMessage?: (message: Message) => void;
+  messageFilter?: (message: Message) => boolean;
+  onClose?: () => void;
+};
+
 export const useWebsocket = (props: Props) => {
   const {
     url,
-    protocol,
-    reconnect = false,
+    protocol = 'ws',
+    reconnect = true,
     onOpen = () => {},
+    msgOnOpen,
     onError = () => {},
     onMessage = () => {},
     messageFilter = (message: Message) => message,
@@ -28,10 +31,19 @@ export const useWebsocket = (props: Props) => {
   const [ws, setWS] = useState<Maybe<WebSocket>>(Nothing);
   const [open, setOpen] = useState(false);
 
+  const sendMessage = useCallback((message: string) => {
+    if (ws && open) {
+      ws.send(message);
+    }
+  }, [open, ws]);
+
   const onOpenHandler = useCallback(() => {
     setOpen(true);
     onOpen();
-  }, [onOpen]);
+    if (msgOnOpen) {
+      sendMessage(msgOnOpen);
+    }
+  }, [onOpen, msgOnOpen, sendMessage]);
 
   const onErrorHandler = useCallback(() => {
     onError();
@@ -67,15 +79,20 @@ export const useWebsocket = (props: Props) => {
 
   useEffect(() => {
     const ws = new WebSocket(url, protocol);
+    ws.addEventListener('open', onOpenHandler);
+    ws.addEventListener('error', onErrorHandler);
+    ws.addEventListener('message', onMessageHandler);
+    ws.addEventListener('close', onCloseHandler);
 
-    ws.onopen = onOpenHandler;
-    ws.onerror = onErrorHandler;
-    ws.onmessage = onMessageHandler;
-    ws.onclose = onCloseHandler;
     setWS(ws);
     return () => {
       setWS(Nothing);
       ws.close();
+      ws.removeEventListener('open', onOpenHandler);
+      ws.removeEventListener('error', onErrorHandler);
+      ws.removeEventListener('message', onMessageHandler);
+      ws.removeEventListener('close', onCloseHandler);
+      setAttempts(1);
     };
   }, [
     onCloseHandler,
@@ -83,18 +100,8 @@ export const useWebsocket = (props: Props) => {
     onMessageHandler,
     onOpenHandler,
     protocol,
-    setWS,
     url,
   ]);
-
-  const sendMessage = useCallback(
-    (message: string) => {
-      if (ws && open) {
-        ws.send(message);
-      }
-    },
-    [open, ws],
-  );
 
   return [sendMessage];
 };

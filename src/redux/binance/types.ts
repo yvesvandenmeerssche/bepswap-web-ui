@@ -1,4 +1,12 @@
-import { Token, TickerStatistics, Account, TxPage, OrderList, Market } from '@thorchain/asgardex-binance';
+import {
+  Token,
+  TickerStatistics,
+  Account,
+  TxPage,
+  OrderList,
+  Market,
+  TransferEvent,
+} from '@thorchain/asgardex-binance';
 import { Maybe } from '../../types/bepswap';
 
 export type State = {
@@ -13,4 +21,6 @@ export type State = {
   loadingToken: boolean;
   loadingMarket: boolean;
   loadingTicker: boolean;
+  wsError: Maybe<Error>;
+  wsTransferEvents: TransferEvent[];
 };
