@@ -80,7 +80,7 @@ export const HeaderTitle = styled.p`
   `}
   color: ${palette('text', 0)};
   font-size: ${key('sizes.font.big', '15px')};
-  letter-spacing: 0.9px;
+  letter-spacing: 1px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
