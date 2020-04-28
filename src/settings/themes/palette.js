@@ -53,5 +53,6 @@ const { secondary, primary } = palette;
 
 export const BIFROST_BLUE = secondary[3];
 export const YGGDRASIL_GREEN = primary[3];
+export const MIDGARD_TURQUOISE = '#23DCC8';
 export const FLASH_ORANGE = '#F3BA2F';
 export const SURTR_RED = '#FF4954';

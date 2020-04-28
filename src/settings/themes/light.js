@@ -3,6 +3,7 @@ import {
   palette,
   BIFROST_BLUE,
   YGGDRASIL_GREEN,
+  MIDGARD_TURQUOISE,
   FLASH_ORANGE,
   SURTR_RED,
 } from './palette';
@@ -16,17 +17,18 @@ const theme = {};
 const DARK_COL = darken(COL_DARKEN_RATE, BIFROST_BLUE);
 const LIGHT_COL = lighten(0.2, BIFROST_BLUE);
 
-const DARK_COL_BASE = darken(COL_DARKEN_RATE, YGGDRASIL_GREEN);
-const LIGHT_COL_BASE = lighten(0.2, YGGDRASIL_GREEN);
+const DARK_COL_BASE = darken(COL_DARKEN_RATE, MIDGARD_TURQUOISE);
+const LIGHT_COL_BASE = lighten(0.2, MIDGARD_TURQUOISE);
 
 theme.palette = {
   gradient: [
-    `linear-gradient(9.34deg, ${YGGDRASIL_GREEN} 19.28%, ${BIFROST_BLUE} 106.03%)`, // 0: Default
+    `linear-gradient(9.34deg, ${MIDGARD_TURQUOISE} 19.28%, ${BIFROST_BLUE} 106.03%)`, // 0: Default
     `linear-gradient(9.34deg, ${DARK_COL_BASE} 19.28%, ${DARK_COL} 106.03%)`, // darken col
     `linear-gradient(9.34deg, ${LIGHT_COL_BASE} 19.28%, ${LIGHT_COL} 106.03%)`, // lighten col
   ],
   primary: [
-    YGGDRASIL_GREEN, // 0 primary
+    MIDGARD_TURQUOISE, // 0 primary
+    YGGDRASIL_GREEN, // 1 primary
   ],
   secondary: [
     BIFROST_BLUE, // 0 secondary
@@ -39,10 +41,10 @@ theme.palette = {
     `linear-gradient(47.73deg, ${FLASH_ORANGE} 0%, ${FLASH_ORANGE} 100%)`, // gradient
   ],
   success: [
-    YGGDRASIL_GREEN, // 0: Success
-    darken(COL_DARKEN_RATE, YGGDRASIL_GREEN), // darken col
-    lighten(COL_LIGHTEN_RATE, YGGDRASIL_GREEN), // lighten col
-    `linear-gradient(47.73deg, ${YGGDRASIL_GREEN} 0%, ${YGGDRASIL_GREEN} 100%)`, // gradient
+    MIDGARD_TURQUOISE, // 0: Success
+    darken(COL_DARKEN_RATE, MIDGARD_TURQUOISE), // darken col
+    lighten(COL_LIGHTEN_RATE, MIDGARD_TURQUOISE), // lighten col
+    `linear-gradient(47.73deg, ${MIDGARD_TURQUOISE} 0%, ${MIDGARD_TURQUOISE} 100%)`, // gradient
   ],
   error: [
     SURTR_RED, // 0: Error
