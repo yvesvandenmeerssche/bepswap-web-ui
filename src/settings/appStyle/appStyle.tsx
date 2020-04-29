@@ -84,10 +84,10 @@ export const AppHolder = styled.div`
 
   .ant-popover {
     .ant-popover-arrow {
-      border-color: ${palette('background', 1)};
+      border-color: ${palette('background', 4)};
     }
     .ant-popover-inner {
-      background-color: ${palette('background', 1)};
+      background-color: ${palette('background', 4)};
     }
   }
 

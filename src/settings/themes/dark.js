@@ -14,13 +14,15 @@ darkTheme.palette = {
   ],
   gray: [
     dark[8], // 0: Border
-    dark[6], // 0: step bar, txstatus bg
+    dark[6], // 1: step bar, txstatus bg
+    dark[5], // 2: hover
   ],
   background: [
     dark[9], // 0: header, footer bg
     dark[9], // 1: main bg
     dark[8], // 2: hover
     '#000', // 3: content bg
+    dark[8], // 4: popover bg
   ],
   text: [
     '#fff', // 0: Normal Text (normal)

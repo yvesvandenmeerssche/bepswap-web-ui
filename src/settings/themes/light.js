@@ -54,13 +54,15 @@ theme.palette = {
   ],
   gray: [
     dark[0], // 0: Border
-    dark[1], // 0: step bar, txstatus bg
+    dark[1], // 1: step bar, txstatus bg
+    dark[2], // 2: hover
   ],
   background: [
     '#fff', // 0: header, footer bg
     '#fff', // 1: main bg
     dark[0], // 2: hover
     dark[0], // 3: content bg
+    '#fff', // 4: popover bg
   ],
   text: [
     dark[8], // 0: Normal Text (normal)
