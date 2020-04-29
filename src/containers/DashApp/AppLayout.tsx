@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import * as RD from '@devexperts/remote-data-ts';
 import { RootState } from '../../redux/store';
 import { ApiBasePathRD } from '../../redux/midgard/types';
-import { Maybe } from '../../types/bepswap';
+import { TransferEventRD } from '../../redux/binance/types';
 
 type ComponentProps = {
   children?: ReactNode;
@@ -13,13 +13,18 @@ type ComponentProps = {
 
 type ConnectedProps = {
   midgardBasePath: ApiBasePathRD;
-  wsError: Maybe<Error>;
+  wsTransferEvent: TransferEventRD;
 };
 
 type Props = ComponentProps & ConnectedProps;
 
 const AppLayout: React.FC<Props> = (props: Props): JSX.Element => {
-  const { children, 'data-test': dataTest, midgardBasePath, wsError } = props;
+  const {
+    children,
+    'data-test': dataTest,
+    midgardBasePath,
+    wsTransferEvent,
+  } = props;
 
   useEffect(() => {
     const ignore = () => {};
@@ -35,14 +40,17 @@ const AppLayout: React.FC<Props> = (props: Props): JSX.Element => {
   }, [midgardBasePath]);
 
   useEffect(() => {
-    if (wsError) {
+    const ignore = () => {};
+    const onFailure = (error: Error) => {
       notification.error({
         message: 'Binance Websocket Error',
-        description: `${wsError?.toString() ?? ''}`,
+        description: `Subscription to transfers failed. ${error?.toString() ??
+          ''}`,
         duration: 10,
       });
-    }
-  }, [wsError]);
+    };
+    RD.fold(ignore, ignore, onFailure, ignore)(wsTransferEvent);
+  }, [wsTransferEvent]);
 
   return <Layout data-test={dataTest}>{children}</Layout>;
 };
@@ -50,7 +58,7 @@ const AppLayout: React.FC<Props> = (props: Props): JSX.Element => {
 export default connect(
   (state: RootState) => ({
     midgardBasePath: state.Midgard.apiBasePath,
-    wsError: state.Binance.wsError,
+    wsTransferEvent: state.Binance.wsTransferEvent,
   }),
   {},
 )(AppLayout);

@@ -7,7 +7,6 @@ import { Row, Col, Icon, notification, Popover } from 'antd';
 import {
   client as binanceClient,
   getPrefix,
-  TransferEvent,
 } from '@thorchain/asgardex-binance';
 import {
   validBNOrZero,
@@ -20,6 +19,7 @@ import {
 
 import { crypto } from '@binance-chain/javascript-sdk';
 import BigNumber from 'bignumber.js';
+import * as RD from '@devexperts/remote-data-ts';
 
 import Button from '../../../components/uielements/button';
 import Drag from '../../../components/uielements/drag';
@@ -86,6 +86,7 @@ import { getAssetFromString } from '../../../redux/midgard/utils';
 import { tokenAmount } from '../../../helpers/tokenHelper';
 import { TokenAmount } from '../../../types/token';
 import { BINANCE_NET, getNet } from '../../../env';
+import { TransferEventRD } from '../../../redux/binance/types';
 
 type ComponentProps = {
   info: string;
@@ -102,7 +103,7 @@ type ConnectedProps = {
   basePriceAsset: string;
   priceIndex: PriceDataIndex;
   user: Maybe<User>;
-  wsTransferEvents: TransferEvent[];
+  wsTransferEvent: TransferEventRD;
   setTxTimerModal: typeof appActions.setTxTimerModal;
   setTxTimerStatus: typeof appActions.setTxTimerStatus;
   setTxTimerValue: typeof appActions.setTxTimerValue;
@@ -184,7 +185,6 @@ class SwapSend extends React.Component<Props, State> {
     getPoolAddress();
     getPools();
     const wallet = user?.wallet;
-    console.log('xxx componentDidMount:', wallet);
     if (wallet) {
       subscribeBinanceTransfers({ address: wallet, net: getNet() });
     }
@@ -192,7 +192,7 @@ class SwapSend extends React.Component<Props, State> {
 
   componentDidUpdate(prevProps: Props) {
     const {
-      wsTransferEvents,
+      wsTransferEvent,
       txStatus: { hash },
       user,
       subscribeBinanceTransfers,
@@ -200,8 +200,6 @@ class SwapSend extends React.Component<Props, State> {
     } = this.props;
 
     const { txResult } = this.state;
-    const length = wsTransferEvents.length;
-    const lastTx = wsTransferEvents[length - 1];
 
     const prevWallet = prevProps?.user?.wallet;
     const wallet = user?.wallet;
@@ -215,15 +213,19 @@ class SwapSend extends React.Component<Props, State> {
       subscribeBinanceTransfers({ address: wallet, net: getNet() });
     }
 
+    const currentWsTransferEvent = RD.toNullable(wsTransferEvent);
+    const prevWsTransferEvent = RD.toNullable(prevProps?.wsTransferEvent);
+
+    // check incoming wsTransferEvent
     if (
-      length !== prevProps.wsTransferEvents.length &&
-      length > 0 &&
+      currentWsTransferEvent &&
+      currentWsTransferEvent !== prevWsTransferEvent &&
       hash !== undefined &&
       txResult === null &&
       !this.isCompleted()
     ) {
       const txResult = getTxResult({
-        tx: lastTx,
+        tx: currentWsTransferEvent,
         hash,
       });
 
@@ -238,7 +240,6 @@ class SwapSend extends React.Component<Props, State> {
   componentWillUnmount() {
     const { resetTxStatus, unSubscribeBinanceTransfers } = this.props;
     resetTxStatus();
-    console.log('xxx componentWillUnmount:');
     unSubscribeBinanceTransfers();
   }
 
@@ -1105,7 +1106,7 @@ export default compose(
       poolData: state.Midgard.poolData,
       priceIndex: state.Midgard.priceIndex,
       basePriceAsset: state.Midgard.basePriceAsset,
-      wsTransferEvents: state.Binance.wsTransferEvents,
+      wsTransferEvent: state.Binance.wsTransferEvent,
     }),
     {
       getPools: midgardActions.getPools,

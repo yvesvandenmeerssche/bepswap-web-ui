@@ -1,4 +1,5 @@
 import { Reducer } from 'redux';
+import { initial, pending, success, failure } from '@devexperts/remote-data-ts';
 import { State } from './types';
 import { BinanceActionTypes } from './actions';
 import { Nothing } from '../../types/bepswap';
@@ -16,7 +17,7 @@ const initState: State = {
   loadingMarket: false,
   loadingTicker: false,
   wsError: Nothing,
-  wsTransferEvents: [],
+  wsTransferEvent: initial,
 };
 
 const reducer: Reducer<State, BinanceActionTypes> = (
@@ -105,14 +106,22 @@ const reducer: Reducer<State, BinanceActionTypes> = (
     case 'SUBSCRIBE_BINANCE_TRANSFERS':
       return {
         ...state,
-        wsError: Nothing,
-        wsTransferEvents: [],
+        wsTransferEvent: pending,
+      };
+    case 'SUBSCRIBE_BINANCE_TRANSFERS_FAILED':
+      return {
+        ...state,
+        wsTransferEvent: failure(action.error),
+      };
+    case 'UNSUBSCRIBE_BINANCE_TRANSFERS':
+      return {
+        ...state,
+        wsTransferEvent: initial,
       };
     case 'BINANCE_TRANSFERS_MESSAGE_RECEIVED':
       return {
         ...state,
-        // TODO (Veado) Update wsTransferEvents
-        // wsTransferEvents: [...state.wsTransferEvents, action.event],
+        wsTransferEvent: success(action.event),
       };
     default:
       return state;

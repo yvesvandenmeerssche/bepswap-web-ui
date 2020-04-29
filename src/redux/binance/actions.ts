@@ -84,8 +84,8 @@ export type SubscribeBinanceTransfersPayload = {
 export const subscribeBinanceTransfers = (payload: SubscribeBinanceTransfersPayload) =>
   ({ type: 'SUBSCRIBE_BINANCE_TRANSFERS', payload } as const);
 
-export const subscribeBinanceTransfersFailed = (payload: Error) =>
-  ({ type: 'SUBSCRIBE_BINANCE_TRANSFERS_FAILED', payload } as const);
+export const subscribeBinanceTransfersFailed = (error: Error) =>
+  ({ type: 'SUBSCRIBE_BINANCE_TRANSFERS_FAILED', error } as const);
 
 export const unSubscribeBinanceTransfers = () =>
   ({ type: 'UNSUBSCRIBE_BINANCE_TRANSFERS' } as const);

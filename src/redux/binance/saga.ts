@@ -1,4 +1,12 @@
-import { all, takeEvery, put, fork, call, take } from 'redux-saga/effects';
+import {
+  all,
+  delay,
+  takeEvery,
+  put,
+  fork,
+  call,
+  take,
+} from 'redux-saga/effects';
 
 import { Method, AxiosResponse } from 'axios';
 import {
@@ -23,9 +31,11 @@ import { getTokenName } from '../../helpers/assetHelper';
 import { Maybe, Nothing, FixmeType } from '../../types/bepswap';
 import { NET } from '../../env';
 
-const LIMIT = 1000;
+/* /////////////////////////////////////////////////////////////
+// api
+///////////////////////////////////////////////////////////// */
 
-export const WS_MAX_RETRY = 5;
+const LIMIT = 1000;
 
 export function* getBinanceTokens() {
   yield takeEvery('GET_BINANCE_TOKENS', function*() {
@@ -163,44 +173,12 @@ export function* getBinanceOpenOrders() {
   });
 }
 
-function createWSChannel(ws: WebSocket) {
-  return eventChannel(emit => {
-    const onOpenHandler = (e: Event) => {
-      // console.log('xxx : onOpenHandler', e);
-      emit(e);
-    };
-    const onMessageHandler = (e: MessageEvent) => {
-      // console.log('xxx : onMessageHandler', e);
-      emit(e);
-    };
-    const onCloseHandler = (_: CloseEvent) => {
-      // console.log('xxx : onCloseHandler', e);
-      emit(END);
-    };
-    const onErrorHandler = (e: Event) => {
-      // console.log('xxx : onErrorHandler', e);
-      emit(e);
-    };
+/* /////////////////////////////////////////////////////////////
+// websockets
+///////////////////////////////////////////////////////////// */
 
-    // setup the subscriptions
-    ws.addEventListener('open', onOpenHandler);
-    ws.addEventListener('error', onErrorHandler);
-    ws.addEventListener('message', onMessageHandler);
-    ws.addEventListener('close', onCloseHandler);
-
-    // Unsubscribe function
-    // which will be invoked when the saga calls `channel.close` method
-    const unsubscribe = () => {
-      ws.close();
-      ws.removeEventListener('open', onOpenHandler);
-      ws.removeEventListener('error', onErrorHandler);
-      ws.removeEventListener('message', onMessageHandler);
-      ws.removeEventListener('close', onCloseHandler);
-    };
-
-    return unsubscribe;
-  });
-}
+export const WS_MAX_RETRY = 5;
+export const WS_RETRY_DELAY = 300; // ms
 
 const TESTNET_WS_URI =
   process.env.REACT_APP_BINANCE_TESTNET_WS_URI ||
@@ -210,37 +188,74 @@ const MAINET_WS_URI =
   process.env.REACT_APP_BINANCE_MAINNET_WS_URI ||
   'wss://dex.binance.org/api/ws';
 
-let wsChannel: Maybe<FixmeType> = Nothing;
+function createBinanceTransfersChannel(ws: WebSocket) {
+  return eventChannel(emit => {
+    const onOpenHandler = (e: Event) => {
+      emit(e);
+    };
+    const onMessageHandler = (e: MessageEvent) => {
+      emit(e);
+    };
+    const onCloseHandler = (_: CloseEvent) => {
+      // END will close channel
+      emit(END);
+    };
+    const onErrorHandler = (e: Event) => {
+      emit(e);
+    };
 
-const initWS = (net: NET) => {
+    // subscriptions
+    ws.addEventListener('open', onOpenHandler);
+    ws.addEventListener('error', onErrorHandler);
+    ws.addEventListener('message', onMessageHandler);
+    ws.addEventListener('close', onCloseHandler);
+
+    // Unsubscribe function
+    // invoked by `channel.close()`
+    const unsubscribe = () => {
+      ws.removeEventListener('open', onOpenHandler);
+      ws.removeEventListener('error', onErrorHandler);
+      ws.removeEventListener('message', onMessageHandler);
+      ws.removeEventListener('close', onCloseHandler);
+      // close WS connection
+      ws.close();
+    };
+
+    return unsubscribe;
+  });
+}
+
+let binanceTransfersChannel: Maybe<FixmeType> = Nothing;
+const destroyBinanceTransfersChannel = () => {
+  // closing channel will close ws connection, too
+  binanceTransfersChannel?.close();
+  binanceTransfersChannel = Nothing;
+};
+
+function* trySubscribeBinanceTransfers(
+  payload: actions.SubscribeBinanceTransfersPayload,
+) {
+  const { net, address } = payload;
   const url = net === NET.MAIN ? MAINET_WS_URI : TESTNET_WS_URI;
-  return new WebSocket(url);
-};
+  for (let i = 0; i < WS_MAX_RETRY; i++) {
+    try {
+      // destroy previous channel if there any
+      destroyBinanceTransfersChannel();
+      const ws = new WebSocket(url);
+      binanceTransfersChannel = yield call(createBinanceTransfersChannel, ws);
 
-const destroyWSChannel = () => {
-  // wsChannel will close WS connection, too
-  wsChannel?.close();
-  wsChannel = Nothing;
-};
+      while (true) {
+        const channelEvent: Event = yield take(binanceTransfersChannel);
+        // BTW: No need to handle channelEvent.type === 'close' here,
+        // since `binanceTransfersChannel` will close then
 
-function* subscribeBinanceTransfers() {
-  yield takeEvery('SUBSCRIBE_BINANCE_TRANSFERS', function*({
-    payload,
-  }: ReturnType<typeof actions.subscribeBinanceTransfers>) {
-    console.log('xxx subscribeBinanceTransfers');
-    // destroy previous connection if there any
-    destroyWSChannel();
-    const { net, address } = payload;
-    const ws = initWS(net);
-    wsChannel = yield call(createWSChannel, ws);
-
-    while (true) {
-      try {
-        const event: Event = yield take(wsChannel);
-        console.log('xxx event:', event);
-        if (event.type === 'open') {
-          console.log('xxx open', ws);
-          (event.target as WebSocket).send(
+        if (channelEvent.type === 'error') {
+          // throw error to trigger re-connection
+          throw new Error('Error while subscribing to Binance.');
+        }
+        if (channelEvent.type === 'open') {
+          // subscribe to transfers
+          (channelEvent.target as WebSocket).send(
             JSON.stringify({
               method: 'subscribe',
               topic: 'transfers',
@@ -248,42 +263,44 @@ function* subscribeBinanceTransfers() {
             }),
           );
         }
-        if (event.type === 'close') {
-          console.log('xxx close', ws);
-          (event.target as WebSocket).send(
-            JSON.stringify({
-              method: 'unsubscribe',
-              topic: 'transfers',
-              address,
-            }),
-          );
-        }
-        if (event.type === 'message') {
-          console.log('xxx message', event);
+        if (channelEvent.type === 'message') {
           try {
             const result = JSON.parse(
-              (event as MessageEvent).data,
+              (channelEvent as MessageEvent).data,
             ) as TransferEvent;
-            console.log('xxx message', result);
             yield put(actions.binanceTransfersMessageReceived(result));
           } catch (error) {
-            console.log('xxx message error', error);
-            yield put(actions.wsBinanceError(error));
+            yield put(actions.subscribeBinanceTransfersFailed(error));
           }
         }
-      } catch (error) {
-        console.log('xxx ws error:', error);
-        destroyWSChannel();
-        // TODO (Veado) Retry??
       }
+    } catch (error) {
+      if (i < WS_MAX_RETRY - 1) {
+        yield delay(WS_RETRY_DELAY);
+      }
+    }
+  }
+  throw new Error(`Connecting to ${url} failed after ${WS_MAX_RETRY} attemps.`);
+}
+
+function* subscribeBinanceTransfers() {
+  yield takeEvery('SUBSCRIBE_BINANCE_TRANSFERS', function*({
+    payload,
+  }: ReturnType<typeof actions.subscribeBinanceTransfers>) {
+    try {
+      binanceTransfersChannel = yield call(
+        trySubscribeBinanceTransfers,
+        payload,
+      );
+    } catch (error) {
+      yield put(actions.subscribeBinanceTransfersFailed(error));
     }
   });
 }
 
 function* unSubscribeBinanceTransfers() {
   yield takeEvery('UNSUBSCRIBE_BINANCE_TRANSFERS', function*() {
-    console.log('xxx unSubscribeBinanceTransfers');
-    yield destroyWSChannel();
+    yield destroyBinanceTransfersChannel();
   });
 }
 
