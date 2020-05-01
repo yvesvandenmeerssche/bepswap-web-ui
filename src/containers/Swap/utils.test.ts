@@ -153,7 +153,8 @@ describe('swap/utils/isValidSwap', () => {
     const invalidPair: Pair = {
       source: 'rune',
       target: 'btc',
-    }; const invalidPair2: Pair = {
+    };
+    const invalidPair2: Pair = {
       source: 'eth',
       target: 'btc',
     };
@@ -173,6 +174,62 @@ describe('swap/utils/isValidSwap', () => {
       target: 'tusdb',
     };
     expect(isValidSwap(validPair, pools)).toBeTruthy();
+  });
+});
+
+describe('swap/utils/validatePair', () => {
+  it('should filter source and target data', () => {
+    const assetInfo: AssetPair[] = [
+      { asset: 'BNB.BNB' },
+      { asset: 'BNB.BOLT-E42' },
+      { asset: 'BNB.FTM-585' },
+      { asset: 'BNB.LOK-3C0' },
+      { asset: 'BNB.BTC' },
+      { asset: 'BNB.ETH' },
+    ];
+
+    const poolInfo: AssetPair[] = [
+      { asset: 'BNB.BNB' },
+      { asset: 'BNB.BOLT-E42' },
+      { asset: 'BNB.LOK-3C0' },
+    ];
+    const pair = { source: 'rune', target: 'bnb' };
+
+    const result = validatePair(pair, assetInfo, poolInfo);
+    const expected = {
+      sourceData: [
+        { asset: 'BNB.BNB' },
+        { asset: 'BNB.BOLT-E42' },
+        { asset: 'BNB.LOK-3C0' },
+      ],
+      targetData: [{ asset: 'BNB.BOLT-E42' }, { asset: 'BNB.LOK-3C0' }],
+    };
+    expect(result).toEqual(expected);
+  });
+
+  it('shouldnt filter anything from empty pair', () => {
+    const assetInfo: AssetPair[] = [
+      { asset: 'BNB.BNB' },
+      { asset: 'BNB.BOLT-E42' },
+      { asset: 'BNB.FTM-585' },
+      { asset: 'BNB.LOK-3C0' },
+      { asset: 'BNB.BTC' },
+      { asset: 'BNB.ETH' },
+    ];
+
+    const poolInfo: AssetPair[] = [
+      { asset: 'BNB.BNB' },
+      { asset: 'BNB.BOLT-E42' },
+      { asset: 'BNB.LOK-3C0' },
+    ];
+    const pair = { source: '', target: '' };
+
+    const result = validatePair(pair, assetInfo, poolInfo);
+    const expected = {
+      sourceData: poolInfo,
+      targetData: poolInfo,
+    };
+    expect(result).toEqual(expected);
   });
 });
 

@@ -38,12 +38,14 @@ export const validatePair = (
   sourceInfo: AssetPair[],
   targetInfo: AssetPair[],
 ) => {
-  const { target = '', source = '' }: Pair = pair;
+  const { source = '', target = '' }: Pair = pair;
+  const poolAssets = targetInfo.map(data => getTickerFormat(data.asset));
+  const sourceData = sourceInfo.filter((data: AssetPair) => {
+    const ticker = getTickerFormat(data.asset);
+    return ticker !== source?.toLowerCase() && poolAssets.includes(ticker);
+  });
   const targetData = targetInfo.filter(
     (data: AssetPair) => getTickerFormat(data.asset) !== target?.toLowerCase(),
-  );
-  const sourceData = sourceInfo.filter(
-    (data: AssetPair) => getTickerFormat(data.asset) !== source?.toLowerCase(),
   );
   return {
     sourceData,
