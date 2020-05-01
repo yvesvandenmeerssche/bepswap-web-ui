@@ -1,12 +1,9 @@
 import React from 'react';
-import { Collapse as AntdCollapse } from 'antd';
 import { CollapseProps } from 'antd/lib/collapse';
 
-import { CollapseWrapper } from './collapse.style';
+import { CollapseWrapper, Panel } from './collapse.style';
 import Label from '../label';
 import { Faq } from './data';
-
-const { Panel } = AntdCollapse;
 
 export type ComponentProps = {
   data: Faq[];
