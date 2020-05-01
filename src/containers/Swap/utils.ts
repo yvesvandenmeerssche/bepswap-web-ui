@@ -10,13 +10,13 @@ import { validBNOrZero, bn, isValidBN } from '@thorchain/asgardex-util';
 import { getSwapMemo } from '../../helpers/memoHelper';
 import { getTickerFormat } from '../../helpers/stringHelper';
 import {
-  DoubleSwapCalcData,
   getZValue,
   getPx,
   getPz,
   getSlip,
   getFee,
   SingleSwapCalcData,
+  DoubleSwapCalcData,
 } from './calc';
 import { PriceDataIndex, PoolDataMap } from '../../redux/midgard/types';
 import { PoolDetail } from '../../types/generated/midgard';
@@ -49,6 +49,23 @@ export const validatePair = (
     sourceData,
     targetData,
   };
+};
+
+export const isValidSwap = (pair: Pair, pools: string[]) => {
+  const { target = '', source = '' }: Pair = pair;
+  const RUNE = 'rune';
+  const poolTickers = pools.map(poolSymbol => getTickerFormat(poolSymbol));
+  poolTickers.push(RUNE);
+
+  if (target === source || !target || !source) {
+    return false;
+  }
+
+  if (!poolTickers.includes(source) || !poolTickers.includes(target)) {
+    return false;
+  }
+
+  return true;
 };
 
 export const getSwapType = (from: string, to: string) =>
