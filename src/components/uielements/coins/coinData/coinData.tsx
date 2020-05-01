@@ -59,7 +59,7 @@ const CoinData: React.FC<Props> = (props: Props): JSX.Element => {
           type="normal"
           weight="600"
         >
-          {`${asset} ${target ? ':' : ''}${type !== 'normal' ? '/ ' : ''}`}
+          {`${asset} ${target ? ':' : ''}`}
         </Label>
         {assetValue && (
           <Label
