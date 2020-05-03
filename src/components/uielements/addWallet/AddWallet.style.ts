@@ -19,7 +19,7 @@ export const AddWalletWrapper = styled.div`
     svg {
       width: 60px;
       height: 60px;
-      fill: ${palette('gray', 0)};
+      fill: ${palette('gray', 1)};
     }
   }
 
