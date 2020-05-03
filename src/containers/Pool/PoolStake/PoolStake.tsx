@@ -1009,7 +1009,7 @@ class PoolStake extends React.Component<Props, State> {
     const { symbol, priceIndex, basePriceAsset, assets } = this.props;
     const {
       runeAmount,
-      tokenAmount: tAmount,
+      tokenAmount,
       runePercent,
       widthdrawPercentage,
       dragReset,
@@ -1106,7 +1106,7 @@ class PoolStake extends React.Component<Props, State> {
                   data-test="coin-card-stake-coin-target"
                   asset={target}
                   assetData={tokensData}
-                  amount={tAmount}
+                  amount={tokenAmount}
                   price={tokenPrice}
                   priceIndex={priceIndex}
                   unit={basePriceAsset}
