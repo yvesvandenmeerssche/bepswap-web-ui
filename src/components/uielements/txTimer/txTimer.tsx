@@ -1,5 +1,4 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { palette } from 'styled-theme';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import { ConfirmIcon, RefundIcon } from '../../icons/timerIcons';
 import { TxTimerWrapper } from './txTimer.style';
