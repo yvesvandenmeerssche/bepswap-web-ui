@@ -1,5 +1,5 @@
+import { LIGHT_THEME } from '../settings';
 import { FixmeType } from '../types/bepswap';
-import { LIGHT_THEME } from '../settings/themes';
 
 export const WALLET_ADDRESS = 'WALLET_ADDRESS';
 export const KEY_STORE = 'KEY_STORE';

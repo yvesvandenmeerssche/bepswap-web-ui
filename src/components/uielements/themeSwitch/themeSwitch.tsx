@@ -2,11 +2,11 @@
 import React, { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { SwitchProps } from 'antd/lib/switch';
+import { LIGHT_THEME, DARK_THEME } from '../../../settings';
+
 import { StyledSwitch, EmojiIcon } from './themeSwitch.style';
 import { RootState } from '../../../redux/store';
 import * as appActions from '../../../redux/app/actions';
-
-import { LIGHT_THEME, DARK_THEME } from '../../../settings/themes';
 
 type ComponentProps = {
   className?: string;

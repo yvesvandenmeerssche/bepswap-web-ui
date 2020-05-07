@@ -1,20 +1,20 @@
 import React from 'react';
 import { Provider as ReduxProvider, useSelector } from 'react-redux';
 import { ThemeProvider } from 'styled-components';
-
+import themes from '@thorchain/asgardex-theme';
 import { IntlProvider } from 'react-intl';
 import { store as reduxStore, history, RootState } from './redux/store';
 
 import PublicRoutes from './router';
+import { LIGHT_THEME } from './settings';
 import { AppHolder, fontConfig } from './settings/appStyle';
-import { lightTheme, darkTheme } from './settings';
-import { LIGHT_THEME } from './settings/themes';
 import WebFontLoader from './components/utility/webfontloader';
 
 const Main = () => {
   const themeType = useSelector((state: RootState) => state.App.themeType);
   const isLight = themeType === LIGHT_THEME;
-  const defaultTheme = isLight ? lightTheme : darkTheme;
+  const { light, dark } = themes;
+  const defaultTheme = isLight ? light : dark;
 
   return (
     <ThemeProvider theme={defaultTheme}>
