@@ -2,7 +2,7 @@
 import React, { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { SwitchProps } from 'antd/lib/switch';
-import { LIGHT_THEME, DARK_THEME } from '../../../settings';
+import { ThemeType } from '@thorchain/asgardex-theme';
 
 import { StyledSwitch, EmojiIcon } from './themeSwitch.style';
 import { RootState } from '../../../redux/store';
@@ -24,12 +24,12 @@ const AssetInfo: React.FC<Props> = (props: Props): JSX.Element => {
   );
   const toggleTheme = useCallback(
     (value: boolean) => {
-      setTheme(value ? LIGHT_THEME : DARK_THEME);
+      setTheme(value ? ThemeType.LIGHT : ThemeType.DARK);
     },
     [setTheme],
   );
 
-  const isLight = themeType === LIGHT_THEME;
+  const isLight = themeType === ThemeType.LIGHT;
 
   const sunIcon = (
     <EmojiIcon role="img" aria-label="sun">

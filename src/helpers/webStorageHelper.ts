@@ -1,4 +1,4 @@
-import { LIGHT_THEME } from '../settings';
+import { ThemeType } from '@thorchain/asgardex-theme';
 import { FixmeType } from '../types/bepswap';
 
 export const WALLET_ADDRESS = 'WALLET_ADDRESS';
@@ -51,5 +51,5 @@ export const saveTheme = (themeType: string) => {
 };
 
 export const getTheme = () => {
-  return localStorage.getItem(THEME_TYPE) || LIGHT_THEME;
+  return localStorage.getItem(THEME_TYPE) || ThemeType.LIGHT;
 };

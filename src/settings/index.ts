@@ -4,9 +4,6 @@ export const defaultTheme = themes.light;
 export const lightTheme = themes.light;
 export const darkTheme = themes.dark;
 
-export const LIGHT_THEME = 'LIGHT_THEME';
-export const DARK_THEME = 'DARK_THEME';
-
 export type CoinType =
   | 'blue'
   | 'check'
