@@ -955,7 +955,6 @@ class PoolStake extends React.Component<Props, State> {
       totalSwaps,
       totalStakers,
       roiAT,
-      poolROI12,
     } = poolStats;
 
     const attrs = [
@@ -997,7 +996,6 @@ class PoolStake extends React.Component<Props, State> {
             target={target}
             value={value}
             label={title}
-            trend={poolROI12}
             loading={loading}
           />
         </Col>

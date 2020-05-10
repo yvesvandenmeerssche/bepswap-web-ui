@@ -27,15 +27,4 @@ export const TokenInfoWrapper = styled.div`
   .label-wrapper {
     padding: 0;
   }
-
-  .tokenInfo-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    text-transform: uppercase;
-
-    .pool-label {
-      color: ${palette('text', 0)};
-    }
-  }
 `;
