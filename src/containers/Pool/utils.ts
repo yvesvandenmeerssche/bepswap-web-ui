@@ -245,7 +245,6 @@ export const getPoolData = (
       transaction,
       liqFee,
       roiAT,
-      poolROI12,
       poolPrice,
     },
   };

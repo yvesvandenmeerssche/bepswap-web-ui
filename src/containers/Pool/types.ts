@@ -25,7 +25,6 @@ export type PoolDataRaw = {
   transaction: BaseAmount;
   liqFee: BaseAmount;
   roiAT: number;
-  poolROI12: BigNumber;
   poolPrice: BigNumber;
 };
 

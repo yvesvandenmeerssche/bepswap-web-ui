@@ -33,10 +33,6 @@ const TokenInfo: React.FC<Props> = (props: Props): JSX.Element => {
       className={`tokenInfo-wrapper ${className}`}
       {...otherProps}
     >
-      <div className="tokenInfo-header">
-        <Label className="pool-label">{poolLabel}</Label>
-        <Trend amount={trend} />
-      </div>
       <Label size="big">{value}</Label>
       <Label color="light">{label}</Label>
     </TokenInfoWrapper>
