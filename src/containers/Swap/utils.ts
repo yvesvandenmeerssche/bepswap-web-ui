@@ -493,14 +493,18 @@ export const parseTransfer = (tx?: Pick<TransferEvent, 'data'>) => {
 export const getTxResult = ({
   pair,
   tx,
+  address,
 }: {
-  pair: Pair,
+  pair: Pair;
   tx: TransferEvent;
+  address: string;
 }) => {
-  const { txToken, txAmount } = parseTransfer(tx);
+  const { txToken, txAmount, txTo } = parseTransfer(tx);
   const { source, target } = pair;
-  const IS_REFUND = getTickerFormat(txToken) === source;
-  const IS_OUTBOUND = getTickerFormat(txToken) === target;
+
+  const IS_IN_TX = txTo === address;
+  const IS_REFUND = IS_IN_TX && getTickerFormat(txToken) === source;
+  const IS_OUTBOUND = IS_IN_TX && getTickerFormat(txToken) === target;
 
   if (IS_REFUND) {
     return {
