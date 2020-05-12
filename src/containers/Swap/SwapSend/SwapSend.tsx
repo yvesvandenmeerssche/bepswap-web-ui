@@ -208,7 +208,7 @@ class SwapSend extends React.Component<Props, State> {
     const pair: Pair = getPair(info);
 
     const prevWallet = prevProps?.user?.wallet;
-    const wallet = user?.wallet ?? '';
+    const wallet = user?.wallet;
     // subscribe if wallet has been added for first time
     if (!prevWallet && wallet) {
       subscribeBinanceTransfers({ address: wallet, net: getNet() });

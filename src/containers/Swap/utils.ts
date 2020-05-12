@@ -497,7 +497,7 @@ export const getTxResult = ({
 }: {
   pair: Pair;
   tx: TransferEvent;
-  address: string;
+  address?: string;
 }) => {
   const { txToken, txAmount, txTo } = parseTransfer(tx);
   const { source, target } = pair;
