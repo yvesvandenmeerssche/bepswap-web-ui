@@ -502,7 +502,7 @@ export const getTxResult = ({
   const { txToken, txAmount, txTo } = parseTransfer(tx);
   const { source, target } = pair;
 
-  const IS_IN_TX = txTo === address;
+  const IS_IN_TX = address && txTo === address;
   const IS_REFUND = IS_IN_TX && getTickerFormat(txToken) === source;
   const IS_OUTBOUND = IS_IN_TX && getTickerFormat(txToken) === target;
 
