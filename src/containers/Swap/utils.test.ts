@@ -321,12 +321,14 @@ describe('swap/utils/', () => {
           ],
         },
       };
+      const address = 'tbnb13egw96d95lldrhwu56dttrpn2fth6cs0axzaad';
       const result = getTxResult({
         pair: {
           source: 'rune',
           target: 'bnb',
         },
         tx,
+        address,
       });
       const expected = {
         type: 'refund',
@@ -358,12 +360,15 @@ describe('swap/utils/', () => {
           ],
         },
       };
+      const address = 'tbnb13egw96d95lldrhwu56dttrpn2fth6cs0axzaad';
+
       const result = getTxResult({
         pair: {
           source: 'rune',
           target: 'tusdb',
         },
         tx,
+        address,
       });
       const expected = {
         type: 'success',
