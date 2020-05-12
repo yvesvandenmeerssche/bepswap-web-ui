@@ -1,9 +1,7 @@
 import BigNumber from 'bignumber.js';
 import {
   TransferResult,
-  TransferEventData,
   TransferEvent,
-  getTxHashFromMemo,
   BinanceClient,
 } from '@thorchain/asgardex-binance';
 import { validBNOrZero, bn, isValidBN } from '@thorchain/asgardex-util';
