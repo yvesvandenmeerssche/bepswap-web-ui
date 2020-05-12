@@ -3,8 +3,6 @@ import { bn } from '@thorchain/asgardex-util';
 import {
   isValidSwap,
   parseTransfer,
-  isOutboundTx,
-  isRefundTx,
   getTxResult,
   validatePair,
   getSwapType,
@@ -234,42 +232,6 @@ describe('swap/utils/', () => {
     });
   });
 
-  describe('isOutboundTx', () => {
-    it('should find an outbound tx ', () => {
-      const transferEvent = {
-        data: {
-          M: 'OUTBOUND:anything',
-        },
-      };
-      const result = isOutboundTx(transferEvent);
-      expect(result).toBeTruthy();
-    });
-
-    it('should not find an outbound tx if now data available ', () => {
-      const transferEvent = {};
-      const result = isOutboundTx(transferEvent);
-      expect(result).toBeFalsy();
-    });
-  });
-
-  describe('isRefundTx', () => {
-    it('should find a refund tx ', () => {
-      const transferEvent = {
-        data: {
-          M: 'REFUND:anyhting',
-        },
-      };
-      const result = isRefundTx(transferEvent);
-      expect(result).toBeTruthy();
-    });
-
-    it('should not find refund tx if no data available', () => {
-      const transferEvent = {};
-      const result = isRefundTx(transferEvent);
-      expect(result).toBeFalsy();
-    });
-  });
-
   describe('parseTransfer', () => {
     it('should parse transfer event ', () => {
       const transferEvent: TransferEvent = {
@@ -344,8 +306,7 @@ describe('swap/utils/', () => {
           e: 'outboundTransferInfo',
           E: 62474260,
           H: 'DADB8F2F5CA0402C56B12E78AB48E6A57875B8CFA5E8652E5B72EF68CFBE3544',
-          M:
-            'REFUND:3B484D9FF242B2378800872B42B39940F22313A12149F0D7933A607189C41E67',
+          M: '',
           f: 'tbnb1nhftlnunw3h6c9wsamfyf8dzmmwm8c9xfjaxmp',
           t: [
             {
@@ -361,6 +322,8 @@ describe('swap/utils/', () => {
         },
       };
       const result = getTxResult({
+        source: 'rune',
+        target: 'bnb',
         tx,
         hash:
           '3B484D9FF242B2378800872B42B39940F22313A12149F0D7933A607189C41E67',
@@ -380,8 +343,7 @@ describe('swap/utils/', () => {
           e: 'outboundTransferInfo',
           E: 62475857,
           H: '92310CD29ED38769BA3996CABAB2FE4699BC2430913B521E2E7FF5AC48A9AB0D',
-          M:
-            'OUTBOUND:5782DB87AAD0CDBB01D6429D1CF9F9E0C49AD347FA54A10D6F6D26250C99F280',
+          M: '',
           f: 'tbnb1nhftlnunw3h6c9wsamfyf8dzmmwm8c9xfjaxmp',
           t: [
             {
@@ -397,6 +359,8 @@ describe('swap/utils/', () => {
         },
       };
       const result = getTxResult({
+        source: 'rune',
+        target: 'tusdb',
         tx,
         hash:
           '5782DB87AAD0CDBB01D6429D1CF9F9E0C49AD347FA54A10D6F6D26250C99F280',

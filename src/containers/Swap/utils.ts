@@ -492,22 +492,22 @@ export const parseTransfer = (tx?: Pick<TransferEvent, 'data'>) => {
   };
 };
 
-export const isOutboundTx = (tx?: { data?: Pick<TransferEventData, 'M'> }) =>
-  tx?.data?.M?.toUpperCase().includes('OUTBOUND') ?? false;
-
-export const isRefundTx = (tx?: { data?: Pick<TransferEventData, 'M'> }) =>
-  tx?.data?.M?.toUpperCase().includes('REFUND') ?? false;
-
 export const getTxResult = ({
+  source,
+  target,
   tx,
   hash,
 }: {
+  source: string;
+  target: string;
   tx: TransferEvent;
   hash: string;
 }) => {
   const { txToken, txAmount } = parseTransfer(tx);
+  const IS_REFUND = getTickerFormat(txToken) === source;
+  const IS_OUTBOUND = getTickerFormat(txToken) === target;
 
-  if (isRefundTx(tx) && getTxHashFromMemo(tx) === hash) {
+  if (IS_REFUND) {
     return {
       type: 'refund',
       amount: txAmount,
@@ -515,7 +515,7 @@ export const getTxResult = ({
     };
   }
 
-  if (isOutboundTx(tx) && getTxHashFromMemo(tx) === hash) {
+  if (IS_OUTBOUND) {
     return {
       type: 'success',
       amount: txAmount,

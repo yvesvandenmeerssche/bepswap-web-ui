@@ -26,7 +26,8 @@ export const MIDGARD_RETRY_DELAY = 1000; // ms
 export function* getApiBasePath(net: NET, noCache = false) {
   // dev
   if (net === NET.DEV) {
-    const basePath: string = api.getMidgardBasePathByIP(api.MIDGARD_DEV_API_DEV_IP);
+    // const basePath: string = api.getMidgardBasePathByIP(api.MIDGARD_DEV_API_DEV_IP);
+    const basePath = `https://${api.MIDGARD_DEV_API_DEV_IP}`;
     yield put(actions.getApiBasePathSuccess(basePath));
     return basePath;
   }
