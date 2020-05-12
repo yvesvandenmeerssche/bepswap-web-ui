@@ -322,11 +322,11 @@ describe('swap/utils/', () => {
         },
       };
       const result = getTxResult({
-        source: 'rune',
-        target: 'bnb',
+        pair: {
+          source: 'rune',
+          target: 'bnb',
+        },
         tx,
-        hash:
-          '3B484D9FF242B2378800872B42B39940F22313A12149F0D7933A607189C41E67',
       });
       const expected = {
         type: 'refund',
@@ -359,11 +359,11 @@ describe('swap/utils/', () => {
         },
       };
       const result = getTxResult({
-        source: 'rune',
-        target: 'tusdb',
+        pair: {
+          source: 'rune',
+          target: 'tusdb',
+        },
         tx,
-        hash:
-          '5782DB87AAD0CDBB01D6429D1CF9F9E0C49AD347FA54A10D6F6D26250C99F280',
       });
       const expected = {
         type: 'success',

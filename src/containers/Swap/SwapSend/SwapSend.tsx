@@ -205,8 +205,7 @@ class SwapSend extends React.Component<Props, State> {
     } = this.props;
 
     const { txResult } = this.state;
-    const swapPair: Pair = getPair(info);
-    const { source = '', target = '' } = swapPair;
+    const pair: Pair = getPair(info);
 
     const prevWallet = prevProps?.user?.wallet;
     const wallet = user?.wallet;
@@ -232,10 +231,8 @@ class SwapSend extends React.Component<Props, State> {
       !this.isCompleted()
     ) {
       const txResult = getTxResult({
-        source,
-        target,
+        pair,
         tx: currentWsTransferEvent,
-        hash,
       });
 
       if (txResult) {
