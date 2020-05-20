@@ -1,4 +1,4 @@
-import { TransferEvent } from '@thorchain/asgardex-binance';
+import { WS as BinanceWS } from '@thorchain/asgardex-binance';
 import { bn } from '@thorchain/asgardex-util';
 import { tokenAmount, baseAmount } from '@thorchain/asgardex-token';
 import {
@@ -104,7 +104,7 @@ const poolData: PoolDataMap = {
 describe('pool/utils/', () => {
   describe('witdrawResult', () => {
     it('should validate a withdraw transfer', () => {
-      const tx: TransferEvent = {
+      const tx: BinanceWS.TransferEvent = {
         stream: 'transfers',
         data: {
           e: 'outboundTransferInfo',

@@ -4,7 +4,7 @@ import {
   Address,
   TransferResult,
   MultiTransfer,
-  TransferEvent,
+  WS,
 } from '@thorchain/asgardex-binance';
 import {
   bn,
@@ -521,7 +521,7 @@ export const confirmWithdraw = (
   });
 };
 
-export const parseTransfer = (tx?: Pick<TransferEvent, 'data'>) => {
+export const parseTransfer = (tx?: Pick<WS.TransferEvent, 'data'>) => {
   const txHash = tx?.data?.H;
   const txMemo = tx?.data?.M;
   const txFrom = tx?.data?.f;
@@ -542,7 +542,7 @@ export const parseTransfer = (tx?: Pick<TransferEvent, 'data'>) => {
 };
 
 export type WithdrawResultParams = {
-  tx: TransferEvent;
+  tx: WS.TransferEvent;
   symbol: string;
   address: string;
 };

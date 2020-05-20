@@ -5,12 +5,12 @@ import {
   TxPage,
   OrderList,
   Market,
-  TransferEvent,
+  WS,
 } from '@thorchain/asgardex-binance';
 import { RemoteData } from '@devexperts/remote-data-ts';
 import { Maybe } from '../../types/bepswap';
 
-export type TransferEventRD = RemoteData<Error, TransferEvent>;
+export type TransferEventRD = RemoteData<Error, WS.TransferEvent>;
 
 export type State = {
   tokenList: Token[];

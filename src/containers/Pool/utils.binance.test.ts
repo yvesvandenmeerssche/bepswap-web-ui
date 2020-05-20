@@ -24,6 +24,8 @@ const mockClient = jest.fn(() => Promise.resolve({
   isValidAddress: jest.fn(() => Promise.reject(new Error('Not needed for testing...'))),
   getMarkets: jest.fn(() => Promise.reject(new Error('Not needed for testing...'))),
   removePrivateKey: jest.fn(() => Promise.reject(new Error('Not needed for testing...'))),
+  setPhrase: jest.fn(_ => {}),
+  getAddress: jest.fn(() => ''),
 }));
 
 describe('pool/utils/', () => {

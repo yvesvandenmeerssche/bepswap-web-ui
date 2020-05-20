@@ -16,7 +16,7 @@ import {
   Account,
   TxPage,
   OrderList,
-  TransferEvent,
+  WS,
 } from '@thorchain/asgardex-binance';
 import { eventChannel, END } from 'redux-saga';
 import * as actions from './actions';
@@ -270,7 +270,7 @@ function* trySubscribeBinanceTransfers(
           try {
             const result = JSON.parse(
               (channelEvent as MessageEvent).data,
-            ) as TransferEvent;
+            ) as WS.TransferEvent;
             yield put(actions.binanceTransfersMessageReceived(result));
           } catch (error) {
             yield put(actions.subscribeBinanceTransfersFailed(error));

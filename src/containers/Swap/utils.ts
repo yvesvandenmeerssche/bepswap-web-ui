@@ -1,8 +1,8 @@
 import BigNumber from 'bignumber.js';
 import {
   TransferResult,
-  TransferEvent,
   BinanceClient,
+  WS,
 } from '@thorchain/asgardex-binance';
 import { validBNOrZero, bn, isValidBN } from '@thorchain/asgardex-util';
 import { TokenAmount,
@@ -469,7 +469,7 @@ export const confirmSwap = (
   });
 };
 
-export const parseTransfer = (tx?: Pick<TransferEvent, 'data'>) => {
+export const parseTransfer = (tx?: Pick<WS.TransferEvent, 'data'>) => {
   const txHash = tx?.data?.H;
   const txMemo = tx?.data?.M;
   const txFrom = tx?.data?.f;
@@ -495,7 +495,7 @@ export const getTxResult = ({
   address,
 }: {
   pair: Pair;
-  tx: TransferEvent;
+  tx: WS.TransferEvent;
   address?: string;
 }) => {
   const { txToken, txAmount, txTo } = parseTransfer(tx);
