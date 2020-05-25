@@ -19,6 +19,7 @@ import {
   TransferEvent,
 } from '@thorchain/asgardex-binance';
 import { eventChannel, END } from 'redux-saga';
+import { failure, success } from '@devexperts/remote-data-ts';
 import * as actions from './actions';
 import {
   getBinanceTestnetURL,
@@ -31,6 +32,8 @@ import { getTokenName } from '../../helpers/assetHelper';
 import { Maybe, Nothing, FixmeType } from '../../types/bepswap';
 import { NET } from '../../env';
 import { envOrDefault } from '../../helpers/envHelper';
+import { Fees } from './types';
+import { getTransferFeeds } from '../../helpers/binanceHelper';
 
 /* /////////////////////////////////////////////////////////////
 // api
@@ -170,6 +173,31 @@ export function* getBinanceOpenOrders() {
       yield put(actions.getBinanceOpenOrdersSuccess(data));
     } catch (error) {
       yield put(actions.getBinanceOpenOrdersFailed(error));
+    }
+  });
+}
+
+export function* getBinanceFees() {
+  yield takeEvery('GET_BINANCE_FEES', function*({ net }: ReturnType<typeof actions.getBinanceFees>) {
+    const endpoint = 'fees';
+    const url = net === NET.MAIN ? getBinanceMainnetURL(endpoint) : getBinanceTestnetURL(endpoint);
+    const params = {
+      method: 'get' as Method,
+      url,
+      headers: getHeaders(),
+    };
+
+    try {
+      const { data }: AxiosResponse<Fees> = yield call(axiosRequest, params);
+
+      // parse fees
+      const fees = getTransferFeeds(data);
+
+      const result = fees ? success(fees) : failure(new Error(`No feeds for transfers defined in ${data}`));
+
+      yield put(actions.getBinanceTransferFeesResult(result));
+    } catch (error) {
+      yield put(actions.getBinanceTransferFeesResult(failure(error)));
     }
   });
 }
