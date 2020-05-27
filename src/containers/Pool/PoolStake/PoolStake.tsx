@@ -32,6 +32,7 @@ import { TokenAmount, BaseAmount, tokenAmount,
   baseAmount,
   baseToToken,
 } from '@thorchain/asgardex-token';
+import Paragraph from 'antd/lib/typography/Paragraph';
 import { getAppContainer } from '../../../helpers/elementHelper';
 
 import Label from '../../../components/uielements/label';
@@ -85,7 +86,7 @@ import {
 import { StakersAssetData } from '../../../types/generated/midgard';
 import { getAssetFromString } from '../../../redux/midgard/utils';
 import { BINANCE_NET, getNet } from '../../../env';
-import { TransferEventRD } from '../../../redux/binance/types';
+import { TransferEventRD, TransferFeesRD, TransferFees } from '../../../redux/binance/types';
 
 const { TabPane } = Tabs;
 
@@ -121,6 +122,8 @@ type ConnectedProps = {
   setTxHash: typeof appActions.setTxHash;
   resetTxStatus: typeof appActions.resetTxStatus;
   refreshStakes: typeof walletActions.refreshStakes;
+  getBinanceFees: typeof binanceActions.getBinanceFees;
+  transferFees: TransferFeesRD;
   subscribeBinanceTransfers: typeof binanceActions.subscribeBinanceTransfers;
   unSubscribeBinanceTransfers: typeof binanceActions.unSubscribeBinanceTransfers;
 };
@@ -196,16 +199,20 @@ class PoolStake extends React.Component<Props, State> {
     const {
       getPoolAddress,
       getPools,
+      getBinanceFees,
+      transferFees,
       user,
       subscribeBinanceTransfers,
     } = this.props;
 
     getPoolAddress();
     getPools();
+    const net = getNet();
+    if (RD.isInitial(transferFees)) { getBinanceFees(net); }
     this.getStakerInfo();
     const wallet = user?.wallet;
     if (wallet) {
-      subscribeBinanceTransfers({ address: wallet, net: getNet() });
+      subscribeBinanceTransfers({ address: wallet, net });
     }
   }
 
@@ -1122,6 +1129,7 @@ class PoolStake extends React.Component<Props, State> {
                 />
               </div>
             </div>
+            {this.renderFee()}
             <div className="stake-share-info-wrapper">
               <div className="share-status-wrapper">
                 <Drag
@@ -1395,6 +1403,21 @@ class PoolStake extends React.Component<Props, State> {
     );
   };
 
+  renderFee = () => {
+    const { transferFees } = this.props;
+    const txtLoading = 'Fee: ...';
+    return (
+      <Paragraph>
+        {RD.fold(
+          () => txtLoading,
+          () => txtLoading,
+          (_: Error) => 'Error: Fee could not be loaded',
+          (fees: TransferFees) => `Fee: ${baseToToken(fees.single).amount()} BNB`,
+        )(transferFees)}
+      </Paragraph>
+    );
+  };
+
   render() {
     const {
       priceIndex,
@@ -1441,7 +1464,7 @@ class PoolStake extends React.Component<Props, State> {
 
     const txSent = txStatus.hash !== undefined;
 
-    // TODO(veado): Completed depending on `txStatus.type`, too (no txResult for `stake` atm)
+    // TODO(veado): Completed depends on `txStatus.type`, too (no txResult for `stake` atm)
     const completed =
       txStatus.type === TxTypes.STAKE
         ? txSent && !txStatus.status
@@ -1551,6 +1574,7 @@ export default compose(
       stakerPoolData: state.Midgard.stakerPoolData,
       stakerPoolDataLoading: state.Midgard.stakerPoolDataLoading,
       stakerPoolDataError: state.Midgard.stakerPoolDataError,
+      transferFees: state.Binance.transferFees,
       wsTransferEvent: state.Binance.wsTransferEvent,
     }),
     {
@@ -1564,6 +1588,7 @@ export default compose(
       setTxHash: appActions.setTxHash,
       resetTxStatus: appActions.resetTxStatus,
       refreshStakes: walletActions.refreshStakes,
+      getBinanceFees: binanceActions.getBinanceFees,
       subscribeBinanceTransfers: binanceActions.subscribeBinanceTransfers,
       unSubscribeBinanceTransfers: binanceActions.unSubscribeBinanceTransfers,
     },

@@ -8,6 +8,7 @@ import {
   TransferEvent,
 } from '@thorchain/asgardex-binance';
 import { RemoteData } from '@devexperts/remote-data-ts';
+import { BaseAmount } from '@thorchain/asgardex-token';
 import { Maybe } from '../../types/bepswap';
 
 export type TransferEventRD = RemoteData<Error, TransferEvent>;
@@ -99,14 +100,14 @@ export type TransferFees = {
   /**
    * Fee of a transfer to a single address
    */
-  single: number;
+  single: BaseAmount;
   /**
    * Multi send fee to muliple addresses
    * If the count of output address is bigger than the threshold, currently it's 2,
    * then the total transaction fee is 0.0003 BNB per token per address.
    * https://docs.binance.org/trading-spec.html#multi-send-fees
    */
-  multi: number; // multi
+  multi: BaseAmount; // multi
 };
 
 export type TransferFeesRD = RemoteData<Error, TransferFees>;

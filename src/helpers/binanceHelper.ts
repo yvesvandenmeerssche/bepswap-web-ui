@@ -1,3 +1,4 @@
+import { baseAmount } from '@thorchain/asgardex-token';
 import { Maybe, Nothing } from '../types/bepswap';
 import {
   Fees,
@@ -36,7 +37,7 @@ export const getTransferFeeds = (fees: Fees): Maybe<TransferFees> =>
       const single = dataItem.fixed_fee_params.fee;
       const multi = dataItem.multi_transfer_fee;
       if (single && multi) {
-        return { single, multi } as TransferFees;
+        return { single: baseAmount(single), multi: baseAmount(multi) } as TransferFees;
       }
       return Nothing;
     }

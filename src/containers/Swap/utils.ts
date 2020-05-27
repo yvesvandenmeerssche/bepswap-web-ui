@@ -5,7 +5,8 @@ import {
   BinanceClient,
 } from '@thorchain/asgardex-binance';
 import { validBNOrZero, bn, isValidBN } from '@thorchain/asgardex-util';
-import { TokenAmount,
+import {
+  TokenAmount,
   tokenAmount,
   baseToToken,
   baseAmount,
@@ -29,6 +30,7 @@ import { Nothing, Maybe, SwapType, Pair, AssetPair } from '../../types/bepswap';
 import { CalcResult } from './SwapSend/types';
 import { getAssetFromString } from '../../redux/midgard/utils';
 import { SwapCardType } from './SwapView/types';
+import { AssetData } from '../../redux/wallet/types';
 
 export const validatePair = (
   pair: Pair,
@@ -192,7 +194,7 @@ export const getCalcResult = (
       }
 
       if (token.toLowerCase() === to.toLowerCase()) {
-      // formula: runeDepth / BASE_NUMBER
+        // formula: runeDepth / BASE_NUMBER
         R = baseToToken(runeDepth);
         // formula: assetDepth / BASE_NUMBER
         Z = baseToToken(assetDepth);
@@ -522,4 +524,20 @@ export const getTxResult = ({
   }
 
   return null;
+};
+
+export const getSourceFromAssetData = (
+  assetData: AssetData[],
+  source: Maybe<string>,
+): Maybe<AssetData> => {
+  const data = assetData.find(data => {
+    const { asset } = data;
+    const tokenName = getTickerFormat(asset);
+    if (tokenName && source && tokenName === source.toLowerCase()) {
+      return true;
+    }
+    return false;
+  });
+
+  return data || Nothing;
 };

@@ -22,7 +22,12 @@ import { crypto } from '@binance-chain/javascript-sdk';
 import BigNumber from 'bignumber.js';
 import * as RD from '@devexperts/remote-data-ts';
 
-import { TokenAmount, tokenAmount } from '@thorchain/asgardex-token';
+import {
+  TokenAmount,
+  tokenAmount,
+  baseToToken,
+} from '@thorchain/asgardex-token';
+import Paragraph from 'antd/lib/typography/Paragraph';
 import Button from '../../../components/uielements/button';
 import Drag from '../../../components/uielements/drag';
 import TokenCard from '../../../components/uielements/tokens/tokenCard';
@@ -57,6 +62,7 @@ import {
   getTxResult,
   validatePair,
   isValidSwap,
+  getSourceFromAssetData,
 } from '../utils';
 import { getAppContainer } from '../../../helpers/elementHelper';
 
@@ -89,7 +95,11 @@ import {
 import { RootState } from '../../../redux/store';
 import { getAssetFromString } from '../../../redux/midgard/utils';
 import { BINANCE_NET, getNet } from '../../../env';
-import { TransferEventRD } from '../../../redux/binance/types';
+import {
+  TransferEventRD,
+  TransferFeesRD,
+  TransferFees,
+} from '../../../redux/binance/types';
 
 type ComponentProps = {
   info: string;
@@ -116,6 +126,8 @@ type ConnectedProps = {
   getPools: typeof midgardActions.getPools;
   getPoolAddress: typeof midgardActions.getPoolAddress;
   refreshBalance: typeof walletActions.refreshBalance;
+  getBinanceFees: typeof binanceActions.getBinanceFees;
+  transferFees: TransferFeesRD;
   subscribeBinanceTransfers: typeof binanceActions.subscribeBinanceTransfers;
   unSubscribeBinanceTransfers: typeof binanceActions.unSubscribeBinanceTransfers;
 };
@@ -147,11 +159,6 @@ type TxResult = {
 };
 
 class SwapSend extends React.Component<Props, State> {
-  /**
-   * Calculated result
-   */
-  calcResult: Maybe<CalcResult> = Nothing;
-
   static readonly defaultProps: Partial<Props> = {
     info: '',
   };
@@ -182,14 +189,17 @@ class SwapSend extends React.Component<Props, State> {
       getPools,
       getPoolAddress,
       subscribeBinanceTransfers,
+      transferFees,
+      getBinanceFees,
       user,
     } = this.props;
-
+    const net = getNet();
     getPoolAddress();
     getPools();
+    if (RD.isInitial(transferFees)) { getBinanceFees(net); }
     const wallet = user?.wallet;
     if (wallet) {
-      subscribeBinanceTransfers({ address: wallet, net: getNet() });
+      subscribeBinanceTransfers({ address: wallet, net });
     }
   }
 
@@ -261,6 +271,30 @@ class SwapSend extends React.Component<Props, State> {
     return !txStatus.status && (txResult !== Nothing || timerFinished);
   };
 
+  calcResult = (): Maybe<CalcResult> => {
+    const { poolData, poolAddress, info, priceIndex } = this.props;
+
+    const { xValue } = this.state;
+
+    const swapPair: Pair = getPair(info);
+
+    if (!swapPair.source || !swapPair.target) {
+      return Nothing;
+    }
+
+    const { source, target } = swapPair;
+    const runePrice = validBNOrZero(priceIndex?.RUNE);
+
+    return getCalcResult(
+      source,
+      target,
+      poolData,
+      poolAddress,
+      xValue,
+      runePrice,
+    );
+  };
+
   handleChangePassword = (password: string) => {
     this.setState({
       password,
@@ -281,14 +315,7 @@ class SwapSend extends React.Component<Props, State> {
     const { assetData } = this.props;
     const { source }: Pair = getPair(info);
 
-    const sourceAsset = assetData.find(data => {
-      const { asset } = data;
-      const tokenName = getTickerFormat(asset);
-      if (tokenName === source) {
-        return true;
-      }
-      return false;
-    });
+    const sourceAsset = getSourceFromAssetData(assetData, source);
 
     const totalAmount = sourceAsset?.assetValue.amount() ?? bn(0);
     // formula (totalAmount * percent) / 100
@@ -297,16 +324,14 @@ class SwapSend extends React.Component<Props, State> {
     if (totalAmount.isLessThan(newValue)) {
       this.setState({
         xValue: tokenAmount(totalAmount),
+        percent,
       });
     } else {
       this.setState({
         xValue: tokenAmount(newValue),
+        percent,
       });
     }
-
-    this.setState({
-      percent,
-    });
   };
 
   handleChangeValue = (value: BigNumber) => {
@@ -325,14 +350,7 @@ class SwapSend extends React.Component<Props, State> {
     const { assetData } = this.props;
     const { source }: Pair = getPair(info);
 
-    const sourceAsset = assetData.find(data => {
-      const { asset } = data;
-      const tokenName = getTickerFormat(asset);
-      if (tokenName === source) {
-        return true;
-      }
-      return false;
-    });
+    const sourceAsset = getSourceFromAssetData(assetData, source);
 
     const totalAmount = sourceAsset?.assetValue.amount() ?? bn(0);
 
@@ -463,7 +481,8 @@ class SwapSend extends React.Component<Props, State> {
       return;
     }
 
-    if (this.calcResult && this.validateSlip(this.calcResult.slip)) {
+    const calcResult = this.calcResult();
+    if (calcResult && this.validateSlip(calcResult.slip)) {
       if (keystore) {
         this.handleOpenPrivateModal();
       } else if (wallet) {
@@ -621,8 +640,8 @@ class SwapSend extends React.Component<Props, State> {
     const { user, info, setTxHash, resetTxStatus } = this.props;
     const { xValue, address, slipProtection } = this.state;
     const { source = '', target = '' }: Pair = getPair(info);
-
-    if (user && source && target && this.calcResult) {
+    const calcResult = this.calcResult();
+    if (user && source && target && calcResult) {
       this.setState({
         txResult: null,
       });
@@ -635,7 +654,7 @@ class SwapSend extends React.Component<Props, State> {
           user.wallet,
           source,
           target,
-          this.calcResult,
+          calcResult,
           xValue,
           slipProtection,
           address,
@@ -663,14 +682,7 @@ class SwapSend extends React.Component<Props, State> {
   handleSelectSourceAmount = (source: string, amount: number) => {
     const { assetData } = this.props;
 
-    const sourceAsset = assetData.find(data => {
-      const { asset } = data;
-      const tokenName = getTickerFormat(asset);
-      if (tokenName === source) {
-        return true;
-      }
-      return false;
-    });
+    const sourceAsset = getSourceFromAssetData(assetData, source);
 
     if (!sourceAsset) {
       return;
@@ -785,7 +797,12 @@ class SwapSend extends React.Component<Props, State> {
                     FINISH
                   </Button>
                 )}
-                <a className="view-tx" href={txURL} target="_blank" rel="noopener noreferrer">
+                <a
+                  className="view-tx"
+                  href={txURL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   VIEW TRANSACTION
                 </a>
               </div>
@@ -823,14 +840,27 @@ class SwapSend extends React.Component<Props, State> {
     return <PopoverContent>Protect my price (within 3%)</PopoverContent>;
   };
 
+  renderFee = () => {
+    const { transferFees } = this.props;
+    const txtLoading = 'Fee: ...';
+    return (
+      <Paragraph>
+        {RD.fold(
+          () => txtLoading,
+          () => txtLoading,
+          (_: Error) => 'Error: Fee could not be loaded',
+          (fees: TransferFees) => `Fee: ${baseToToken(fees.single).amount()} BNB`,
+        )(transferFees)}
+      </Paragraph>
+    );
+  };
+
   render() {
     const {
       info,
       txStatus,
       assets: tokenInfo,
-      poolData,
       pools,
-      poolAddress,
       assetData,
       priceIndex,
       basePriceAsset,
@@ -896,22 +926,13 @@ class SwapSend extends React.Component<Props, State> {
 
     const openSwapModal = txStatus.type === 'swap' ? txStatus.modal : false;
 
-    // calculation
-    this.calcResult = getCalcResult(
-      swapSource,
-      swapTarget,
-      poolData,
-      poolAddress,
-      xValue,
-      runePrice,
-    );
-
-    if (!this.calcResult) {
+    const calcResult = this.calcResult();
+    if (!calcResult) {
       // ^ It should never be happen in theory, but who knows...
       // Todo(veado): Should we display an error message in this case?
       return <></>;
     } else {
-      const { slip, outputAmount, outputPrice } = this.calcResult;
+      const { slip, outputAmount, outputPrice } = calcResult;
       const sourcePriceBN = bn(priceIndex[swapSource.toUpperCase()]);
       const sourcePrice = isValidBN(sourcePriceBN)
         ? sourcePriceBN
@@ -924,7 +945,6 @@ class SwapSend extends React.Component<Props, State> {
       const ratio = !targetPrice.isEqualTo(bn(0))
         ? sourcePrice.div(targetPrice)
         : bn(0);
-
       const ratioLabel = `1 ${swapSource.toUpperCase()} = ${ratio.toFixed(
         2,
       )} ${swapTarget.toUpperCase()}`;
@@ -1002,6 +1022,9 @@ class SwapSend extends React.Component<Props, State> {
                   withSearch
                   data-test="coincard-target"
                 />
+
+                {this.renderFee()}
+
                 <div className="swaptool-container">
                   <CardFormHolder>
                     <CardForm>
@@ -1073,11 +1096,7 @@ class SwapSend extends React.Component<Props, State> {
             footer={null}
             onCancel={this.handleCloseModal}
           >
-            {this.renderSwapModalContent(
-              swapSource,
-              swapTarget,
-              this.calcResult,
-            )}
+            {this.renderSwapModalContent(swapSource, swapTarget, calcResult)}
           </SwapModal>
           <PrivateModal
             visible={openPrivateModal}
@@ -1115,6 +1134,7 @@ export default compose(
       pools: state.Midgard.pools,
       priceIndex: state.Midgard.priceIndex,
       basePriceAsset: state.Midgard.basePriceAsset,
+      transferFees: state.Binance.transferFees,
       wsTransferEvent: state.Binance.wsTransferEvent,
     }),
     {
@@ -1127,6 +1147,7 @@ export default compose(
       resetTxStatus: appActions.resetTxStatus,
       setTxHash: appActions.setTxHash,
       refreshBalance: walletActions.refreshBalance,
+      getBinanceFees: binanceActions.getBinanceFees,
       subscribeBinanceTransfers: binanceActions.subscribeBinanceTransfers,
       unSubscribeBinanceTransfers: binanceActions.unSubscribeBinanceTransfers,
     },

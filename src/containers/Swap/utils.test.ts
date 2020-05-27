@@ -11,6 +11,7 @@ import {
   getCalcResult,
   validateSwap,
   SwapErrorMsg,
+  getSourceFromAssetData,
 } from './utils';
 import {
   PoolDetail,
@@ -19,6 +20,7 @@ import {
 import { Nothing, Pair, AssetPair, SwapType } from '../../types/bepswap';
 import { PoolDataMap } from '../../redux/midgard/types';
 import { CalcResult } from './SwapSend/types';
+import { AssetData } from '../../redux/wallet/types';
 
 const bnbPoolInfo: PoolDetail = {
   asset: 'BNB.BNB',
@@ -659,6 +661,36 @@ describe('swap/utils/', () => {
       expect(
         validateSwap('address', SwapType.DOUBLE_SWAP, data, tokenAmount(10)),
       ).toBeNothing();
+    });
+  });
+
+  describe('getSourceFromAssetData', () => {
+    const tusdb: AssetData = {
+      asset: 'BNB.TUSDB-000',
+      assetValue: tokenAmount(1),
+      price: bn(1),
+    };
+    const bnb: AssetData = {
+      asset: 'BNB.BNB',
+      assetValue: tokenAmount(1),
+      price: bn(1),
+    };
+    const lok: AssetData = {
+      asset: 'BNB.LOK-3C0',
+      assetValue: tokenAmount(1),
+      price: bn(1),
+    };
+    it('returns source', () => {
+      expect(getSourceFromAssetData([tusdb, bnb, lok], 'LOK')).toEqual(lok);
+    });
+    it('returns Nothing if source is empty', () => {
+      expect(getSourceFromAssetData([tusdb, bnb], '')).toBeNothing();
+    });
+    it('returns Nothing if source is not avaiable in list of assets', () => {
+      expect(getSourceFromAssetData([tusdb, bnb], 'LOK-3C0')).toBeNothing();
+    });
+    it('returns Nothing for an empty list of assets', () => {
+      expect(getSourceFromAssetData([], 'LOK-3C0')).toBeNothing();
     });
   });
 });

@@ -99,7 +99,7 @@ const reducer: Reducer<State, BinanceActionTypes> = (
         openOrders: action.payload,
         error: Nothing,
       };
-    case 'GET_BINANCE_TRANSFER_FEES':
+    case 'GET_BINANCE_FEES':
       return {
         ...state,
         transferFees: pending,

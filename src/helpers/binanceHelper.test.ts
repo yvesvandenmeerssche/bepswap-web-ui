@@ -1,7 +1,13 @@
-import { getTransferFeeds, isFee, isTransferFee, isDexFees } from './binanceHelper';
+import { tokenAmount } from '@thorchain/asgardex-token';
+import {
+  getTransferFeeds,
+  isFee,
+  isTransferFee,
+  isDexFees,
+} from './binanceHelper';
 import { Fees, TransferFee, Fee, DexFees } from '../redux/binance/types';
 
-describe.only('helpers/binanceHelpers', () => {
+describe('helpers/binanceHelpers', () => {
   const fee = {
     msg_type: 'submit_proposal',
     fee: 500000000,
@@ -64,10 +70,8 @@ describe.only('helpers/binanceHelpers', () => {
     it('returns fees for transfer', () => {
       const fees: Fees = [fee, transferFee, dexFees, fee2];
       const result = getTransferFeeds(fees);
-      expect(result).toEqual({
-        single: 37500,
-        multi: 30000,
-      });
+      expect(result?.single.amount()).toEqual(tokenAmount(37500).amount());
+      expect(result?.multi.amount()).toEqual(tokenAmount(30000).amount());
     });
     it('returns Nothing for an empty list of fees', () => {
       const result = getTransferFeeds([]);
