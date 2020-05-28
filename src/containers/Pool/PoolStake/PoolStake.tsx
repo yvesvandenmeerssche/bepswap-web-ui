@@ -31,8 +31,10 @@ import { TokenAmount, BaseAmount, tokenAmount,
   formatBaseAsTokenAmount,
   baseAmount,
   baseToToken,
+  tokenToBase,
 } from '@thorchain/asgardex-token';
 import Paragraph from 'antd/lib/typography/Paragraph';
+import Text from 'antd/lib/typography/Text';
 import { getAppContainer } from '../../../helpers/elementHelper';
 
 import Label from '../../../components/uielements/label';
@@ -87,6 +89,7 @@ import { StakersAssetData } from '../../../types/generated/midgard';
 import { getAssetFromString } from '../../../redux/midgard/utils';
 import { BINANCE_NET, getNet } from '../../../env';
 import { TransferEventRD, TransferFeesRD, TransferFees } from '../../../redux/binance/types';
+import { getAssetFromAssetData } from '../../Swap/utils';
 
 const { TabPane } = Tabs;
 
@@ -322,6 +325,7 @@ class PoolStake extends React.Component<Props, State> {
 
     const source = getTickerFormat(tokenName);
 
+    console.log('xxx source:', source);
     const sourceAsset = assetData.find(data => {
       const { asset } = data;
       const tokenName = getTickerFormat(asset);
@@ -1011,6 +1015,74 @@ class PoolStake extends React.Component<Props, State> {
     });
   };
 
+
+  walletBnbAmount = (assetData: AssetData[]): BaseAmount => {
+    const bnbAsset = getAssetFromAssetData(assetData, 'bnb');
+    const amount = bnbAsset?.assetValue ?? tokenAmount(0);
+    return tokenToBase(amount);
+  };
+
+  /**
+   * BNB fee in BaseAmount
+   */
+  bnbFeeAmount = (): Maybe<BaseAmount> => {
+    const { transferFees } = this.props;
+    const fees = RD.toNullable(transferFees);
+    return fees?.single ?? Nothing;
+  };
+
+  /**
+   * Checks whether fee is covered by amounts of BNB in users wallet
+   */
+  bnbFeeIsCovered = () => {
+    const { assetData } = this.props;
+    const bnbBaseAmount = this.walletBnbAmount(assetData);
+    const fee = this.bnbFeeAmount();
+    return fee && bnbBaseAmount.amount().isGreaterThanOrEqualTo(fee.amount());
+    // return false;
+  };
+
+  /**
+   * Renders fee
+   */
+  renderFee = () => {
+    const { transferFees, assetData } = this.props;
+    const bnbValue = this.walletBnbAmount(assetData);
+
+    // Helper to format BNB amounts properly (we can't use `formatTokenAmountCurrency`)
+    // TODO (@Veado) Update `formatTokenAmountCurrency` of `asgardex-token` (now in `asgardex-util`) to accept decimals
+    const formatBnbAmount = (value: BaseAmount) => {
+      const token = baseToToken(value);
+      return `${token.amount().toString()} BNB`;
+    };
+
+    const txtLoading = <Text>Fee: ...</Text>;
+    return (
+      <Paragraph>
+        {RD.fold(
+          () => txtLoading,
+          () => txtLoading,
+          (_: Error) => <Text>Error: Fee could not be loaded</Text>,
+          (fees: TransferFees) => (
+            <>
+              <Text>Fee: {formatBnbAmount(fees.single)}</Text>
+              {!this.bnbFeeIsCovered() && (
+                <>
+                  <br />
+                  <Text type="danger" style={{ paddingTop: '10px' }}>
+                    You have {formatBnbAmount(bnbValue)} in your wallet,
+                    that&lsquo;s not enought to cover the fee for this
+                    transaction.
+                  </Text>
+                </>
+              )}
+            </>
+          ),
+        )(transferFees)}
+      </Paragraph>
+    );
+  };
+
   renderShareDetail = (
     _: PoolData,
     stakersAssetData: StakersAssetData,
@@ -1079,6 +1151,8 @@ class PoolStake extends React.Component<Props, State> {
       .amount()
       .multipliedBy(tokenPrice);
 
+    const disableDrag = !this.bnbFeeIsCovered();
+
     return (
       <div className="share-detail-wrapper">
         <Tabs withBorder>
@@ -1137,6 +1211,7 @@ class PoolStake extends React.Component<Props, State> {
                   source="blue"
                   target="confirm"
                   reset={dragReset}
+                  disabled={disableDrag}
                   onConfirm={this.handleStake}
                   onDrag={this.handleDrag}
                 />
@@ -1189,12 +1264,14 @@ class PoolStake extends React.Component<Props, State> {
                   />
                 </div>
               </div>
+              {this.renderFee()}
               <div className="drag-container">
                 <Drag
                   title="Drag to withdraw"
                   source="blue"
                   target="confirm"
                   reset={dragReset}
+                  disabled={disableDrag}
                   onConfirm={this.handleWithdraw}
                   onDrag={this.handleDrag}
                 />
@@ -1400,21 +1477,6 @@ class PoolStake extends React.Component<Props, State> {
           </p>
         </div>
       </div>
-    );
-  };
-
-  renderFee = () => {
-    const { transferFees } = this.props;
-    const txtLoading = 'Fee: ...';
-    return (
-      <Paragraph>
-        {RD.fold(
-          () => txtLoading,
-          () => txtLoading,
-          (_: Error) => 'Error: Fee could not be loaded',
-          (fees: TransferFees) => `Fee: ${baseToToken(fees.single).amount()} BNB`,
-        )(transferFees)}
-      </Paragraph>
     );
   };
 
