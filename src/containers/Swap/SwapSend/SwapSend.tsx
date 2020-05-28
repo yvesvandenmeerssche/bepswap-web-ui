@@ -26,8 +26,12 @@ import {
   TokenAmount,
   tokenAmount,
   baseToToken,
+  BaseAmount,
+  tokenToBase,
+  baseAmount,
 } from '@thorchain/asgardex-token';
 import Paragraph from 'antd/lib/typography/Paragraph';
+import Text from 'antd/lib/typography/Text';
 import Button from '../../../components/uielements/button';
 import Drag from '../../../components/uielements/drag';
 import TokenCard from '../../../components/uielements/tokens/tokenCard';
@@ -62,7 +66,7 @@ import {
   getTxResult,
   validatePair,
   isValidSwap,
-  getSourceFromAssetData,
+  getAssetFromAssetData,
 } from '../utils';
 import { getAppContainer } from '../../../helpers/elementHelper';
 
@@ -196,7 +200,9 @@ class SwapSend extends React.Component<Props, State> {
     const net = getNet();
     getPoolAddress();
     getPools();
-    if (RD.isInitial(transferFees)) { getBinanceFees(net); }
+    if (RD.isInitial(transferFees)) {
+      getBinanceFees(net);
+    }
     const wallet = user?.wallet;
     if (wallet) {
       subscribeBinanceTransfers({ address: wallet, net });
@@ -295,6 +301,12 @@ class SwapSend extends React.Component<Props, State> {
     );
   };
 
+  walletBnbAmount = (assetData: AssetData[]): BaseAmount => {
+    const bnbAsset = getAssetFromAssetData(assetData, 'bnb');
+    const amount = bnbAsset?.assetValue ?? tokenAmount(0);
+    return tokenToBase(amount);
+  };
+
   handleChangePassword = (password: string) => {
     this.setState({
       password,
@@ -310,14 +322,23 @@ class SwapSend extends React.Component<Props, State> {
   };
 
   handleChangePercent = (percent: number) => {
-    const { info } = this.props;
+    const { info, transferFees } = this.props;
 
     const { assetData } = this.props;
-    const { source }: Pair = getPair(info);
+    const { source = '' }: Pair = getPair(info);
 
-    const sourceAsset = getSourceFromAssetData(assetData, source);
+    const sourceAsset = getAssetFromAssetData(assetData, source);
 
-    const totalAmount = sourceAsset?.assetValue.amount() ?? bn(0);
+    let totalAmount = sourceAsset?.assetValue.amount() ?? bn(0);
+    const fees = RD.toNullable(transferFees);
+    const fee = fees?.single.amount() || bn(0);
+    // substract fee from BNB source
+    if (
+      totalAmount.isGreaterThanOrEqualTo(fee) &&
+      source?.toUpperCase() === 'BNB'
+    ) {
+      totalAmount = totalAmount.minus(fee);
+    }
     // formula (totalAmount * percent) / 100
     const newValue = totalAmount.multipliedBy(percent).div(100);
 
@@ -350,9 +371,26 @@ class SwapSend extends React.Component<Props, State> {
     const { assetData } = this.props;
     const { source }: Pair = getPair(info);
 
-    const sourceAsset = getSourceFromAssetData(assetData, source);
+    const sourceAsset = getAssetFromAssetData(assetData, source);
 
-    const totalAmount = sourceAsset?.assetValue.amount() ?? bn(0);
+    let totalAmount = sourceAsset?.assetValue.amount() ?? bn(0);
+    // Convert fee into Token first
+    const feeToken = baseToToken(this.bnbFeeAmount());
+    const feeAmount = feeToken.amount();
+    // Special case for BNB sources
+    if (source?.toUpperCase() === 'BNB') {
+      // substract fee from BNB source
+      if (totalAmount.isGreaterThanOrEqualTo(feeAmount)) {
+        totalAmount = totalAmount.minus(feeAmount);
+      } else {
+        notification.error({
+          message: 'Invalid BNB value',
+          description: 'Not enough BNB to cover the fee for this transaction.',
+          getContainer: getAppContainer,
+        });
+        return;
+      }
+    }
 
     if (totalAmount.isLessThanOrEqualTo(newValue.amount())) {
       this.setState({
@@ -682,7 +720,7 @@ class SwapSend extends React.Component<Props, State> {
   handleSelectSourceAmount = (source: string, amount: number) => {
     const { assetData } = this.props;
 
-    const sourceAsset = getSourceFromAssetData(assetData, source);
+    const sourceAsset = getAssetFromAssetData(assetData, source);
 
     if (!sourceAsset) {
       return;
@@ -840,16 +878,61 @@ class SwapSend extends React.Component<Props, State> {
     return <PopoverContent>Protect my price (within 3%)</PopoverContent>;
   };
 
-  renderFee = () => {
+  /**
+   * Returns BNB fee in BaseAmount (default 0 if fee not available)
+   * */
+  bnbFeeAmount = (): BaseAmount => {
     const { transferFees } = this.props;
-    const txtLoading = 'Fee: ...';
+    const fees = RD.toNullable(transferFees);
+    return fees?.single ?? baseAmount(0);
+  };
+
+  /**
+   * Checks whether fee is covered by amounts of BNB in users wallet
+   */
+  bnbFeeIsCovered = () => {
+    const { assetData } = this.props;
+    const bnbBaseAmount = this.walletBnbAmount(assetData);
+    const fee = this.bnbFeeAmount();
+    return bnbBaseAmount.amount().isGreaterThanOrEqualTo(fee.amount());
+  };
+
+  /**
+   * Renders fee
+   */
+  renderFee = () => {
+    const { transferFees, assetData } = this.props;
+    const bnbValue = this.walletBnbAmount(assetData);
+
+    // Helper to format BNB amounts properly (we can't use `formatTokenAmountCurrency`)
+    // TODO (@Veado) Update `formatTokenAmountCurrency` of `asgardex-token` (now in `asgardex-util`) to accept decimals
+    const formatBnbAmount = (value: BaseAmount) => {
+      const token = baseToToken(value);
+      return `${token.amount().toString()} BNB`;
+    };
+
+    const txtLoading = <Text>Fee: ...</Text>;
     return (
       <Paragraph>
         {RD.fold(
           () => txtLoading,
           () => txtLoading,
-          (_: Error) => 'Error: Fee could not be loaded',
-          (fees: TransferFees) => `Fee: ${baseToToken(fees.single).amount()} BNB`,
+          (_: Error) => <Text>Error: Fee could not be loaded</Text>,
+          (fees: TransferFees) => (
+            <>
+              <Text>Fee: {formatBnbAmount(fees.single)}</Text>
+              {!this.bnbFeeIsCovered() && (
+                <>
+                  <br />
+                  <Text type="danger" style={{ paddingTop: '10px' }}>
+                    You have {formatBnbAmount(bnbValue)} in your wallet,
+                    that&lsquo;s not enought to cover the fee for this
+                    transaction.
+                  </Text>
+                </>
+              )}
+            </>
+          ),
         )(transferFees)}
       </Paragraph>
     );
@@ -958,6 +1041,8 @@ class SwapSend extends React.Component<Props, State> {
         : refunded
         ? 'TOKEN REFUNDED'
         : 'YOU SWAPPED';
+
+      const disableDrag = !this.bnbFeeIsCovered();
 
       return (
         <ContentWrapper className="swap-detail-wrapper">
@@ -1084,6 +1169,7 @@ class SwapSend extends React.Component<Props, State> {
                   source={swapSource}
                   target={swapTarget}
                   reset={dragReset}
+                  disabled={disableDrag}
                   onConfirm={this.handleEndDrag}
                   onDrag={this.handleDrag}
                 />
