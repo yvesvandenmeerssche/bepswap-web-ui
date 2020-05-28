@@ -27,7 +27,10 @@ import {
   bnOrZero,
   formatBN,
 } from '@thorchain/asgardex-util';
-import { TokenAmount, BaseAmount, tokenAmount,
+import {
+  TokenAmount,
+  BaseAmount,
+  tokenAmount,
   formatBaseAsTokenAmount,
   baseAmount,
   baseToToken,
@@ -88,8 +91,12 @@ import {
 import { StakersAssetData } from '../../../types/generated/midgard';
 import { getAssetFromString } from '../../../redux/midgard/utils';
 import { BINANCE_NET, getNet } from '../../../env';
-import { TransferEventRD, TransferFeesRD, TransferFees } from '../../../redux/binance/types';
-import { getAssetFromAssetData } from '../../Swap/utils';
+import {
+  TransferEventRD,
+  TransferFeesRD,
+  TransferFees,
+} from '../../../redux/binance/types';
+import { getAssetFromAssetData } from '../../../helpers/walletHelper';
 
 const { TabPane } = Tabs;
 
@@ -211,7 +218,9 @@ class PoolStake extends React.Component<Props, State> {
     getPoolAddress();
     getPools();
     const net = getNet();
-    if (RD.isInitial(transferFees)) { getBinanceFees(net); }
+    if (RD.isInitial(transferFees)) {
+      getBinanceFees(net);
+    }
     this.getStakerInfo();
     const wallet = user?.wallet;
     if (wallet) {
@@ -326,15 +335,11 @@ class PoolStake extends React.Component<Props, State> {
     const source = getTickerFormat(tokenName);
 
     console.log('xxx source:', source);
-    const sourceAsset = assetData.find(data => {
-      const { asset } = data;
-      const tokenName = getTickerFormat(asset);
-      if (tokenName === source) {
-        return true;
-      }
-      return false;
-    });
-
+    console.log('xxx symbol:', symbol);
+    const sourceAsset = getAssetFromAssetData(
+      assetData,
+      tokenName.toLowerCase(),
+    );
     const targetToken = assetData.find(data => {
       const { asset } = data;
       if (asset.toLowerCase() === symbol.toLowerCase()) {
@@ -342,6 +347,9 @@ class PoolStake extends React.Component<Props, State> {
       }
       return false;
     });
+
+    console.log('xxx sourceAsset:', sourceAsset);
+    console.log('xxx targetToken:', targetToken);
 
     if (!sourceAsset || !targetToken) {
       return;
@@ -358,6 +366,11 @@ class PoolStake extends React.Component<Props, State> {
       .amount()
       .multipliedBy(balance);
     const newValue = tokenAmount(amount);
+
+    // Flag to check if we have to update values of BNB for fees
+    // TODO (@Veado) Implement it ^
+    const _ /* considerBnbFee */ = symbol.toUpperCase() === 'BNB';
+
     if (tokenName === 'rune') {
       const data = this.getData();
       const ratio = data?.ratio ?? 1;
@@ -370,22 +383,26 @@ class PoolStake extends React.Component<Props, State> {
       if (totalAmount.isLessThan(newValue.amount())) {
         this.setState({
           runeAmount: tokenAmount(totalAmount),
+          // TODO (@Veado) Special case for fees (BNB only)
           tokenAmount: tokenAmount(tokenAmountBN),
           runePercent: 100,
         });
       } else {
         this.setState({
           runeAmount: newValue,
+          // TODO (@Veado) Special case for fees (BNB only)
           tokenAmount: tokenAmount(tokenAmountBN),
         });
       }
     } else if (totalAmount.isLessThan(newValue.amount())) {
       this.setState({
+        // TODO (@Veado) Special case for fees (BNB only)
         tokenAmount: tokenAmount(totalAmount),
         tokenPercent: 100,
       });
     } else {
       this.setState({
+        // TODO (@Veado) Special case for fees (BNB only)
         tokenAmount: newValue,
       });
     }
@@ -395,22 +412,11 @@ class PoolStake extends React.Component<Props, State> {
     const { assetData, symbol } = this.props;
     const { fR, fT } = this.state;
 
-    const selectedToken = assetData.find(data => {
-      const { asset } = data;
-      const ticker = getTickerFormat(asset);
-      if (ticker === tokenName.toLowerCase()) {
-        return true;
-      }
-      return false;
-    });
+    const selectedToken = getAssetFromAssetData(assetData, tokenName);
+    const targetToken = getAssetFromAssetData(assetData, symbol);
 
-    const targetToken = assetData.find(data => {
-      const { asset } = data;
-      if (asset.toLowerCase() === symbol.toLowerCase()) {
-        return true;
-      }
-      return false;
-    });
+    console.log('xxx selectedToken:', selectedToken);
+    console.log('xxx targetToken:', targetToken);
 
     if (!selectedToken || !targetToken) {
       return;
@@ -1015,7 +1021,6 @@ class PoolStake extends React.Component<Props, State> {
     });
   };
 
-
   walletBnbAmount = (assetData: AssetData[]): BaseAmount => {
     const bnbAsset = getAssetFromAssetData(assetData, 'bnb');
     const amount = bnbAsset?.assetValue ?? tokenAmount(0);
@@ -1024,11 +1029,12 @@ class PoolStake extends React.Component<Props, State> {
 
   /**
    * BNB fee in BaseAmount
+   * Returns 0 as default
    */
-  bnbFeeAmount = (): Maybe<BaseAmount> => {
+  bnbFeeAmount = (): BaseAmount => {
     const { transferFees } = this.props;
     const fees = RD.toNullable(transferFees);
-    return fees?.single ?? Nothing;
+    return fees?.single ?? baseAmount(0);
   };
 
   /**
@@ -1039,7 +1045,6 @@ class PoolStake extends React.Component<Props, State> {
     const bnbBaseAmount = this.walletBnbAmount(assetData);
     const fee = this.bnbFeeAmount();
     return fee && bnbBaseAmount.amount().isGreaterThanOrEqualTo(fee.amount());
-    // return false;
   };
 
   /**
@@ -1066,6 +1071,7 @@ class PoolStake extends React.Component<Props, State> {
           (fees: TransferFees) => (
             <>
               <Text>Fee: {formatBnbAmount(fees.single)}</Text>
+              {/* FIXME (@Veado) Error message is rendered once before hiding  */}
               {!this.bnbFeeIsCovered() && (
                 <>
                   <br />
