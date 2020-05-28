@@ -11,7 +11,7 @@ import {
   getCalcResult,
   validateSwap,
   SwapErrorMsg,
-  getSourceFromAssetData,
+  getAssetFromAssetData,
 } from './utils';
 import {
   PoolDetail,
@@ -664,7 +664,7 @@ describe('swap/utils/', () => {
     });
   });
 
-  describe('getSourceFromAssetData', () => {
+  describe('getAssetFromAssetData', () => {
     const tusdb: AssetData = {
       asset: 'BNB.TUSDB-000',
       assetValue: tokenAmount(1),
@@ -681,16 +681,16 @@ describe('swap/utils/', () => {
       price: bn(1),
     };
     it('returns source', () => {
-      expect(getSourceFromAssetData([tusdb, bnb, lok], 'LOK')).toEqual(lok);
+      expect(getAssetFromAssetData([tusdb, bnb, lok], 'LOK')).toEqual(lok);
     });
     it('returns Nothing if source is empty', () => {
-      expect(getSourceFromAssetData([tusdb, bnb], '')).toBeNothing();
+      expect(getAssetFromAssetData([tusdb, bnb], '')).toBeNothing();
     });
     it('returns Nothing if source is not avaiable in list of assets', () => {
-      expect(getSourceFromAssetData([tusdb, bnb], 'LOK-3C0')).toBeNothing();
+      expect(getAssetFromAssetData([tusdb, bnb], 'LOK-3C0')).toBeNothing();
     });
     it('returns Nothing for an empty list of assets', () => {
-      expect(getSourceFromAssetData([], 'LOK-3C0')).toBeNothing();
+      expect(getAssetFromAssetData([], 'LOK-3C0')).toBeNothing();
     });
   });
 });

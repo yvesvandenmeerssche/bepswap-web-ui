@@ -526,18 +526,21 @@ export const getTxResult = ({
   return null;
 };
 
-export const getSourceFromAssetData = (
+export const getAssetFromAssetData = (
   assetData: AssetData[],
   source: Maybe<string>,
 ): Maybe<AssetData> => {
-  const data = assetData.find(data => {
+  if (!source) {
+    return Nothing;
+  }
+  return assetData.reduce((acc, data) => {
     const { asset } = data;
-    const tokenName = getTickerFormat(asset);
-    if (tokenName && source && tokenName === source.toLowerCase()) {
-      return true;
+    if (!acc) {
+      const tokenName = getTickerFormat(asset);
+      if (tokenName && tokenName === source.toLowerCase()) {
+        return data;
+      }
     }
-    return false;
-  });
-
-  return data || Nothing;
+    return acc;
+  }, Nothing as Maybe<AssetData>);
 };
