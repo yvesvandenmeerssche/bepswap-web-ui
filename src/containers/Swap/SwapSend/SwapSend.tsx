@@ -66,7 +66,6 @@ import {
   getTxResult,
   validatePair,
   isValidSwap,
-  getAssetFromAssetData,
 } from '../utils';
 import { getAppContainer } from '../../../helpers/elementHelper';
 
@@ -104,6 +103,7 @@ import {
   TransferFeesRD,
   TransferFees,
 } from '../../../redux/binance/types';
+import { getAssetFromAssetData } from '../../../helpers/walletHelper';
 
 type ComponentProps = {
   info: string;
@@ -375,7 +375,7 @@ class SwapSend extends React.Component<Props, State> {
 
     let totalAmount = sourceAsset?.assetValue.amount() ?? bn(0);
     // Because `totalAmount` is `TokenAmount`,
-    const fee = this.bnbFeeAmount() || baseAmount(0);
+    const fee = this.bnbFeeAmount();
     // we have to convert fee into Token first before getting its value
     const feeAmount = baseToToken(fee).amount();
     // Special case for BNB sources
@@ -881,11 +881,12 @@ class SwapSend extends React.Component<Props, State> {
 
   /**
    * BNB fee in BaseAmount
+   * Returns 0 as default
    */
-  bnbFeeAmount = (): Maybe<BaseAmount> => {
+  bnbFeeAmount = (): BaseAmount => {
     const { transferFees } = this.props;
     const fees = RD.toNullable(transferFees);
-    return fees?.single ?? Nothing;
+    return fees?.single ?? baseAmount(0);
   };
 
   /**
@@ -895,7 +896,7 @@ class SwapSend extends React.Component<Props, State> {
     const { assetData } = this.props;
     const bnbBaseAmount = this.walletBnbAmount(assetData);
     const fee = this.bnbFeeAmount();
-    return fee && bnbBaseAmount.amount().isGreaterThanOrEqualTo(fee.amount());
+    return fee && bnbBaseAmount.amount().isGreaterThan(fee.amount());
   };
 
   /**
