@@ -374,9 +374,10 @@ class SwapSend extends React.Component<Props, State> {
     const sourceAsset = getAssetFromAssetData(assetData, source);
 
     let totalAmount = sourceAsset?.assetValue.amount() ?? bn(0);
-    // Convert fee into Token first
-    const feeToken = baseToToken(this.bnbFeeAmount());
-    const feeAmount = feeToken.amount();
+    // Because `totalAmount` is `TokenAmount`,
+    const fee = this.bnbFeeAmount() || baseAmount(0);
+    // we have to convert fee into Token first before getting its value
+    const feeAmount = baseToToken(fee).amount();
     // Special case for BNB sources
     if (source?.toUpperCase() === 'BNB') {
       // substract fee from BNB source
@@ -879,12 +880,12 @@ class SwapSend extends React.Component<Props, State> {
   };
 
   /**
-   * Returns BNB fee in BaseAmount (default 0 if fee not available)
-   * */
-  bnbFeeAmount = (): BaseAmount => {
+   * BNB fee in BaseAmount
+   */
+  bnbFeeAmount = (): Maybe<BaseAmount> => {
     const { transferFees } = this.props;
     const fees = RD.toNullable(transferFees);
-    return fees?.single ?? baseAmount(0);
+    return fees?.single ?? Nothing;
   };
 
   /**
@@ -894,7 +895,7 @@ class SwapSend extends React.Component<Props, State> {
     const { assetData } = this.props;
     const bnbBaseAmount = this.walletBnbAmount(assetData);
     const fee = this.bnbFeeAmount();
-    return bnbBaseAmount.amount().isGreaterThanOrEqualTo(fee.amount());
+    return fee && bnbBaseAmount.amount().isGreaterThanOrEqualTo(fee.amount());
   };
 
   /**
