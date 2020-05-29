@@ -339,10 +339,6 @@ class PoolStake extends React.Component<Props, State> {
     const { assetData, symbol } = this.props;
     const { fR, fT } = this.state;
 
-    const source = getTickerFormat(tokenName);
-
-    console.log('xxx source:', source);
-    console.log('xxx symbol:', symbol);
     const sourceAsset = getAssetFromAssetData(
       assetData,
       tokenName.toLowerCase(),
@@ -355,9 +351,6 @@ class PoolStake extends React.Component<Props, State> {
       return false;
     });
 
-    console.log('xxx sourceAsset:', sourceAsset);
-    console.log('xxx targetToken:', targetToken);
-
     if (!sourceAsset || !targetToken) {
       return;
     }
@@ -365,37 +358,21 @@ class PoolStake extends React.Component<Props, State> {
     const balance = tokenName === 'rune' ? fR : fT;
 
     // formula: sourceAsset.assetValue * balance
-    let totalAmount = sourceAsset.assetValue.amount().multipliedBy(balance);
+    const totalAmount = sourceAsset.assetValue.amount().multipliedBy(balance);
     // formula: targetToken.assetValue * balance
     const totalTokenAmount = targetToken.assetValue
       .amount()
       .multipliedBy(balance);
     const valueAsToken = tokenAmount(value);
 
-    // Flag whether to consider BNB fees
-    const considerBnbFee = symbol.toUpperCase() === 'BNB';
-    // fee transformation: BaseAmount -> TokenAmount -> BigNumber
-    const fee = this.bnbFeeAmount() || baseAmount(0);
-    const feeAsToken = baseToToken(fee);
-    const feeAsTokenBN = feeAsToken.amount();
-
     if (tokenName === 'rune') {
       const data = this.getData();
       const ratio = data?.ratio ?? 1;
       // formula: newValue * ratio
       const tokenValue = valueAsToken.amount().multipliedBy(ratio);
-      let tokenAmountBN = tokenValue.isLessThanOrEqualTo(totalTokenAmount)
+      const tokenAmountBN = tokenValue.isLessThanOrEqualTo(totalTokenAmount)
         ? tokenValue
         : totalTokenAmount;
-
-      // substract fee from `tokenAmountBN` - for BNB sources only
-      if (considerBnbFee) {
-        console.log('xxx considerBnbFee 1 BEFORE', tokenAmountBN.toString());
-        tokenAmountBN = tokenAmountBN.isGreaterThan(feeAsTokenBN)
-          ? tokenAmountBN.minus(feeAsTokenBN)
-          : bn(0);
-        console.log('xxx considerBnbFee 1 AFTER', tokenAmountBN.toString());
-      }
 
       if (totalAmount.isLessThan(valueAsToken.amount())) {
         this.setState({
@@ -410,37 +387,13 @@ class PoolStake extends React.Component<Props, State> {
         });
       }
     } else if (totalAmount.isLessThan(valueAsToken.amount())) {
-      // substract fee from `totalAmount` - for BNB sources only
-      if (considerBnbFee) {
-        console.log('xxx considerBnbFee 2 BEFORE', totalAmount.toString());
-        totalAmount = totalAmount.isGreaterThan(feeAsTokenBN)
-          ? totalAmount.minus(feeAsTokenBN)
-          : bn(0);
-        console.log('xxx considerBnbFee 2 AFTER', totalAmount.toString());
-      }
       this.setState({
         tokenAmount: tokenAmount(totalAmount),
         tokenPercent: 100,
       });
     } else {
-      let newTokenAmount = valueAsToken;
-      // substract fee from `value` - for BNB sources only
-      if (considerBnbFee) {
-        console.log(
-          'xxx considerBnbFee 3 BEFORE',
-          valueAsToken.amount().toString(),
-        );
-        const newValue = valueAsToken.amount().isGreaterThan(feeAsTokenBN)
-          ? valueAsToken.amount().minus(feeAsTokenBN)
-          : bn(0);
-        newTokenAmount = tokenAmount(newValue);
-        console.log(
-          'xxx considerBnbFee 3 AFTER',
-          newTokenAmount.amount().toString(),
-        );
-      }
       this.setState({
-        tokenAmount: newTokenAmount,
+        tokenAmount: valueAsToken,
       });
     }
   };
@@ -457,9 +410,6 @@ class PoolStake extends React.Component<Props, State> {
 
     const selectedToken = getAssetFromAssetData(assetData, tokenName);
     const targetToken = getAssetFromAssetData(assetData, symbol);
-
-    console.log('xxx selectedToken:', selectedToken);
-    console.log('xxx targetToken:', targetToken);
 
     if (!selectedToken || !targetToken) {
       return;
@@ -559,10 +509,23 @@ class PoolStake extends React.Component<Props, State> {
 
   handleConfirmStake = async () => {
     const { user, setTxHash } = this.props;
-    const { runeAmount, tokenAmount } = this.state;
+    const { runeAmount, tokenAmount: tokenAmountToStake } = this.state;
 
     if (user) {
       const { wallet } = user;
+      let newTokenAmountToStake = tokenAmountToStake;
+      // fee transformation: BaseAmount -> TokenAmount -> BigNumber
+      const fee = this.bnbFeeAmount() || baseAmount(0);
+      const feeAsTokenAmount = baseToToken(fee).amount();
+      // Special case: Substract fee from BNB amount before sending it
+      // Note: All validation for this already happened in `handleStake`
+      if (this.considerBnb()) {
+        const amountToStake = tokenAmountToStake
+          .amount()
+          .minus(feeAsTokenAmount);
+        newTokenAmountToStake = tokenAmount(amountToStake);
+      }
+
       this.handleStartTimer(TxTypes.STAKE);
 
       this.setState({
@@ -577,7 +540,7 @@ class PoolStake extends React.Component<Props, State> {
           bncClient,
           wallet,
           runeAmount,
-          tokenAmount,
+          tokenAmount: newTokenAmountToStake,
           poolAddress: data.poolAddress,
           symbolTo: data.symbolTo,
         });
@@ -601,12 +564,16 @@ class PoolStake extends React.Component<Props, State> {
     }
   };
 
+  /**
+   * Handler to run first validation of data before staking
+   */
   handleStake = () => {
     const { user } = this.props;
     const { runeAmount, tokenAmount } = this.state;
     const wallet = user ? user.wallet : null;
     const keystore = user ? user.keystore : null;
 
+    // Validata existing wallet
     if (!wallet) {
       this.setState({
         openWalletAlert: true,
@@ -614,6 +581,7 @@ class PoolStake extends React.Component<Props, State> {
       return;
     }
 
+    // Validate amounts to stake
     if (
       runeAmount.amount().isLessThanOrEqualTo(0) &&
       tokenAmount.amount().isLessThanOrEqualTo(0)
@@ -630,12 +598,33 @@ class PoolStake extends React.Component<Props, State> {
       return;
     }
 
+    // Validate BNB amount to swap to consider fees
+    // to substract fee from amount before sending it
+    if (this.considerBnb()) {
+      const fee = this.bnbFeeAmount() || baseAmount(0);
+      // fee transformation: BaseAmount -> TokenAmount -> BigNumber
+      const feeAsTokenAmount = baseToToken(fee).amount();
+      if (tokenAmount.amount().isLessThanOrEqualTo(feeAsTokenAmount)) {
+        notification.error({
+          message: 'Invalid BNB value',
+          description: 'Not enough BNB to cover the fee for this transaction.',
+          getContainer: getAppContainer,
+        });
+        this.setState({
+          dragReset: true,
+        });
+        return;
+      }
+    }
+
+    // Validate keystore
     if (keystore) {
       this.type = TxTypes.STAKE;
       this.handleOpenPrivateModal();
-    } else if (wallet) {
-      this.handleConfirmStake();
+      return;
     }
+
+    this.handleConfirmStake();
   };
 
   handleConnectWallet = () => {
@@ -1068,6 +1057,14 @@ class PoolStake extends React.Component<Props, State> {
   };
 
   /**
+   * Check to consider special cases for BNB
+   */
+  considerBnb = (): boolean => {
+    const { symbol } = this.props;
+    return symbol.toUpperCase() === 'BNB';
+  };
+
+  /**
    * BNB fee in BaseAmount
    * Returns Nothing if fee is not available
    */
@@ -1111,6 +1108,12 @@ class PoolStake extends React.Component<Props, State> {
           (fees: TransferFees) => (
             <>
               <Text>Fee: {formatBnbAmount(fees.single)}</Text>
+              {this.considerBnb() && (
+                <Text>
+                  {' '}
+                  (It will be substructed from your entered BNB value)
+                </Text>
+              )}
               {bnbAmount && this.bnbFeeIsNotCovered() && (
                 <>
                   <br />
