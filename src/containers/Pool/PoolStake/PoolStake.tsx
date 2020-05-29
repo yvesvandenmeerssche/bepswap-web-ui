@@ -95,7 +95,10 @@ import {
   TransferFeesRD,
   TransferFees,
 } from '../../../redux/binance/types';
-import { getAssetFromAssetData, bnbBaseAmount } from '../../../helpers/walletHelper';
+import {
+  getAssetFromAssetData,
+  bnbBaseAmount,
+} from '../../../helpers/walletHelper';
 
 const { TabPane } = Tabs;
 
@@ -327,7 +330,12 @@ class PoolStake extends React.Component<Props, State> {
     });
   };
 
-  handleChangeTokenAmount = (tokenName: string) => (amount: BigNumber) => {
+  /**
+   * Handler for setting token amounts in input fields
+   *
+   * Note: That's the only place to consider fees
+   */
+  handleChangeTokenAmount = (tokenName: string) => (value: BigNumber) => {
     const { assetData, symbol } = this.props;
     const { fR, fT } = this.state;
 
@@ -357,56 +365,92 @@ class PoolStake extends React.Component<Props, State> {
     const balance = tokenName === 'rune' ? fR : fT;
 
     // formula: sourceAsset.assetValue * balance
-    const totalAmount = !sourceAsset
-      ? bn(0)
-      : sourceAsset.assetValue.amount().multipliedBy(balance);
+    let totalAmount = sourceAsset.assetValue.amount().multipliedBy(balance);
     // formula: targetToken.assetValue * balance
     const totalTokenAmount = targetToken.assetValue
       .amount()
       .multipliedBy(balance);
-    const newValue = tokenAmount(amount);
+    const valueAsToken = tokenAmount(value);
 
-    // Flag to check if we have to update values of BNB for fees
-    // TODO (@Veado) Implement it ^
-    const _ /* considerBnbFee */ = symbol.toUpperCase() === 'BNB';
+    // Flag whether to consider BNB fees
+    const considerBnbFee = symbol.toUpperCase() === 'BNB';
+    // fee transformation: BaseAmount -> TokenAmount -> BigNumber
+    const fee = this.bnbFeeAmount() || baseAmount(0);
+    const feeAsToken = baseToToken(fee);
+    const feeAsTokenBN = feeAsToken.amount();
 
     if (tokenName === 'rune') {
       const data = this.getData();
       const ratio = data?.ratio ?? 1;
       // formula: newValue * ratio
-      const tokenValue = newValue.amount().multipliedBy(ratio);
-      const tokenAmountBN = tokenValue.isLessThanOrEqualTo(totalTokenAmount)
+      const tokenValue = valueAsToken.amount().multipliedBy(ratio);
+      let tokenAmountBN = tokenValue.isLessThanOrEqualTo(totalTokenAmount)
         ? tokenValue
         : totalTokenAmount;
 
-      if (totalAmount.isLessThan(newValue.amount())) {
+      // substract fee from `tokenAmountBN` - for BNB sources only
+      if (considerBnbFee) {
+        console.log('xxx considerBnbFee 1 BEFORE', tokenAmountBN.toString());
+        tokenAmountBN = tokenAmountBN.isGreaterThan(feeAsTokenBN)
+          ? tokenAmountBN.minus(feeAsTokenBN)
+          : bn(0);
+        console.log('xxx considerBnbFee 1 AFTER', tokenAmountBN.toString());
+      }
+
+      if (totalAmount.isLessThan(valueAsToken.amount())) {
         this.setState({
           runeAmount: tokenAmount(totalAmount),
-          // TODO (@Veado) Special case for fees (BNB only)
           tokenAmount: tokenAmount(tokenAmountBN),
           runePercent: 100,
         });
       } else {
         this.setState({
-          runeAmount: newValue,
-          // TODO (@Veado) Special case for fees (BNB only)
+          runeAmount: valueAsToken,
           tokenAmount: tokenAmount(tokenAmountBN),
         });
       }
-    } else if (totalAmount.isLessThan(newValue.amount())) {
+    } else if (totalAmount.isLessThan(valueAsToken.amount())) {
+      // substract fee from `totalAmount` - for BNB sources only
+      if (considerBnbFee) {
+        console.log('xxx considerBnbFee 2 BEFORE', totalAmount.toString());
+        totalAmount = totalAmount.isGreaterThan(feeAsTokenBN)
+          ? totalAmount.minus(feeAsTokenBN)
+          : bn(0);
+        console.log('xxx considerBnbFee 2 AFTER', totalAmount.toString());
+      }
       this.setState({
-        // TODO (@Veado) Special case for fees (BNB only)
         tokenAmount: tokenAmount(totalAmount),
         tokenPercent: 100,
       });
     } else {
+      let newTokenAmount = valueAsToken;
+      // substract fee from `value` - for BNB sources only
+      if (considerBnbFee) {
+        console.log(
+          'xxx considerBnbFee 3 BEFORE',
+          valueAsToken.amount().toString(),
+        );
+        const newValue = valueAsToken.amount().isGreaterThan(feeAsTokenBN)
+          ? valueAsToken.amount().minus(feeAsTokenBN)
+          : bn(0);
+        newTokenAmount = tokenAmount(newValue);
+        console.log(
+          'xxx considerBnbFee 3 AFTER',
+          newTokenAmount.amount().toString(),
+        );
+      }
       this.setState({
-        // TODO (@Veado) Special case for fees (BNB only)
-        tokenAmount: newValue,
+        tokenAmount: newTokenAmount,
       });
     }
   };
 
+  /**
+   * Handler for moving percent slider
+   *
+   * Note: Don't consider any fees in this function, since it sets values for tokenAmount,
+   * which triggers `handleChangeTokenAmount` where all calculations for fees are happen
+   */
   handleChangePercent = (tokenName: string) => (amount: number) => {
     const { assetData, symbol } = this.props;
     const { fR, fT } = this.state;
@@ -454,6 +498,9 @@ class PoolStake extends React.Component<Props, State> {
     }
   };
 
+  /**
+   * `handleChangeBalance` is not used currently
+   */
   handleChangeBalance = (balance: number) => {
     const { runePercent, tokenPercent, runeTotal, tokenTotal } = this.state;
     const fR = balance <= 100 ? 1 : (200 - balance) / 100;
@@ -1022,12 +1069,12 @@ class PoolStake extends React.Component<Props, State> {
 
   /**
    * BNB fee in BaseAmount
-   * Returns 0 as default
+   * Returns Nothing if fee is not available
    */
-  bnbFeeAmount = (): BaseAmount => {
+  bnbFeeAmount = (): Maybe<BaseAmount> => {
     const { transferFees } = this.props;
     const fees = RD.toNullable(transferFees);
-    return fees?.single ?? baseAmount(0);
+    return fees?.single;
   };
 
   /**
