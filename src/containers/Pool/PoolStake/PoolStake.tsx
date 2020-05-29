@@ -34,7 +34,6 @@ import {
   formatBaseAsTokenAmount,
   baseAmount,
   baseToToken,
-  tokenToBase,
 } from '@thorchain/asgardex-token';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import Text from 'antd/lib/typography/Text';
@@ -96,7 +95,7 @@ import {
   TransferFeesRD,
   TransferFees,
 } from '../../../redux/binance/types';
-import { getAssetFromAssetData } from '../../../helpers/walletHelper';
+import { getAssetFromAssetData, bnbBaseAmount } from '../../../helpers/walletHelper';
 
 const { TabPane } = Tabs;
 
@@ -1021,12 +1020,6 @@ class PoolStake extends React.Component<Props, State> {
     });
   };
 
-  walletBnbAmount = (assetData: AssetData[]): BaseAmount => {
-    const bnbAsset = getAssetFromAssetData(assetData, 'bnb');
-    const amount = bnbAsset?.assetValue ?? tokenAmount(0);
-    return tokenToBase(amount);
-  };
-
   /**
    * BNB fee in BaseAmount
    * Returns 0 as default
@@ -1040,11 +1033,11 @@ class PoolStake extends React.Component<Props, State> {
   /**
    * Checks whether fee is covered by amounts of BNB in users wallet
    */
-  bnbFeeIsCovered = () => {
+  bnbFeeIsNotCovered = () => {
     const { assetData } = this.props;
-    const bnbBaseAmount = this.walletBnbAmount(assetData);
+    const bnbAmount = bnbBaseAmount(assetData);
     const fee = this.bnbFeeAmount();
-    return fee && bnbBaseAmount.amount().isGreaterThanOrEqualTo(fee.amount());
+    return bnbAmount && fee && bnbAmount.amount().isLessThan(fee.amount());
   };
 
   /**
@@ -1052,7 +1045,7 @@ class PoolStake extends React.Component<Props, State> {
    */
   renderFee = () => {
     const { transferFees, assetData } = this.props;
-    const bnbValue = this.walletBnbAmount(assetData);
+    const bnbAmount = bnbBaseAmount(assetData);
 
     // Helper to format BNB amounts properly (we can't use `formatTokenAmountCurrency`)
     // TODO (@Veado) Update `formatTokenAmountCurrency` of `asgardex-token` (now in `asgardex-util`) to accept decimals
@@ -1063,7 +1056,7 @@ class PoolStake extends React.Component<Props, State> {
 
     const txtLoading = <Text>Fee: ...</Text>;
     return (
-      <Paragraph>
+      <Paragraph style={{ paddingTop: '10px' }}>
         {RD.fold(
           () => txtLoading,
           () => txtLoading,
@@ -1071,12 +1064,11 @@ class PoolStake extends React.Component<Props, State> {
           (fees: TransferFees) => (
             <>
               <Text>Fee: {formatBnbAmount(fees.single)}</Text>
-              {/* FIXME (@Veado) Error message is rendered once before hiding  */}
-              {!this.bnbFeeIsCovered() && (
+              {bnbAmount && this.bnbFeeIsNotCovered() && (
                 <>
                   <br />
                   <Text type="danger" style={{ paddingTop: '10px' }}>
-                    You have {formatBnbAmount(bnbValue)} in your wallet,
+                    You have {formatBnbAmount(bnbAmount)} in your wallet,
                     that&lsquo;s not enought to cover the fee for this
                     transaction.
                   </Text>
@@ -1157,7 +1149,7 @@ class PoolStake extends React.Component<Props, State> {
       .amount()
       .multipliedBy(tokenPrice);
 
-    const disableDrag = !this.bnbFeeIsCovered();
+    const disableDrag = this.bnbFeeIsNotCovered();
 
     return (
       <div className="share-detail-wrapper">
