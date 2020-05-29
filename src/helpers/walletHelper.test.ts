@@ -1,10 +1,9 @@
 import { bn } from '@thorchain/asgardex-util';
-import { tokenAmount } from '@thorchain/asgardex-token';
-import { getAssetFromAssetData } from './walletHelper';
+import { tokenAmount, formatTokenAmount, formatBaseAsTokenAmount } from '@thorchain/asgardex-token';
+import { getAssetFromAssetData, bnbBaseAmount } from './walletHelper';
 import { AssetData } from '../redux/wallet/types';
 
 describe('walletHelper', () => {
-  describe('getAssetFromAssetData', () => {
     const tusdb: AssetData = {
       asset: 'BNB.TUSDB-000',
       assetValue: tokenAmount(1),
@@ -20,6 +19,7 @@ describe('walletHelper', () => {
       assetValue: tokenAmount(1),
       price: bn(1),
     };
+  describe('getAssetFromAssetData', () => {
     it('returns source of LOK', () => {
       expect(getAssetFromAssetData([tusdb, bnb, lok], 'LOK')).toEqual(lok);
     });
@@ -34,6 +34,18 @@ describe('walletHelper', () => {
     });
     it('returns Nothing for an empty list of assets', () => {
       expect(getAssetFromAssetData([], 'LOK-3C0')).toBeNothing();
+    });
+  });
+  describe('bnbAmount', () => {
+    it('returns amount of BNB', () => {
+      const amount = bnbBaseAmount([tusdb, lok, bnb]);
+      const result = amount && formatBaseAsTokenAmount(amount);
+      const expected = formatTokenAmount(tokenAmount(1));
+      expect(result).toEqual(expected);
+    });
+    it('returns Nothing if BNB is not avaiable in list of assets', () => {
+      const result = bnbBaseAmount([tusdb, lok]);
+      expect(result).toBeNothing();
     });
   });
 });

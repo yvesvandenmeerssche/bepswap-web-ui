@@ -1,3 +1,4 @@
+import { tokenToBase, BaseAmount } from '@thorchain/asgardex-token';
 import { getTickerFormat } from './stringHelper';
 import { Nothing, Maybe } from '../types/bepswap';
 import { AssetData } from '../redux/wallet/types';
@@ -19,4 +20,14 @@ export const getAssetFromAssetData = (
     }
     return acc;
   }, Nothing as Maybe<AssetData>);
+};
+
+/**
+ * Returns BNB amount within AssetData
+ * If no BNB is available, Nothing will be returned
+*/
+export const bnbBaseAmount = (assetData: AssetData[]): Maybe<BaseAmount> => {
+  const bnbAsset = getAssetFromAssetData(assetData, 'bnb');
+  const amount = bnbAsset?.assetValue;
+  return amount ? tokenToBase(amount) : Nothing;
 };
