@@ -496,8 +496,22 @@ class SwapSend extends React.Component<Props, State> {
       return;
     }
 
-    // Validate BNB amount to swap to consider fees
-    // to substract fee from amount before sending it
+    // Validate RUNE amount consider fees
+    if (this.considerRune()) {
+      if (xValue.amount().isLessThanOrEqualTo(tokenAmount(1).amount())) {
+        notification.error({
+          message: 'Invalid RUNE value',
+          description: 'Swap amount must exceed 1 RUNE to cover network fees.',
+          getContainer: getAppContainer,
+        });
+        this.setState({
+          dragReset: true,
+        });
+        return;
+      }
+    }
+
+    // Validate BNB amount to consider fees
     if (this.considerBnb()) {
       const fee = this.bnbFeeAmount() || baseAmount(0);
       // fee transformation: BaseAmount -> TokenAmount -> BigNumber
@@ -903,7 +917,16 @@ class SwapSend extends React.Component<Props, State> {
     const { info } = this.props;
     const { source }: Pair = getPair(info);
     return source?.toUpperCase() === 'BNB';
-  }
+  };
+
+  /**
+   * Check to consider special cases for RUNE
+   */
+  considerRune = (): boolean => {
+    const { info } = this.props;
+    const { source }: Pair = getPair(info);
+    return source?.toUpperCase() === 'RUNE';
+  };
 
   /**
    * BNB fee in BaseAmount
