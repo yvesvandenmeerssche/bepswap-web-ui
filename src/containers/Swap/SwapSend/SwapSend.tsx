@@ -331,7 +331,7 @@ class SwapSend extends React.Component<Props, State> {
     const feeAsToken = baseToToken(fee);
     const feeAsTokenBN = feeAsToken.amount();
     // substract fee  - for BNB source only
-    if (source?.toUpperCase() === 'BNB') {
+    if (this.considerBnb()) {
       totalAmount = totalAmount.isGreaterThan(feeAsTokenBN)
         ? totalAmount.minus(feeAsTokenBN)
         : bn(0);
@@ -370,25 +370,7 @@ class SwapSend extends React.Component<Props, State> {
 
     const sourceAsset = getAssetFromAssetData(assetData, source);
 
-    let totalAmount = sourceAsset?.assetValue.amount() ?? bn(0);
-    const fee = this.bnbFeeAmount() || baseAmount(0);
-    // Because `totalAmount` is `TokenAmount`,
-    // we have to convert fee into Token first before getting its value
-    const feeAmount = baseToToken(fee).amount();
-    // Special case for BNB sources
-    if (source?.toUpperCase() === 'BNB') {
-      // substract fee from BNB source
-      if (totalAmount.isGreaterThanOrEqualTo(feeAmount)) {
-        totalAmount = totalAmount.minus(feeAmount);
-      } else {
-        notification.error({
-          message: 'Invalid BNB value',
-          description: 'Not enough BNB to cover the fee for this transaction.',
-          getContainer: getAppContainer,
-        });
-        return;
-      }
-    }
+    const totalAmount = sourceAsset?.assetValue.amount() ?? bn(0);
 
     if (totalAmount.isLessThanOrEqualTo(newValue.amount())) {
       this.setState({
@@ -481,14 +463,19 @@ class SwapSend extends React.Component<Props, State> {
     });
   };
 
+  /**
+   * Handler for moving drag slider to the end
+   *
+   * That's the point we do first validation
+   *
+   */
   handleEndDrag = async () => {
     const { user } = this.props;
     const { xValue, view } = this.state;
     const wallet = user ? user.wallet : null;
     const keystore = user ? user.keystore : null;
 
-    // validation
-
+    // Validate existing wallet
     if (!wallet) {
       this.setState({
         openWalletAlert: true,
@@ -496,6 +483,7 @@ class SwapSend extends React.Component<Props, State> {
       return;
     }
 
+    // Validate amount to swap
     if (xValue.amount().isLessThanOrEqualTo(0)) {
       notification.error({
         message: 'Swap Invalid',
@@ -508,6 +496,26 @@ class SwapSend extends React.Component<Props, State> {
       return;
     }
 
+    // Validate BNB amount to swap to consider fees
+    // to substract fee from amount before sending it
+    if (this.considerBnb()) {
+      const fee = this.bnbFeeAmount() || baseAmount(0);
+      // fee transformation: BaseAmount -> TokenAmount -> BigNumber
+      const feeAsTokenAmount = baseToToken(fee).amount();
+      if (xValue.amount().isLessThanOrEqualTo(feeAsTokenAmount)) {
+        notification.error({
+          message: 'Invalid BNB value',
+          description: 'Not enough BNB to cover the fee for this transaction.',
+          getContainer: getAppContainer,
+        });
+        this.setState({
+          dragReset: true,
+        });
+        return;
+      }
+    }
+
+    // Validate address to send to
     const isValidRecipient = await this.isValidRecipient();
     if (view === SwapSendView.SEND && !isValidRecipient) {
       this.setState({
@@ -517,6 +525,7 @@ class SwapSend extends React.Component<Props, State> {
       return;
     }
 
+    // Validate calculation + slip
     const calcResult = this.calcResult();
     if (calcResult && this.validateSlip(calcResult.slip)) {
       if (keystore) {
@@ -678,6 +687,17 @@ class SwapSend extends React.Component<Props, State> {
     const { source = '', target = '' }: Pair = getPair(info);
     const calcResult = this.calcResult();
     if (user && source && target && calcResult) {
+      let tokenAmountToSwap = xValue;
+      const fee = this.bnbFeeAmount() || baseAmount(0);
+      // fee transformation: BaseAmount -> TokenAmount -> BigNumber
+      const feeAsTokenAmount = baseToToken(fee).amount();
+      // Special case: Substract fee from BNB amount before sending it
+      // Note: All validation for that already happened in `handleEndDrag`
+      if (this.considerBnb()) {
+        const amountToSwap = tokenAmountToSwap.amount().minus(feeAsTokenAmount);
+        tokenAmountToSwap = tokenAmount(amountToSwap);
+      }
+
       this.setState({
         txResult: null,
       });
@@ -691,7 +711,7 @@ class SwapSend extends React.Component<Props, State> {
           source,
           target,
           calcResult,
-          xValue,
+          tokenAmountToSwap,
           slipProtection,
           address,
         );
@@ -875,6 +895,15 @@ class SwapSend extends React.Component<Props, State> {
   renderProtectPopoverContent = () => {
     return <PopoverContent>Protect my price (within 3%)</PopoverContent>;
   };
+
+  /**
+   * Check to consider special cases for BNB
+   */
+  considerBnb = (): boolean => {
+    const { info } = this.props;
+    const { source }: Pair = getPair(info);
+    return source?.toUpperCase() === 'BNB';
+  }
 
   /**
    * BNB fee in BaseAmount
