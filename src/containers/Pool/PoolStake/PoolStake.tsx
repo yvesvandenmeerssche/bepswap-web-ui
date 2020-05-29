@@ -332,8 +332,6 @@ class PoolStake extends React.Component<Props, State> {
 
   /**
    * Handler for setting token amounts in input fields
-   *
-   * Note: That's the only place to consider fees
    */
   handleChangeTokenAmount = (tokenName: string) => (value: BigNumber) => {
     const { assetData, symbol } = this.props;
