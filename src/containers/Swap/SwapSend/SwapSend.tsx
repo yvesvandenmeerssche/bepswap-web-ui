@@ -102,7 +102,10 @@ import {
   TransferFeesRD,
   TransferFees,
 } from '../../../redux/binance/types';
-import { getAssetFromAssetData, bnbBaseAmount } from '../../../helpers/walletHelper';
+import {
+  getAssetFromAssetData,
+  bnbBaseAmount,
+} from '../../../helpers/walletHelper';
 
 type ComponentProps = {
   info: string;
@@ -315,7 +318,7 @@ class SwapSend extends React.Component<Props, State> {
   };
 
   handleChangePercent = (percent: number) => {
-    const { info, transferFees } = this.props;
+    const { info } = this.props;
 
     const { assetData } = this.props;
     const { source = '' }: Pair = getPair(info);
@@ -323,14 +326,15 @@ class SwapSend extends React.Component<Props, State> {
     const sourceAsset = getAssetFromAssetData(assetData, source);
 
     let totalAmount = sourceAsset?.assetValue.amount() ?? bn(0);
-    const fees = RD.toNullable(transferFees);
-    const fee = fees?.single.amount() || bn(0);
-    // substract fee from BNB source
-    if (
-      totalAmount.isGreaterThanOrEqualTo(fee) &&
-      source?.toUpperCase() === 'BNB'
-    ) {
-      totalAmount = totalAmount.minus(fee);
+    // fee transformation: BaseAmount -> TokenAmount -> BigNumber
+    const fee = this.bnbFeeAmount() || baseAmount(0);
+    const feeAsToken = baseToToken(fee);
+    const feeAsTokenBN = feeAsToken.amount();
+    // substract fee  - for BNB source only
+    if (source?.toUpperCase() === 'BNB') {
+      totalAmount = totalAmount.isGreaterThan(feeAsTokenBN)
+        ? totalAmount.minus(feeAsTokenBN)
+        : bn(0);
     }
     // formula (totalAmount * percent) / 100
     const newValue = totalAmount.multipliedBy(percent).div(100);
@@ -874,6 +878,7 @@ class SwapSend extends React.Component<Props, State> {
 
   /**
    * BNB fee in BaseAmount
+   * Returns Nothing if fee is not available
    */
   bnbFeeAmount = (): Maybe<BaseAmount> => {
     const { transferFees } = this.props;
