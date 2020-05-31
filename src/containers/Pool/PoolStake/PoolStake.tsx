@@ -408,7 +408,7 @@ class PoolStake extends React.Component<Props, State> {
 
     const selectedToken = getAssetFromAssetData(assetData, tokenName);
     const targetToken = getAssetFromAssetData(assetData, symbol);
-
+    console.log(selectedToken, targetToken);
     if (!selectedToken || !targetToken) {
       return;
     }
