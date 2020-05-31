@@ -29,7 +29,7 @@ const PoolFilter: React.FC<Props> = (props: Props): JSX.Element => {
         focused={selected === PoolDetailStatusEnum.Enabled}
       >
         <CheckCircleOutlined />
-        Enabled
+        Active
       </Button>
       <Button
         typevalue="outline"
@@ -38,7 +38,7 @@ const PoolFilter: React.FC<Props> = (props: Props): JSX.Element => {
         focused={selected === PoolDetailStatusEnum.Bootstrapped}
       >
         <FieldTimeOutlined />
-        Boostrapped
+        Pending
       </Button>
     </PoolFilterWrapper>
   );
