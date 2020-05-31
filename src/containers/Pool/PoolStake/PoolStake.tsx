@@ -384,11 +384,24 @@ class PoolStake extends React.Component<Props, State> {
           tokenAmount: tokenAmount(tokenAmountBN),
         });
       }
-    } else if (totalAmount.isLessThan(valueAsToken.amount())) {
-      this.setState({
-        tokenAmount: tokenAmount(totalAmount),
-        tokenPercent: 100,
-      });
+    } else if (tokenName !== 'rune') {
+      const data = this.getData();
+      const ratio = data?.ratio ?? 1;
+      // formula: newValue / ratio
+      const tokenValue = valueAsToken.amount().dividedBy(ratio);
+
+      console.log('here');
+      if (totalAmount.isLessThan(valueAsToken.amount())) {
+        this.setState({
+          runeAmount: tokenAmount(tokenValue),
+          tokenAmount: tokenAmount(totalAmount),
+        });
+      } else {
+        this.setState({
+          runeAmount: tokenAmount(tokenValue),
+          tokenAmount: valueAsToken,
+        });
+      }
     } else {
       this.setState({
         tokenAmount: valueAsToken,
@@ -408,7 +421,6 @@ class PoolStake extends React.Component<Props, State> {
 
     const selectedToken = getAssetFromAssetData(assetData, tokenName);
     const targetToken = getAssetFromAssetData(assetData, symbol);
-    console.log(selectedToken, targetToken);
     if (!selectedToken || !targetToken) {
       return;
     }
