@@ -408,7 +408,6 @@ class PoolStake extends React.Component<Props, State> {
       // formula: newValue / ratio
       const tokenValue = valueAsToken.amount().dividedBy(ratio);
 
-      console.log('here');
       if (totalAmount.isLessThan(valueAsToken.amount())) {
         this.setState({
           runeAmount: tokenAmount(tokenValue),
