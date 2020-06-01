@@ -29,7 +29,6 @@ import {
   BaseAmount,
   baseAmount,
 } from '@thorchain/asgardex-token';
-import Paragraph from 'antd/lib/typography/Paragraph';
 import Text from 'antd/lib/typography/Text';
 import Button from '../../../components/uielements/button';
 import Drag from '../../../components/uielements/drag';
@@ -52,6 +51,7 @@ import {
   SwapStatusPanel,
   PopoverContent,
   PopoverContainer,
+  FeeParagraph,
 } from './SwapSend.style';
 import {
   getTickerFormat,
@@ -89,14 +89,11 @@ import { SwapSendView, CalcResult } from './types';
 import { User, AssetData } from '../../../redux/wallet/types';
 import { TxStatus, TxTypes } from '../../../redux/app/types';
 
-import {
-  AssetDetailMap,
-  PriceDataIndex,
-  PoolDataMap,
-} from '../../../redux/midgard/types';
+import { PriceDataIndex, PoolDataMap } from '../../../redux/midgard/types';
 import { RootState } from '../../../redux/store';
 import { getAssetFromString } from '../../../redux/midgard/utils';
 import { BINANCE_NET, getNet } from '../../../env';
+import { PoolDetailStatusEnum } from '../../../types/generated/midgard';
 import {
   TransferEventRD,
   TransferFeesRD,
@@ -116,7 +113,6 @@ type ConnectedProps = {
   txStatus: TxStatus;
   assetData: AssetData[];
   poolAddress: string;
-  assets: AssetDetailMap;
   poolData: PoolDataMap;
   pools: string[];
   basePriceAsset: string;
@@ -941,11 +937,11 @@ class SwapSend extends React.Component<Props, State> {
   /**
    * Checks whether fee is covered by amounts of BNB in users wallet
    */
-  bnbFeeIsNotCovered = () => {
+  bnbFeeIsNotCovered = (): boolean => {
     const { assetData } = this.props;
     const bnbAmount = bnbBaseAmount(assetData);
     const fee = this.bnbFeeAmount();
-    return bnbAmount && fee && bnbAmount.amount().isLessThan(fee.amount());
+    return !!bnbAmount && !!fee && bnbAmount.amount().isLessThan(fee.amount());
   };
 
   /**
@@ -964,7 +960,7 @@ class SwapSend extends React.Component<Props, State> {
 
     const txtLoading = <Text>Fee: ...</Text>;
     return (
-      <Paragraph style={{ paddingTop: '10px' }}>
+      <FeeParagraph>
         {RD.fold(
           () => txtLoading,
           () => txtLoading,
@@ -972,6 +968,12 @@ class SwapSend extends React.Component<Props, State> {
           (fees: TransferFees) => (
             <>
               <Text>Fee: {formatBnbAmount(fees.single)}</Text>
+              {this.considerBnb() && (
+                <Text>
+                  {' '}
+                  (It will be substructed from your entered BNB value)
+                </Text>
+              )}
               {bnbAmount && this.bnbFeeIsNotCovered() && (
                 <>
                   <br />
@@ -985,7 +987,7 @@ class SwapSend extends React.Component<Props, State> {
             </>
           ),
         )(transferFees)}
-      </Paragraph>
+      </FeeParagraph>
     );
   };
 
@@ -993,7 +995,7 @@ class SwapSend extends React.Component<Props, State> {
     const {
       info,
       txStatus,
-      assets: tokenInfo,
+      poolData,
       pools,
       assetData,
       priceIndex,
@@ -1020,7 +1022,7 @@ class SwapSend extends React.Component<Props, State> {
     if (
       !swapPair.source ||
       !swapPair.target ||
-      !Object.keys(tokenInfo).length ||
+      !Object.keys(poolData).length ||
       !isValidSwap(swapPair, pools)
     ) {
       this.props.history.push('/swap'); // redirect if swap is invalid
@@ -1029,17 +1031,26 @@ class SwapSend extends React.Component<Props, State> {
 
     const { source: swapSource, target: swapTarget } = swapPair;
 
-    const tokensData: TokenData[] = Object.keys(tokenInfo).map(tokenName => {
-      const tokenData = tokenInfo[tokenName];
-      const assetStr = tokenData?.asset;
-      const asset = assetStr ? getAssetFromString(assetStr) : null;
-      const price = bnOrZero(tokenData?.priceRune);
+    const tokensData: TokenData[] = Object.keys(poolData).reduce(
+      (result: TokenData[], tokenName: string) => {
+        const tokenData = poolData[tokenName];
+        const assetStr = tokenData?.asset;
+        const asset = assetStr ? getAssetFromString(assetStr) : null;
+        const price = bnOrZero(tokenData?.price);
 
-      return {
-        asset: asset?.symbol ?? '',
-        price,
-      };
-    });
+        if (
+          tokenData.status &&
+          tokenData.status === PoolDetailStatusEnum.Enabled
+        ) {
+          result.push({
+            asset: asset?.symbol ?? '',
+            price,
+          });
+        }
+        return result;
+      },
+      [],
+    );
 
     const runePrice = validBNOrZero(priceIndex?.RUNE);
 
@@ -1266,7 +1277,6 @@ export default compose(
       user: state.Wallet.user,
       assetData: state.Wallet.assetData,
       poolAddress: state.Midgard.poolAddress,
-      assets: state.Midgard.assets,
       poolData: state.Midgard.poolData,
       pools: state.Midgard.pools,
       priceIndex: state.Midgard.priceIndex,
