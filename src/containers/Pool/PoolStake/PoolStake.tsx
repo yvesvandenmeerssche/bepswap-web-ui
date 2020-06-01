@@ -106,6 +106,11 @@ import {
 
 const { TabPane } = Tabs;
 
+enum ShareDetailTabKeys {
+  ADD = 'add',
+  WITHDRAW = 'withdraw',
+}
+
 type ComponentProps = {
   symbol: string;
   info: FixmeType; // PropTypes.object,
@@ -164,6 +169,7 @@ type State = {
   txResult: boolean;
   widthdrawPercentage: number;
   selectRatio: boolean;
+  selectedShareDetailTab: ShareDetailTabKeys;
 };
 
 type StakeData = {
@@ -210,6 +216,7 @@ class PoolStake extends React.Component<Props, State> {
       txResult: false,
       widthdrawPercentage: 0,
       selectRatio: false,
+      selectedShareDetailTab: ShareDetailTabKeys.ADD,
     };
   }
 
@@ -1108,7 +1115,13 @@ class PoolStake extends React.Component<Props, State> {
    * Check to consider BNB fee
    */
   considerBnbFee = (): boolean => {
-    const { tokenAmount } = this.state;
+    const { tokenAmount, selectedShareDetailTab } = this.state;
+
+    // For withdrawing, it's same as `considerBnb`
+    if (selectedShareDetailTab === ShareDetailTabKeys.WITHDRAW) {
+      return this.considerBnb();
+    }
+    // For staking, an amount of BNB needs to be entered as well
     return this.considerBnb() && tokenAmount.amount().isGreaterThan(0);
   };
 
@@ -1118,13 +1131,19 @@ class PoolStake extends React.Component<Props, State> {
    */
   bnbFeeAmount = (): Maybe<BaseAmount> => {
     const { transferFees } = this.props;
-    const { runeAmount, tokenAmount } = this.state;
+    const { runeAmount, tokenAmount, selectedShareDetailTab } = this.state;
     const fees = RD.toNullable(transferFees);
-    // check for single or multi fee
+    // To withdraw we will have two transactions and need two single fees
+    if (selectedShareDetailTab === ShareDetailTabKeys.WITHDRAW) {
+      const fee = fees?.single;
+      return fee ? baseAmount(fee.amount().multipliedBy(2)) : Nothing;
+    }
+
+    // For staking, whether it's a single or multi fee depending on entered values
     return runeAmount.amount().isGreaterThan(0) &&
       tokenAmount.amount().isGreaterThan(0)
-        ? fees?.multi
-        : fees?.single;
+      ? fees?.multi
+      : fees?.single;
   };
 
   /**
@@ -1166,7 +1185,7 @@ class PoolStake extends React.Component<Props, State> {
                 {this.considerBnbFee() && (
                   <Text>
                     {' '}
-                    (It will be substructed from your entered BNB value)
+                    (It will be substructed from BNB amount)
                   </Text>
                 )}
                 {bnbAmount && this.bnbFeeIsNotCovered() && (
@@ -1186,6 +1205,9 @@ class PoolStake extends React.Component<Props, State> {
       </FeeParagraph>
     );
   };
+
+  shareDetailTabsChangedHandler = (activeKey: ShareDetailTabKeys) =>
+    this.setState({ selectedShareDetailTab: activeKey });
 
   renderShareDetail = (
     _: PoolData,
@@ -1260,8 +1282,8 @@ class PoolStake extends React.Component<Props, State> {
 
     return (
       <div className="share-detail-wrapper">
-        <Tabs withBorder>
-          <TabPane tab="add" key="add">
+        <Tabs withBorder onChange={this.shareDetailTabsChangedHandler}>
+          <TabPane tab="Add" key={ShareDetailTabKeys.ADD}>
             <Row>
               <Col span={24} lg={12}>
                 <Label className="label-description" size="normal">
@@ -1350,7 +1372,11 @@ class PoolStake extends React.Component<Props, State> {
               </div>
             </div>
           </TabPane>
-          <TabPane tab="Withdraw" key="withdraw" disabled={disableWithdraw}>
+          <TabPane
+            tab="Withdraw"
+            key={ShareDetailTabKeys.WITHDRAW}
+            disabled={disableWithdraw}
+          >
             <Label className="label-title" size="normal" weight="bold">
               ADJUST WITHDRAWAL
             </Label>
