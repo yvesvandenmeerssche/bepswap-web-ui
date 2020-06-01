@@ -1153,17 +1153,16 @@ class PoolStake extends React.Component<Props, State> {
     const { transferFees } = this.props;
     const { runeAmount, tokenAmount, selectedShareDetailTab } = this.state;
     const fees = RD.toNullable(transferFees);
-    // To withdraw we will have two transactions and need two single fees
+    // To withdraw we will always have a `single` transaction fee
     if (selectedShareDetailTab === ShareDetailTabKeys.WITHDRAW) {
-      const fee = fees?.single;
-      return fee ? baseAmount(fee.amount().multipliedBy(2)) : Nothing;
+      return fees?.single ?? Nothing;
     }
 
-    // For staking, whether it's a single or multi fee depending on entered values
+    // For staking, check whether it's a `single` or `multi` fee depending on entered values
     return runeAmount.amount().isGreaterThan(0) &&
       tokenAmount.amount().isGreaterThan(0)
-      ? fees?.multi
-      : fees?.single;
+      ? (fees?.multi ?? Nothing)
+      : (fees?.single ?? Nothing);
   };
 
   /**
