@@ -37,7 +37,6 @@ import {
   baseAmount,
   baseToToken,
 } from '@thorchain/asgardex-token';
-import Paragraph from 'antd/lib/typography/Paragraph';
 import Text from 'antd/lib/typography/Text';
 import { getAppContainer } from '../../../helpers/elementHelper';
 
@@ -65,6 +64,7 @@ import {
   ConfirmModalContent,
   PopoverContent,
   PopoverContainer,
+  FeeParagraph,
 } from './PoolStake.style';
 import {
   WithdrawResultParams,
@@ -628,7 +628,7 @@ class PoolStake extends React.Component<Props, State> {
 
     // Validate BNB amount to swap to consider fees
     // to substract fee from amount before sending it
-    if (this.considerBnb()) {
+    if (this.considerBnbFee()) {
       const fee = this.bnbFeeAmount() || baseAmount(0);
       // fee transformation: BaseAmount -> TokenAmount -> BigNumber
       const feeAsTokenAmount = baseToToken(fee).amount();
@@ -1105,23 +1105,36 @@ class PoolStake extends React.Component<Props, State> {
   };
 
   /**
+   * Check to consider BNB fee
+   */
+  considerBnbFee = (): boolean => {
+    const { tokenAmount } = this.state;
+    return this.considerBnb() && tokenAmount.amount().isGreaterThan(0);
+  };
+
+  /**
    * BNB fee in BaseAmount
    * Returns Nothing if fee is not available
    */
   bnbFeeAmount = (): Maybe<BaseAmount> => {
     const { transferFees } = this.props;
+    const { runeAmount, tokenAmount } = this.state;
     const fees = RD.toNullable(transferFees);
-    return fees?.single;
+    // check for single or multi fee
+    return runeAmount.amount().isGreaterThan(0) &&
+      tokenAmount.amount().isGreaterThan(0)
+        ? fees?.multi
+        : fees?.single;
   };
 
   /**
    * Checks whether fee is covered by amounts of BNB in users wallet
    */
-  bnbFeeIsNotCovered = () => {
+  bnbFeeIsNotCovered = (): boolean => {
     const { assetData } = this.props;
     const bnbAmount = bnbBaseAmount(assetData);
     const fee = this.bnbFeeAmount();
-    return bnbAmount && fee && bnbAmount.amount().isLessThan(fee.amount());
+    return !!bnbAmount && !!fee && bnbAmount.amount().isLessThan(fee.amount());
   };
 
   /**
@@ -1140,34 +1153,37 @@ class PoolStake extends React.Component<Props, State> {
 
     const txtLoading = <Text>Fee: ...</Text>;
     return (
-      <Paragraph style={{ paddingTop: '10px' }}>
+      <FeeParagraph style={{ paddingTop: '10px' }}>
         {RD.fold(
           () => txtLoading,
           () => txtLoading,
           (_: Error) => <Text>Error: Fee could not be loaded</Text>,
-          (fees: TransferFees) => (
-            <>
-              <Text>Fee: {formatBnbAmount(fees.single)}</Text>
-              {this.considerBnb() && (
-                <Text>
-                  {' '}
-                  (It will be substructed from your entered BNB value)
-                </Text>
-              )}
-              {bnbAmount && this.bnbFeeIsNotCovered() && (
-                <>
-                  <br />
-                  <Text type="danger" style={{ paddingTop: '10px' }}>
-                    You have {formatBnbAmount(bnbAmount)} in your wallet,
-                    that&lsquo;s not enought to cover the fee for this
-                    transaction.
+          (_: TransferFees) => {
+            const fee = this.bnbFeeAmount();
+            return (
+              <>
+                {fee && <Text>Fee: {formatBnbAmount(fee)}</Text>}
+                {this.considerBnbFee() && (
+                  <Text>
+                    {' '}
+                    (It will be substructed from your entered BNB value)
                   </Text>
-                </>
-              )}
-            </>
-          ),
+                )}
+                {bnbAmount && this.bnbFeeIsNotCovered() && (
+                  <>
+                    <br />
+                    <Text type="danger" style={{ paddingTop: '10px' }}>
+                      You have {formatBnbAmount(bnbAmount)} in your wallet,
+                      that&lsquo;s not enought to cover the fee for this
+                      transaction.
+                    </Text>
+                  </>
+                )}
+              </>
+            );
+          },
         )(transferFees)}
-      </Paragraph>
+      </FeeParagraph>
     );
   };
 
