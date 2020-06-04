@@ -643,6 +643,8 @@ class PoolCreate extends React.Component<Props, State> {
     const target = getTickerFormat(symbol);
     const runePrice = validBNOrZero(priceIndex?.RUNE);
 
+    const totalPrice = runeAmount.amount().multipliedBy(runePrice);
+
     const completed = hash && !status;
     const txURL = TESTNET_TX_BASE_URL + hash;
 
@@ -666,14 +668,14 @@ class PoolCreate extends React.Component<Props, State> {
                 data-test="stakeconfirm-coin-data-source"
                 asset={source}
                 assetValue={runeAmount}
-                price={runeAmount.amount().multipliedBy(runePrice)}
+                price={totalPrice}
                 priceUnit={basePriceAsset}
               />
               <CoinData
                 data-test="stakeconfirm-coin-data-target"
                 asset={target}
                 assetValue={tokenAmount}
-                price={bn(0)}
+                price={totalPrice}
                 priceUnit={basePriceAsset}
               />
             </div>
