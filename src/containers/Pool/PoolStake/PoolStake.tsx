@@ -1359,7 +1359,7 @@ class PoolStake extends React.Component<Props, State> {
                         sizevalue="small"
                         typevalue="outline"
                         focused={selectRatio}
-                        tabIndex={2}
+                        tabIndex={-1}
                       >
                         {selectRatio ? <LockOutlined /> : <UnlockOutlined />}
                       </Button>
