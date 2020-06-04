@@ -216,7 +216,7 @@ class PoolStake extends React.Component<Props, State> {
       tokenPercent: 0,
       txResult: false,
       widthdrawPercentage: 0,
-      selectRatio: false,
+      selectRatio: true,
       selectedShareDetailTab: ShareDetailTabKeys.ADD,
     };
   }
@@ -1799,7 +1799,7 @@ class PoolStake extends React.Component<Props, State> {
               onCancel={this.hideWalletAlert}
               okText="ADD WALLET"
             >
-              Please add a wallet to stake.
+              <Label>Please add a wallet to swap tokens.</Label>
             </Modal>
           </>
         )}
