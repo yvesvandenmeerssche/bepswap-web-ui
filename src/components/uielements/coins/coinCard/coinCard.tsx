@@ -79,6 +79,7 @@ type Props = {
   children: React.ReactNode;
   inputProps: {
     'data-test': string;
+    'tabIndex': string;
   };
   'data-test': string;
 };
