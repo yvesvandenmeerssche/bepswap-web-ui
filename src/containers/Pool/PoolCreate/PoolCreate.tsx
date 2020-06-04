@@ -18,7 +18,6 @@ import {
   formatBN,
   bnOrZero,
   formatBNCurrency,
-  bn,
   delay,
 } from '@thorchain/asgardex-util';
 
