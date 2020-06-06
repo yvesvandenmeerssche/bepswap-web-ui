@@ -75,13 +75,14 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
         } = record;
         const URL = `/swap/${asset.toLowerCase()}-${target.toLowerCase()}`;
         const dataTest = `swap-button-${target.toLowerCase()}`;
-
+        console.log(poolStatus);
         return (
           <Link to={URL}>
             <Button
               style={{ margin: 'auto' }}
               round="true"
               data-test={dataTest}
+              disabled={poolStatus === 'bootstrapped'}
             >
               <SwapOutlined />
               swap
