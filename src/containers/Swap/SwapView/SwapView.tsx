@@ -82,7 +82,7 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
               style={{ margin: 'auto' }}
               round="true"
               data-test={dataTest}
-              disabled={poolStatus === 'bootstrapped'}
+              disabled={poolStatus === PoolDetailStatusEnum.Bootstrapped}
             >
               <SwapOutlined />
               swap
