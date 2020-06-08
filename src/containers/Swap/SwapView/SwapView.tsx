@@ -201,7 +201,6 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
         'rune',
         poolInfo,
         priceIndex,
-        basePriceAsset,
       );
 
       if (swapCardData) {

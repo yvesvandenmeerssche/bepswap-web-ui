@@ -242,7 +242,6 @@ class PoolView extends React.Component<Props, State> {
         'rune',
         poolInfo,
         priceIndex,
-        basePriceAsset,
       );
 
       if (stakeCardData.target !== activeAsset) {
