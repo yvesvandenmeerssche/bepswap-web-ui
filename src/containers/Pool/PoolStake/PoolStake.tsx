@@ -1740,7 +1740,6 @@ class PoolStake extends React.Component<Props, State> {
   render() {
     const {
       priceIndex,
-      basePriceAsset,
       poolData,
       stakerPoolData,
       stakerPoolDataError,
