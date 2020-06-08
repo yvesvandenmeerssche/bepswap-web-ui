@@ -230,7 +230,7 @@ class PoolView extends React.Component<Props, State> {
   };
 
   renderPoolList = (view: ViewType) => {
-    const { pools, poolData, priceIndex, basePriceAsset } = this.props;
+    const { pools, poolData, priceIndex } = this.props;
     const { activeAsset, poolStatus } = this.state;
 
     let key = 0;

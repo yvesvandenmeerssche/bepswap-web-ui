@@ -41,7 +41,6 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
     pools,
     poolData,
     priceIndex,
-    basePriceAsset,
     loading,
     getPools,
   } = props;
