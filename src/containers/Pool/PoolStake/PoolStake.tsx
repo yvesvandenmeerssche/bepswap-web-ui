@@ -911,7 +911,9 @@ class PoolStake extends React.Component<Props, State> {
     const txURL = TESTNET_TX_BASE_URL + hash;
 
     const sourcePrice = runeAmount.amount().multipliedBy(Pr);
-    const targetPrice = tokenAmount.amount().multipliedBy(tokenPrice);
+    // const targetPrice = tokenAmount.amount().multipliedBy(tokenPrice);
+    // target price is equal to source price
+    const targetPrice = sourcePrice;
 
     return (
       <ConfirmModalContent>
