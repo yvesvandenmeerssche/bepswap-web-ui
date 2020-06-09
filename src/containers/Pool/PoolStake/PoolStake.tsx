@@ -907,7 +907,7 @@ class PoolStake extends React.Component<Props, State> {
     const target = getTickerFormat(symbol);
 
     const Pr = validBNOrZero(priceIndex?.RUNE);
-    const tokenPrice = _get(priceIndex, target.toUpperCase(), 0);
+    // const tokenPrice = _get(priceIndex, target.toUpperCase(), 0);
     const txURL = TESTNET_TX_BASE_URL + hash;
 
     const sourcePrice = runeAmount.amount().multipliedBy(Pr);
