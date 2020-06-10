@@ -44,7 +44,11 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
   const [page, setPage] = useState(1);
 
   const limit = 5;
-  const txTypesPair: { [key: string]: TxDetailType } = {
+
+  const allTxTypeParams = `${TxDetailsTypeEnum.Swap},${TxDetailsTypeEnum.DoubleSwap},${TxDetailsTypeEnum.Stake},${TxDetailsTypeEnum.Unstake}`;
+
+  const txTypesPair: { [key: string]: string } = {
+    all: allTxTypeParams,
     swap: TxDetailsTypeEnum.Swap,
     stake: TxDetailsTypeEnum.Stake,
     unstake: TxDetailsTypeEnum.Unstake,
@@ -188,27 +192,13 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
   };
 
   const pageContent = (data: TxDetails[], count: number, loading: boolean) => {
-    const filteredData = data.filter(eventData => {
-      if (
-        eventData.type &&
-        [
-          TxDetailsTypeEnum.Swap,
-          TxDetailsTypeEnum.Stake,
-          TxDetailsTypeEnum.Unstake,
-        ].includes(eventData.type)
-      ) {
-        return true;
-      }
-      return false;
-    });
-
     return (
       <ContentWrapper>
         <ContentWrapper className="transaction-view-wrapper desktop-view">
-          {renderTxTable(filteredData, ViewType.DESKTOP, loading)}
+          {renderTxTable(data, ViewType.DESKTOP, loading)}
         </ContentWrapper>
         <ContentWrapper className="transaction-view-wrapper mobile-view">
-          {renderTxTable(filteredData, ViewType.MOBILE, loading)}
+          {renderTxTable(data, ViewType.MOBILE, loading)}
         </ContentWrapper>
         {count ? (
           <StyledPagination
