@@ -1,7 +1,7 @@
 import React from 'react';
 
 import BigNumber from 'bignumber.js';
-import { bn, formatBN, bnOrZero } from '@thorchain/asgardex-util';
+import { bn, formatBN } from '@thorchain/asgardex-util';
 import { TokenAmount, formatTokenAmount } from '@thorchain/asgardex-token';
 import {
   CoinDataWrapper,
