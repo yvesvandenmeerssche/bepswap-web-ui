@@ -13,7 +13,7 @@ export const SwapAssetCard = styled.div`
   flex-direction: column;
   margin: auto;
   width: 100%;
-  max-width: 800px;
+  max-width: 600px;
 
   .swaptool-container {
     display: flex;
@@ -31,13 +31,28 @@ export const SwapAssetCard = styled.div`
     padding-top: 20px;
   }
 
-  ${media.md`
-    width: 90%;
+  ${media.lg`
+    max-width: 800px;
   `}
 
-  ${media.lg`
-    width: 80%;
-  `}
+  .swap-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding: 0 20px;
+    align-items: center;
+    margin: 0px auto;
+    .desktop-view {
+      display: none;
+      ${media.lg`
+        display: block;
+      `}
+    }
+    ${media.sm`
+      margin-top: 40px;
+      margin-bottom: 20px;
+    `}
+  }
 `;
 
 export const ArrowImage = styled.img`
@@ -83,33 +98,6 @@ export const ContentWrapper = styled(ContentView)`
     padding: 48px 0;
   `}
 
-  .ant-row {
-    display: flex;
-    flex-grow: 1;
-    ${media.xs`
-      flex-direction: column;
-    `}
-    ${media.sm`
-      flex-direction: row;
-    `}
-
-    .desktop-view {
-      display: none;
-      ${media.md`
-        display: block;
-      `}
-    }
-  }
-
-  .swap-status-panel {
-    .slip-label {
-      font-size: 13px;
-      color: ${palette('text', 0)};
-      letter-spacing: 1px;
-      text-align: right;
-      text-transform: uppercase;
-    }
-  }
 
   .swap-detail-panel {
     display: flex;
@@ -320,13 +308,16 @@ export const SwapStatusPanel = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 200px;
-  margin-top: 120px;
-  margin-left: auto;
-  margin-right: 10px;
+  margin: auto 10px;
 
   .slip-ratio-labels {
-    margin-right: 10px;
+    margin-left: 18px;
+    .slip-label {
+      font-size: 13px;
+      color: ${palette('grey', 0)};
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
   }
 
   svg {
@@ -359,21 +350,23 @@ export const SliderSwapWrapper = styled.div`
   flex-direction: row;
   padding-left: 10px;
   align-items: center;
-  margin-top: 10px;
+  margin-top: 20px;
+  padding-bottom: 20px;
+  height: 80px;
   .slider {
     flex-grow: 1;
+    align-self: baseline;
   }
   .swap-wrapper{
-    width: 100px;
+    width: 60px;
     text-align: center;
     .swap-outlined {
-      font-size: 18px;
+      font-size: 22px;
       transform: rotate(90deg);
       color: ${palette('success', 0)};
     }
   }
   ${media.sm`
-    align-items: baseline;
     .swap-wrapper {
       width: 170px;
     }  

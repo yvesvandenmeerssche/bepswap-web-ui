@@ -4,7 +4,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { SwapOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons';
-import { Row, Col, notification } from 'antd';
+import { Row, notification } from 'antd';
 import {
   client as binanceClient,
   getPrefix,
@@ -36,7 +36,6 @@ import Label from '../../../components/uielements/label';
 import Drag from '../../../components/uielements/drag';
 import TokenCard from '../../../components/uielements/tokens/tokenCard';
 import CoinData from '../../../components/uielements/coins/coinData';
-import Status from '../../../components/uielements/status';
 import TxTimer from '../../../components/uielements/txTimer';
 import Modal from '../../../components/uielements/modal';
 import PrivateModal from '../../../components/modals/privateModal';
@@ -1142,26 +1141,9 @@ class SwapSend extends React.Component<Props, State> {
             <ContentTitle>
               swapping {swapSource} &gt;&gt; {swapTarget}
             </ContentTitle>
-            <Row>
-              <Col
-                className="swap-status-panel desktop-view"
-                xs={{ span: 0, offset: 0 }}
-                md={{ span: 8, offset: 0 }}
-                lg={{ span: 8 }}
-              >
-                <SwapStatusPanel>
-                  <div className="slip-ratio-labels">
-                    <Status value={ratioLabel} />
-                    {slipValue && <p className="slip-label">{slipValue}</p>}
-                  </div>
-                  <StepBar />
-                </SwapStatusPanel>
-              </Col>
-              <Col
+            <div className="swap-content">
+              <div
                 className="swap-detail-panel"
-                xs={{ span: 24, offset: 0 }}
-                md={{ span: 16, offset: 0 }}
-                lg={{ span: 16, offset: 0 }}
               >
                 <TokenCard
                   inputTitle="input"
@@ -1261,8 +1243,19 @@ class SwapSend extends React.Component<Props, State> {
                     </CardForm>
                   </CardFormHolder>
                 </div>
-              </Col>
-            </Row>
+              </div>
+              <div
+                className="desktop-view"
+              >
+                <SwapStatusPanel>
+                  <StepBar size={170} />
+                  <div className="slip-ratio-labels">
+                    <p className="slip-label">{ratioLabel}</p>
+                    {slipValue && <p className="slip-label">{slipValue}</p>}
+                  </div>
+                </SwapStatusPanel>
+              </div>
+            </div>
             <div className="drag-confirm-wrapper">
               <Drag
                 title={dragTitle}
