@@ -11,7 +11,7 @@ export const TokenCardWrapper = styled.div`
   }
 
   .token-card-content {
-    margin-top: 36px;
+    margin-top: 6px;
     display: flex;
     flex-direction: column;
     ${media.sm`
