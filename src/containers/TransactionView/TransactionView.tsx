@@ -50,6 +50,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
   const txTypesPair: { [key: string]: string } = {
     all: allTxTypeParams,
     swap: TxDetailsTypeEnum.Swap,
+    doubleSwap: TxDetailsTypeEnum.DoubleSwap,
     stake: TxDetailsTypeEnum.Stake,
     unstake: TxDetailsTypeEnum.Unstake,
   };
