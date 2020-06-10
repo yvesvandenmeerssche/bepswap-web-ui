@@ -11,13 +11,32 @@ import { transition } from '../../../settings/style-util';
 export const SwapAssetCard = styled.div`
   display: flex;
   flex-direction: column;
+  margin: auto;
+  width: 100%;
 
   .swaptool-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    display: none;
   }
+
+  .drag-confirm-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-top: 20px;
+  }
+
+  ${media.md`
+    width: 90%;
+  `}
+
+  ${media.lg`
+    width: 80%;
+  `}
 `;
 
 export const ArrowImage = styled.img`
@@ -75,9 +94,19 @@ export const ContentWrapper = styled(ContentView)`
 
     .desktop-view {
       display: none;
-      ${media.lg`
+      ${media.md`
         display: block;
       `}
+    }
+  }
+
+  .swap-status-panel {
+    .slip-label {
+      font-size: 13px;
+      color: ${palette('text', 0)};
+      letter-spacing: 1px;
+      text-align: right;
+      text-transform: uppercase;
     }
   }
 
@@ -93,14 +122,6 @@ export const ContentWrapper = styled(ContentView)`
       .btn-wrapper {
         width: calc(50% - 10px);
       }
-    }
-
-    .drag-confirm-wrapper {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding-top: 20px;
     }
   }
 
@@ -303,6 +324,10 @@ export const SwapStatusPanel = styled.div`
   margin-left: auto;
   margin-right: 10px;
 
+  .slip-ratio-labels {
+    margin-right: 10px;
+  }
+
   svg {
     transform: rotate(-90deg);
     font-size: 24px;
@@ -322,7 +347,34 @@ export const PopoverContent = styled.div`
 
 export const FeeParagraph = styled(Paragraph)`
   padding-top: 10px;
+  text-align: center;
   & > * {
-    color: ${palette('text', 1)};
+    color: ${palette('text', 2)};
   }
+`;
+
+export const SliderSwapWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  padding-left: 10px;
+  align-items: center;
+  margin-top: 10px;
+  .slider {
+    flex-grow: 1;
+  }
+  .swap-wrapper{
+    width: 100px;
+    text-align: center;
+    .swap-outlined {
+      font-size: 18px;
+      transform: rotate(90deg);
+      color: ${palette('success', 0)};
+    }
+  }
+  ${media.sm`
+    align-items: baseline;
+    .swap-wrapper {
+      width: 170px;
+    }  
+  `}
 `;

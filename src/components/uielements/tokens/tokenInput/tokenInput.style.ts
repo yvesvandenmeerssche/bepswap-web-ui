@@ -8,10 +8,12 @@ export const TokenInputWrapper = styled.div`
   min-width: 212px;
   height: 60px;
   padding: 9px;
-  border: 1px solid ${palette('gray', 0)};
+  
   border-radius: 2px;
   text-transform: uppercase;
   ${transition()};
+
+  border: 1px solid transparent;
 
   &:hover {
     border-color: ${palette('success', 0)};
@@ -27,12 +29,12 @@ export const TokenInputWrapper = styled.div`
       color: ${palette('text', 2)};
       letter-spacing: 1px;
     }
-
     .token-input-header-label {
       font-size: 11px;
-      color: ${palette('success', 1)};
+      color: ${palette('text', 2)};
       letter-spacing: 1px;
     }
+
   }
 
   .token-input-content {
