@@ -98,7 +98,6 @@ export const ContentWrapper = styled(ContentView)`
     padding: 48px 0;
   `}
 
-
   .swap-detail-panel {
     display: flex;
     flex-direction: column;
@@ -312,12 +311,6 @@ export const SwapStatusPanel = styled.div`
 
   .slip-ratio-labels {
     margin-left: 18px;
-    .slip-label {
-      font-size: 13px;
-      color: ${palette('grey', 0)};
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
   }
 
   svg {
@@ -357,7 +350,7 @@ export const SliderSwapWrapper = styled.div`
     flex-grow: 1;
     align-self: baseline;
   }
-  .swap-wrapper{
+  .swap-wrapper {
     width: 60px;
     text-align: center;
     .swap-outlined {

@@ -1130,7 +1130,7 @@ class SwapSend extends React.Component<Props, State> {
 
       const disableDrag = this.bnbFeeIsNotCovered();
 
-      const slipValue = slip ? `slip ${formatBN(slip, 2)}%` : Nothing;
+      const slipValue = slip ? `SLIP ${formatBN(slip, 2)}%` : Nothing;
 
       const sourceAsset = getAssetFromAssetData(assetData, swapSource);
       const totalAmount = sourceAsset?.assetValue.amount().toNumber();
@@ -1142,9 +1142,7 @@ class SwapSend extends React.Component<Props, State> {
               swapping {swapSource} &gt;&gt; {swapTarget}
             </ContentTitle>
             <div className="swap-content">
-              <div
-                className="swap-detail-panel"
-              >
+              <div className="swap-detail-panel">
                 <TokenCard
                   inputTitle="input"
                   asset={swapSource}
@@ -1170,9 +1168,11 @@ class SwapSend extends React.Component<Props, State> {
                     />
                   </div>
                   <div className="swap-wrapper">
-                    <SwapOutlined className="swap-outlined" onClick={this.handleReversePair} />
+                    <SwapOutlined
+                      className="swap-outlined"
+                      onClick={this.handleReversePair}
+                    />
                   </div>
-
                 </SliderSwapWrapper>
                 <TokenCard
                   inputTitle="output"
@@ -1244,14 +1244,12 @@ class SwapSend extends React.Component<Props, State> {
                   </CardFormHolder>
                 </div>
               </div>
-              <div
-                className="desktop-view"
-              >
+              <div className="desktop-view">
                 <SwapStatusPanel>
                   <StepBar size={170} />
                   <div className="slip-ratio-labels">
-                    <p className="slip-label">{ratioLabel}</p>
-                    {slipValue && <p className="slip-label">{slipValue}</p>}
+                    <Label>{ratioLabel}</Label>
+                    <Label>{slipValue}</Label>
                   </div>
                 </SwapStatusPanel>
               </div>
