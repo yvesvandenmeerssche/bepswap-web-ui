@@ -70,7 +70,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
     [history],
   );
 
-  const renderHeader = useMemo(() => {
+  const renderHeader = () => {
     const swapTab = (
       <span>
         <SwapOutlined />
@@ -97,7 +97,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
         </Tabs>
       </div>
     );
-  }, [activeKey]);
+  };
 
   return (
     <StyledHeader>
