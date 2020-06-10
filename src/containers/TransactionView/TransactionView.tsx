@@ -22,7 +22,7 @@ import {
 import { ViewType, Maybe } from '../../types/bepswap';
 
 import * as midgardActions from '../../redux/midgard/actions';
-import { TxDetailData, TxDetailType } from '../../redux/midgard/types';
+import { TxDetailData } from '../../redux/midgard/types';
 import { User } from '../../redux/wallet/types';
 import { RootState } from '../../redux/store';
 import AddWallet from '../../components/uielements/addWallet';
