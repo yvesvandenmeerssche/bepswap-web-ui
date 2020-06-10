@@ -13,6 +13,7 @@ export const SwapAssetCard = styled.div`
   flex-direction: column;
   margin: auto;
   width: 100%;
+  max-width: 800px;
 
   .swaptool-container {
     display: flex;
