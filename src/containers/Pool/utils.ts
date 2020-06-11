@@ -42,6 +42,10 @@ export type CalcResult = {
   T: BigNumber;
 };
 
+export const getRoundedDownBN = (value: BigNumber, decimal = 2) => {
+  return value.toFixed(decimal, 1);
+};
+
 export const getCalcResult = (
   tokenName: string,
   pools: PoolDataMap,
