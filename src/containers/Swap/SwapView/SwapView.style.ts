@@ -16,6 +16,18 @@ export const ContentWrapper = styled(ContentView)`
     }
   }
 
+  .add-new-pool {
+    display: flex;
+    align-items: center;
+    padding-top: 20px;
+    cursor: pointer;
+    width: 160px;
+
+    .label-wrapper {
+      padding-left: 20px;
+    }
+  }
+
   .view-title {
     padding-left: 10px;
   }

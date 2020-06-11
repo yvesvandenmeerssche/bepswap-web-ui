@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
+import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, Link } from 'react-router-dom';
-import { SyncOutlined, SwapOutlined } from '@ant-design/icons';
+import { notification, Row, Col } from 'antd';
+import { SyncOutlined, SwapOutlined, DatabaseOutlined } from '@ant-design/icons';
 
-import { bn } from '@thorchain/asgardex-util';
+// import { bn } from '@thorchain/asgardex-util';
+import Label from '../../../components/uielements/label';
+import AddIcon from '../../../components/uielements/addIcon';
 import CoinPair from '../../../components/uielements/coins/coinPair';
-import Trend from '../../../components/uielements/trend';
+import CoinIcon from '../../../components/uielements/coins/coinIcon';
+// import Trend from '../../../components/uielements/trend';
 import Button from '../../../components/uielements/button';
 import Table from '../../../components/uielements/table';
 
@@ -17,20 +22,25 @@ import { PriceDataIndex, PoolDataMap } from '../../../redux/midgard/types';
 import { FixmeType, Maybe, ViewType, Nothing  } from '../../../types/bepswap';
 
 import { ContentWrapper, ActionHeader } from './SwapView.style';
+import { getCreatePoolTokens } from '../../Pool/utils';
+import { getTickerFormat } from '../../../helpers/stringHelper';
+import { getAppContainer } from '../../../helpers/elementHelper';
 import { RootState } from '../../../redux/store';
+import { AssetData, User } from '../../../redux/wallet/types';
 import { getAssetFromString } from '../../../redux/midgard/utils';
 import { PoolInfoType } from '../../Pool/types';
 import { PoolDetailStatusEnum } from '../../../types/generated/midgard/api';
 import PoolFilter from '../../../components/poolFilter';
-import { User } from '../../../redux/wallet/types';
 
 
 type ComponentProps = {};
 
 type ConnectedProps = {
+  history: H.History;
   pools: string[];
   poolData: PoolDataMap;
   priceIndex: PriceDataIndex;
+  assetData: AssetData[];
   basePriceAsset: string;
   loading: boolean;
   getPools: typeof midgardActions.getPools;
@@ -47,6 +57,7 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
     loading,
     getPools,
     user,
+    assetData,
   } = props;
 
   const wallet: Maybe<string> = user ? user.wallet : Nothing;
@@ -60,12 +71,44 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wallet]);
 
+  const handleNewPool = () => {
+    // const { assetData, pools } = this.props;
+
+    // const wallet = user ? user.wallet : null;
+
+    if (!wallet) {
+      notification.warning({
+        message: 'Create Pool Failed',
+        description: 'Please connect your wallet to add a new pool.',
+        getContainer: getAppContainer,
+      });
+    } else {
+      console.log(assetData);
+      const possibleTokens = getCreatePoolTokens(assetData, pools);
+      console.log(possibleTokens);
+      if (possibleTokens.length) {
+        const symbol = possibleTokens[0].asset;
+        if (getTickerFormat(symbol) !== 'rune') {
+          const URL = `/pool/${symbol}/new`;
+          props.history.push(URL);
+        }
+      } else {
+        notification.warning({
+          message: 'Create Pool Failed',
+          description: 'You cannot create a new pool.',
+          getContainer: getAppContainer,
+        });
+      }
+    }
+  };
+
   const renderSwapTable = (
     swapViewData: SwapTableRowType[],
     view: ViewType,
   ) => {
     const btnCol = {
       key: 'swap',
+      // width: '30%',
       title: (
         <ActionHeader>
           <Button onClick={getPools} typevalue="outline">
@@ -81,18 +124,40 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
         const URL = `/swap/${asset.toLowerCase()}-${target.toLowerCase()}`;
         const dataTest = `swap-button-${target.toLowerCase()}`;
 
+        const URL_stake = `/pool/${asset.toUpperCase()}`;
+        const dataTest_stake = `stake-button-${asset.toLowerCase()}`;
+
         return (
-          <Link to={URL}>
-            <Button
-              style={{ margin: 'auto' }}
-              round="true"
-              data-test={dataTest}
-              disabled={poolStatus === PoolDetailStatusEnum.Bootstrapped}
-            >
-              <SwapOutlined />
-              swap
-            </Button>
-          </Link>
+          <div>
+            <Row>
+              <Col xs={12}>
+                <Link to={URL_stake}>
+                  <Button
+                    style={{ margin: 'auto' }}
+                    round="true"
+                    typevalue="outline"
+                    data-test={dataTest_stake}
+                  >
+                    <DatabaseOutlined />
+                    stake
+                  </Button>
+                </Link>
+              </Col>
+              <Col xs={12}>
+                <Link to={URL}>
+                  <Button
+                    style={{ margin: 'auto' }}
+                    round="true"
+                    data-test={dataTest}
+                    disabled={poolStatus === PoolDetailStatusEnum.Bootstrapped}
+                  >
+                    <SwapOutlined />
+                    swap
+                  </Button>
+                </Link>
+              </Col>
+            </Row>
+          </div>
         );
       },
     };
@@ -114,8 +179,21 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
         key: 'pool',
         title: 'pool',
         dataIndex: 'pool',
-        render: ({ asset, target }: PoolInfoType) => (
-          <CoinPair from={asset} to={target} />
+        render: ({ target }: PoolInfoType) => (
+          // <div style={{ marginLeft:'20px' }}>
+          //   <CoinIcon type={target} />
+          // </div>
+          <Row>
+            <Col
+              xs={24}
+              style={{ display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center' }}
+            >
+              <CoinIcon type={target} />
+            </Col>
+          </Row>
+
         ),
       },
       {
@@ -152,15 +230,22 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
           a.raw.volume.minus(b.raw.volume),
         sortDirections: ['descend', 'ascend'],
       },
-      {
-        key: 'slip',
-        title: 'avg. slip',
-        dataIndex: 'slip',
-        render: (slip: string) => <Trend amount={bn(slip)} />,
-        sorter: (a: SwapTableRowType, b: SwapTableRowType) =>
-          a.raw.slip.minus(b.raw.slip),
-        sortDirections: ['descend', 'ascend'],
-      },
+      // {
+      //   key: 'slip',
+      //   title: 'avg. slip',
+      //   dataIndex: 'slip',
+      //   render: (slip: string) => <Trend amount={bn(slip)} />,
+      //   sorter: (a: SwapTableRowType, b: SwapTableRowType) =>
+      //     a.raw.slip.minus(b.raw.slip),
+      //   sortDirections: ['descend', 'ascend'],
+      // },
+      // {
+      //   key: 'roiAT',
+      //   title: 'historical ROI',
+      //   dataIndex: 'roiAT',
+      //   sorter: (a: SwapTableRowType, b: SwapTableRowType) => a.raw.roiAT - b.raw.roiAT,
+      //   sortDirections: ['descend', 'ascend'],
+      // },
       btnCol,
     ];
 
@@ -211,6 +296,7 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
     return renderSwapTable(filteredData, view);
   };
 
+
   return (
     <ContentWrapper className="swap-view-wrapper">
       <PoolFilter selected={poolStatus} onClick={selectPoolStatus} />
@@ -219,6 +305,12 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
       </div>
       <div className="swap-list-view mobile-view">
         {renderSwapList(ViewType.MOBILE)}
+      </div>
+      <div className="add-new-pool" onClick={handleNewPool}>
+        <AddIcon />
+        <Label size="normal" weight="bold" color="normal">
+          ADD NEW POOL
+        </Label>
       </div>
     </ContentWrapper>
   );
