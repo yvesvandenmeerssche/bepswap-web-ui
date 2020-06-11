@@ -654,7 +654,7 @@ class SwapSend extends React.Component<Props, State> {
     pair: Pair,
   ) => {
     if (!targetInfo.length) {
-      this.props.history.push('/swap');
+      this.props.history.push('/pools');
     }
 
     return validatePair(pair, sourceInfo, targetInfo);

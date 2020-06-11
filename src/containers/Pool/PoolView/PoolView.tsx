@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { withRouter, Link } from 'react-router-dom';
+import { withRouter, Link, useHistory } from 'react-router-dom';
 import { notification } from 'antd';
-import { SyncOutlined, DatabaseOutlined } from '@ant-design/icons';
+import {
+  SyncOutlined,
+  SwapOutlined,
+  DatabaseOutlined,
+} from '@ant-design/icons';
 
 import Label from '../../../components/uielements/label';
 import AddIcon from '../../../components/uielements/addIcon';
@@ -13,7 +17,7 @@ import Table from '../../../components/uielements/table';
 import Button from '../../../components/uielements/button';
 import PoolFilter from '../../../components/poolFilter';
 
-import { ContentWrapper, ActionHeader } from './PoolView.style';
+import { ContentWrapper, ActionHeader, ActionColumn } from './PoolView.style';
 import { getCreatePoolTokens, getPoolData } from '../utils';
 import { PoolData } from '../types';
 import { getTickerFormat } from '../../../helpers/stringHelper';
@@ -34,7 +38,6 @@ type ConnectedProps = {
   getPools: typeof midgardActions.getPools;
   pools: string[];
   poolData: PoolDataMap;
-  basePriceAsset: string;
   priceIndex: PriceDataIndex;
   assetData: AssetData[];
   user: Maybe<User>;
@@ -46,28 +49,29 @@ type State = {
 
 type Props = ComponentProps & ConnectedProps;
 
-class PoolView extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      poolStatus: PoolDetailStatusEnum.Enabled,
-    };
-  }
+const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
+  const {
+    pools,
+    poolData,
+    priceIndex,
+    assetData,
+    user,
+    loading,
+    getPools,
+  } = props;
+  const [poolStatus, selectPoolStatus] = useState<PoolDetailStatusEnum>(
+    PoolDetailStatusEnum.Enabled,
+  );
+  const history = useHistory();
 
-  componentDidMount() {
-    const { getPools } = this.props;
+  const wallet: Maybe<string> = user ? user.wallet : null;
+
+  useEffect(() => {
     getPools();
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wallet]);
 
-  selectPoolStatus = (poolStatus: PoolDetailStatusEnum) => {
-    this.setState({
-      poolStatus,
-    });
-  };
-
-  handleNewPool = () => {
-    const { assetData, pools, user } = this.props;
-
+  const handleNewPool = () => {
     const wallet = user ? user.wallet : null;
 
     if (!wallet) {
@@ -82,7 +86,7 @@ class PoolView extends React.Component<Props, State> {
         const symbol = possibleTokens[0].asset;
         if (getTickerFormat(symbol) !== 'rune') {
           const URL = `/pool/${symbol}/new`;
-          this.props.history.push(URL);
+          history.push(URL);
         }
       } else {
         notification.warning({
@@ -94,9 +98,7 @@ class PoolView extends React.Component<Props, State> {
     }
   };
 
-  renderPoolTable = (poolViewData: PoolData[], view: ViewType) => {
-    const { getPools, loading } = this.props;
-
+  const renderPoolTable = (poolViewData: PoolData[], view: ViewType) => {
     const buttonCol = {
       key: 'stake',
       title: (
@@ -113,22 +115,37 @@ class PoolView extends React.Component<Props, State> {
         </ActionHeader>
       ),
       render: (text: string, record: PoolData) => {
-        const { target: symbol } = record;
-        if (symbol) {
-          const URL = `/pool/${symbol.toUpperCase()}`;
-          const dataTest = `stake-button-${symbol.toLowerCase()}`;
+        const { asset, target } = record;
+        if (target) {
+          const swapUrl = `/swap/${asset.toLowerCase()}-${target.toLowerCase()}`;
+          const stakeUrl = `/pool/${target.toUpperCase()}`;
+          const dataTest = `stake-button-${target.toLowerCase()}`;
 
           return (
-            <Link to={URL}>
-              <Button
-                style={{ margin: 'auto' }}
-                round="true"
-                data-test={dataTest}
-              >
-                <DatabaseOutlined />
-                stake
-              </Button>
-            </Link>
+            <ActionColumn>
+              <Link to={stakeUrl}>
+                <Button
+                  style={{ margin: 'auto' }}
+                  round="true"
+                  typevalue="outline"
+                  data-test={dataTest}
+                >
+                  <DatabaseOutlined />
+                  stake
+                </Button>
+              </Link>
+              <Link to={swapUrl}>
+                <Button
+                  style={{ margin: 'auto' }}
+                  round="true"
+                  data-test={dataTest}
+                  disabled={poolStatus === PoolDetailStatusEnum.Bootstrapped}
+                >
+                  <SwapOutlined />
+                  swap
+                </Button>
+              </Link>
+            </ActionColumn>
           );
         }
       },
@@ -205,10 +222,7 @@ class PoolView extends React.Component<Props, State> {
     );
   };
 
-  renderPoolList = (view: ViewType) => {
-    const { pools, poolData, priceIndex } = this.props;
-    const { poolStatus } = this.state;
-
+  const renderPoolList = (view: ViewType) => {
     const poolViewData = pools.map((poolName, index) => {
       const { symbol = '' } = getAssetFromString(poolName);
 
@@ -231,31 +245,27 @@ class PoolView extends React.Component<Props, State> {
       poolData => poolData.status === poolStatus,
     );
 
-    return this.renderPoolTable(filteredData, view);
+    return renderPoolTable(filteredData, view);
   };
 
-  render() {
-    const { poolStatus } = this.state;
-
-    return (
-      <ContentWrapper className="pool-view-wrapper">
-        <PoolFilter selected={poolStatus} onClick={this.selectPoolStatus} />
-        <div className="pool-list-view desktop-view">
-          {this.renderPoolList(ViewType.DESKTOP)}
-        </div>
-        <div className="pool-list-view mobile-view">
-          {this.renderPoolList(ViewType.MOBILE)}
-        </div>
-        <div className="add-new-pool" onClick={this.handleNewPool}>
-          <AddIcon />
-          <Label size="normal" weight="bold" color="normal">
-            ADD NEW POOL
-          </Label>
-        </div>
-      </ContentWrapper>
-    );
-  }
-}
+  return (
+    <ContentWrapper className="pool-view-wrapper">
+      <PoolFilter selected={poolStatus} onClick={selectPoolStatus} />
+      <div className="pool-list-view desktop-view">
+        {renderPoolList(ViewType.DESKTOP)}
+      </div>
+      <div className="pool-list-view mobile-view">
+        {renderPoolList(ViewType.MOBILE)}
+      </div>
+      <div className="add-new-pool" onClick={handleNewPool}>
+        <AddIcon />
+        <Label size="normal" weight="bold" color="normal">
+          ADD NEW POOL
+        </Label>
+      </div>
+    </ContentWrapper>
+  );
+};
 
 export default compose(
   connect(
@@ -264,7 +274,6 @@ export default compose(
       poolData: state.Midgard.poolData,
       loading: state.Midgard.poolLoading,
       priceIndex: state.Midgard.priceIndex,
-      basePriceAsset: state.Midgard.basePriceAsset,
       assetData: state.Wallet.assetData,
       user: state.Wallet.user,
     }),

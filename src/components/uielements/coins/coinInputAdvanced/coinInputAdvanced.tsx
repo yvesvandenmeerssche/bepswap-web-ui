@@ -45,7 +45,6 @@ export function useCoinCardInputBehaviour({
   amount,
   onChangeValue,
   onFocus,
-  minimumFractionDigits = 2,
 }: BehaviorProps) {
   // Note: Amount could be undefined|null, since we have not migrated everything to TS yet, so check it here
   const valueAsString = !!amount && isValidBN(amount) ? amount.toString() : '0';

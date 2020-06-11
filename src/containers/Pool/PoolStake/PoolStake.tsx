@@ -76,7 +76,6 @@ import {
   CalcResult,
   getPoolData,
   withdrawResult,
-  roundedDownAmount,
 } from '../utils';
 import { PoolData } from '../types';
 import { getTickerFormat, emptyString } from '../../../helpers/stringHelper';
@@ -165,10 +164,7 @@ type State = {
   validatingPassword: boolean;
   runeAmount: TokenAmount;
   tokenAmount: TokenAmount;
-  runeTotal: BigNumber;
-  tokenTotal: BigNumber;
   runePercent: number;
-  tokenPercent: number;
   txResult: boolean;
   widthdrawPercentage: number;
   selectRatio: boolean;
@@ -210,10 +206,7 @@ class PoolStake extends React.Component<Props, State> {
       validatingPassword: false,
       runeAmount: tokenAmount(0),
       tokenAmount: tokenAmount(0),
-      runeTotal: bn(0),
-      tokenTotal: bn(0),
       runePercent: 0,
-      tokenPercent: 0,
       txResult: false,
       widthdrawPercentage: 50,
       selectRatio: true,
@@ -460,13 +453,10 @@ class PoolStake extends React.Component<Props, State> {
         runeAmount: tokenAmount(value),
         tokenAmount: tokenAmount(tokenAmountBN),
         runePercent: amount,
-        runeTotal: totalAmount,
       });
     } else {
       this.setState({
         tokenAmount: tokenAmount(value),
-        tokenPercent: amount,
-        tokenTotal: totalAmount,
       });
     }
   };
