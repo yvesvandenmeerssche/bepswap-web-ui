@@ -96,7 +96,7 @@ class PoolView extends React.Component<Props, State> {
     }
   };
 
-  renderPoolTable = (swapViewData: FixmeType, view: ViewType) => {
+  renderPoolTable = (poolViewData: PoolData[], view: ViewType) => {
     const { getPools, loading } = this.props;
 
     const buttonCol = {
@@ -161,15 +161,14 @@ class PoolView extends React.Component<Props, State> {
         title: 'asset',
         dataIndex: 'pool',
         render: ({ target }: { target: string }) => <p>{target}</p>,
-        sorter: (a: FixmeType, b: FixmeType) =>
-          a.pool.target.localeCompare(b.pool.target),
+        sorter: (a: PoolData, b: PoolData) => a.target.localeCompare(b.target),
         sortDirections: ['descend', 'ascend'],
       },
       {
         key: 'poolprice',
         title: 'pool price',
         dataIndex: 'poolPrice',
-        sorter: (a: FixmeType, b: FixmeType) =>
+        sorter: (a: PoolData, b: PoolData) =>
           a.raw.poolPrice.minus(b.raw.poolPrice),
         sortDirections: ['descend', 'ascend'],
         defaultSortOrder: 'descend',
@@ -178,36 +177,23 @@ class PoolView extends React.Component<Props, State> {
         key: 'depth',
         title: 'depth',
         dataIndex: 'depth',
-        sorter: (a: FixmeType, b: FixmeType) => a.raw.depth - b.raw.depth,
+        sorter: (a: PoolData, b: PoolData) =>
+          a.raw.depth.amount().minus(b.raw.depth.amount()),
         sortDirections: ['descend', 'ascend'],
       },
       {
         key: 'volume24',
         title: '24h vol',
         dataIndex: 'volume24',
-        sorter: (a: FixmeType, b: FixmeType) => a.raw.volume24 - b.raw.volume24,
-        sortDirections: ['descend', 'ascend'],
-      },
-      {
-        key: 'transaction',
-        title: 'avg. transaction',
-        dataIndex: 'transaction',
-        sorter: (a: FixmeType, b: FixmeType) =>
-          a.raw.transaction - b.raw.transaction,
-        sortDirections: ['descend', 'ascend'],
-      },
-      {
-        key: 'liqFee',
-        title: 'avg. liq fee',
-        dataIndex: 'liqFee',
-        sorter: (a: FixmeType, b: FixmeType) => a.raw.liqFee - b.raw.liqFee,
+        sorter: (a: PoolData, b: PoolData) =>
+          a.raw.volume24.amount().minus(b.raw.volume24.amount()),
         sortDirections: ['descend', 'ascend'],
       },
       {
         key: 'roiAT',
-        title: 'historical roi',
+        title: 'historical ROI',
         dataIndex: 'roiAT',
-        sorter: (a: FixmeType, b: FixmeType) => a.raw.roiAT - b.raw.roiAT,
+        sorter: (a: PoolData, b: PoolData) => a.raw.roiAT - b.raw.roiAT,
         sortDirections: ['descend', 'ascend'],
       },
       buttonCol,
@@ -222,7 +208,7 @@ class PoolView extends React.Component<Props, State> {
     return (
       <Table
         columns={columns}
-        dataSource={swapViewData}
+        dataSource={poolViewData}
         loading={loading}
         rowKey="key"
       />
@@ -230,7 +216,7 @@ class PoolView extends React.Component<Props, State> {
   };
 
   renderPoolList = (view: ViewType) => {
-    const { pools, poolData, priceIndex, basePriceAsset } = this.props;
+    const { pools, poolData, priceIndex } = this.props;
     const { activeAsset, poolStatus } = this.state;
 
     let key = 0;
@@ -242,7 +228,6 @@ class PoolView extends React.Component<Props, State> {
         'rune',
         poolInfo,
         priceIndex,
-        basePriceAsset,
       );
 
       if (stakeCardData.target !== activeAsset) {

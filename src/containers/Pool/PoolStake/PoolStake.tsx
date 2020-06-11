@@ -2,7 +2,7 @@ import React from 'react';
 import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { withRouter, Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { Row, Col, notification, Popover } from 'antd';
 import {
   InboxOutlined,
@@ -63,9 +63,10 @@ import {
   Tabs,
   ConfirmModal,
   ConfirmModalContent,
-  PopoverContent,
   PopoverContainer,
   FeeParagraph,
+  PopoverContent,
+  PopoverIcon,
 } from './PoolStake.style';
 import {
   WithdrawResultParams,
@@ -91,6 +92,7 @@ import {
   StakerPoolData,
   PoolDataMap,
   PriceDataIndex,
+  ThorchainData,
 } from '../../../redux/midgard/types';
 import { StakersAssetData } from '../../../types/generated/midgard';
 import { getAssetFromString } from '../../../redux/midgard/utils';
@@ -134,6 +136,7 @@ type ConnectedProps = {
   priceIndex: PriceDataIndex;
   basePriceAsset: string;
   poolLoading: boolean;
+  thorchainData: ThorchainData;
   getPools: typeof midgardActions.getPools;
   getPoolAddress: typeof midgardActions.getPoolAddress;
   getStakerPoolData: typeof midgardActions.getStakerPoolData;
@@ -215,7 +218,7 @@ class PoolStake extends React.Component<Props, State> {
       runePercent: 0,
       tokenPercent: 0,
       txResult: false,
-      widthdrawPercentage: 0,
+      widthdrawPercentage: 50,
       selectRatio: true,
       selectedShareDetailTab: ShareDetailTabKeys.ADD,
     };
@@ -904,11 +907,13 @@ class PoolStake extends React.Component<Props, State> {
     const target = getTickerFormat(symbol);
 
     const Pr = validBNOrZero(priceIndex?.RUNE);
-    const tokenPrice = _get(priceIndex, target.toUpperCase(), 0);
+    // const tokenPrice = _get(priceIndex, target.toUpperCase(), 0);
     const txURL = TESTNET_TX_BASE_URL + hash;
 
     const sourcePrice = runeAmount.amount().multipliedBy(Pr);
-    const targetPrice = tokenAmount.amount().multipliedBy(tokenPrice);
+    // const targetPrice = tokenAmount.amount().multipliedBy(tokenPrice);
+    // target price is equal to source price
+    const targetPrice = sourcePrice;
 
     return (
       <ConfirmModalContent>
@@ -947,11 +952,13 @@ class PoolStake extends React.Component<Props, State> {
           {completed && (
             <div className="hash-address">
               <div className="copy-btn-wrapper">
-                <Link to="/pools">
-                  <Button className="view-btn" color="success">
-                    FINISH
-                  </Button>
-                </Link>
+                <Button
+                  className="view-btn"
+                  color="success"
+                  onClick={this.handleCloseModal}
+                >
+                  FINISH
+                </Button>
                 <a href={txURL} target="_blank" rel="noopener noreferrer">
                   VIEW TRANSACTION
                 </a>
@@ -1024,11 +1031,13 @@ class PoolStake extends React.Component<Props, State> {
               <div className="hash-address">
                 <div className="copy-btn-wrapper">
                   {completed && (
-                    <Link to="/pools">
-                      <Button className="view-btn" color="success">
-                        FINISH
-                      </Button>
-                    </Link>
+                    <Button
+                      className="view-btn"
+                      color="success"
+                      onClick={this.handleCloseModal}
+                    >
+                      FINISH
+                    </Button>
                   )}
                   <a href={txURL} target="_blank" rel="noopener noreferrer">
                     VIEW TRANSACTION
@@ -1081,7 +1090,7 @@ class PoolStake extends React.Component<Props, State> {
       },
       {
         key: 'roi',
-        title: 'All Time RoI',
+        title: 'All Time ROI',
         value: `${roiAT}% APR`,
       },
     ];
@@ -1232,12 +1241,31 @@ class PoolStake extends React.Component<Props, State> {
   shareDetailTabsChangedHandler = (activeKey: ShareDetailTabKeys) =>
     this.setState({ selectedShareDetailTab: activeKey });
 
+  getCooldownPopupContainer = () => {
+    return document.getElementsByClassName(
+      'share-detail-wrapper',
+    )[0] as HTMLElement;
+  };
+
+  renderPopoverContent = () => (
+    <PopoverContent>
+      To prevent attacks on the network, you must wait approx 24hrs (17280
+      blocks) after each staking event to withdraw assets.
+    </PopoverContent>
+  );
+
   renderShareDetail = (
     _: PoolData,
     stakersAssetData: StakersAssetData,
     calcResult: CalcResult,
   ) => {
-    const { symbol, priceIndex, basePriceAsset, assets } = this.props;
+    const {
+      symbol,
+      priceIndex,
+      basePriceAsset,
+      assets,
+      thorchainData,
+    } = this.props;
     const {
       runeAmount,
       tokenAmount,
@@ -1264,7 +1292,7 @@ class PoolStake extends React.Component<Props, State> {
     });
 
     // withdraw values
-    const withdrawRate: number = (widthdrawPercentage || 50) / 100;
+    const withdrawRate: number = widthdrawPercentage / 100;
     const { stakeUnits }: StakersAssetData = stakersAssetData;
 
     const { R, T, poolUnits } = calcResult;
@@ -1302,6 +1330,33 @@ class PoolStake extends React.Component<Props, State> {
       .multipliedBy(tokenPrice);
 
     const disableDrag = this.bnbFeeIsNotCovered();
+
+    // unstake cooldown
+    const heightLastStaked = bnOrZero(stakersAssetData?.heightLastStaked);
+    const currentBlockHeight = bnOrZero(thorchainData.lastBlock?.thorchain);
+    const stakeLockUpBlocks = bnOrZero(
+      thorchainData.constants?.int_64_values?.StakeLockUpBlocks,
+    );
+    const totalBlocksToUnlock: BigNumber = heightLastStaked.plus(
+      stakeLockUpBlocks,
+    );
+    const remainingBlocks: BigNumber = totalBlocksToUnlock.minus(
+      currentBlockHeight,
+    );
+
+    const withdrawDisabled = remainingBlocks.toNumber() > 0;
+
+    let remainingTimeString = '';
+    if (withdrawDisabled) {
+      const remainingSeconds = remainingBlocks.multipliedBy(5).toNumber();
+      const remainingHours =
+        (remainingSeconds - (remainingSeconds % 3600)) / 3600;
+      const remainingMinutes =
+        ((remainingSeconds % 3600) - (remainingSeconds % 60)) / 60;
+      remainingTimeString = `${remainingHours} Hours ${remainingMinutes} Minutes`;
+    }
+
+    const dragText = withdrawDisabled ? '24hr cooldown' : 'drag to withdraw';
 
     return (
       <div className="share-detail-wrapper">
@@ -1429,7 +1484,7 @@ class PoolStake extends React.Component<Props, State> {
               }}
               defaultValue={50}
               max={100}
-              min={1}
+              min={0}
             />
             <div className="stake-withdraw-info-wrapper">
               <Label className="label-title" size="normal" weight="bold">
@@ -1454,14 +1509,35 @@ class PoolStake extends React.Component<Props, State> {
               {this.renderFee()}
               <div className="drag-container">
                 <Drag
-                  title="Drag to withdraw"
+                  title={dragText}
                   source="blue"
                   target="confirm"
                   reset={dragReset}
-                  disabled={disableDrag}
+                  disabled={disableDrag || withdrawDisabled}
                   onConfirm={this.handleWithdraw}
                   onDrag={this.handleDrag}
                 />
+                {!!withdrawDisabled && (
+                  <div className="cooldown-info">
+                    <Label>
+                      You must wait {remainingTimeString} until you can withdraw
+                      again.
+                    </Label>
+                    <Popover
+                      content={this.renderPopoverContent}
+                      getPopupContainer={this.getCooldownPopupContainer}
+                      placement="bottomLeft"
+                      overlayClassName="pool-filter-info"
+                      overlayStyle={{
+                        padding: '6px',
+                        animationDuration: '0s !important',
+                        animation: 'none !important',
+                      }}
+                    >
+                      <PopoverIcon />
+                    </Popover>
+                  </div>
+                )}
               </div>
             </div>
           </TabPane>
@@ -1670,7 +1746,6 @@ class PoolStake extends React.Component<Props, State> {
   render() {
     const {
       priceIndex,
-      basePriceAsset,
       poolData,
       stakerPoolData,
       stakerPoolDataError,
@@ -1693,7 +1768,7 @@ class PoolStake extends React.Component<Props, State> {
     symbol = symbol.toUpperCase();
     const poolInfo = poolData[symbol] || {};
 
-    const poolStats = getPoolData('rune', poolInfo, priceIndex, basePriceAsset);
+    const poolStats = getPoolData('rune', poolInfo, priceIndex);
 
     const calcResult = this.getData();
 
@@ -1824,6 +1899,7 @@ export default compose(
       stakerPoolDataError: state.Midgard.stakerPoolDataError,
       transferFees: state.Binance.transferFees,
       wsTransferEvent: state.Binance.wsTransferEvent,
+      thorchainData: state.Midgard.thorchain,
     }),
     {
       getPools: midgardActions.getPools,

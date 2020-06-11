@@ -16,13 +16,13 @@ import {
 } from './TransactionView.style';
 import {
   TxDetails,
-  InlineResponse200,
+  InlineResponse2001,
   TxDetailsTypeEnum,
 } from '../../types/generated/midgard';
 import { ViewType, Maybe } from '../../types/bepswap';
 
 import * as midgardActions from '../../redux/midgard/actions';
-import { TxDetailData, TxDetailType } from '../../redux/midgard/types';
+import { TxDetailData } from '../../redux/midgard/types';
 import { User } from '../../redux/wallet/types';
 import { RootState } from '../../redux/store';
 import AddWallet from '../../components/uielements/addWallet';
@@ -32,7 +32,7 @@ type ComponentProps = {};
 type ConnectedProps = {
   user: Maybe<User>;
   txData: TxDetailData;
-  txCurData: Maybe<InlineResponse200>;
+  txCurData: Maybe<InlineResponse2001>;
   getTxByAddress: typeof midgardActions.getTxByAddress;
 };
 
@@ -44,8 +44,13 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
   const [page, setPage] = useState(1);
 
   const limit = 5;
-  const txTypesPair: { [key: string]: TxDetailType } = {
+
+  const allTxTypeParams = `${TxDetailsTypeEnum.Swap},${TxDetailsTypeEnum.DoubleSwap},${TxDetailsTypeEnum.Stake},${TxDetailsTypeEnum.Unstake}`;
+
+  const txTypesPair: { [key: string]: string } = {
+    all: allTxTypeParams,
     swap: TxDetailsTypeEnum.Swap,
+    doubleSwap: TxDetailsTypeEnum.DoubleSwap,
     stake: TxDetailsTypeEnum.Stake,
     unstake: TxDetailsTypeEnum.Unstake,
   };
@@ -188,27 +193,13 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
   };
 
   const pageContent = (data: TxDetails[], count: number, loading: boolean) => {
-    const filteredData = data.filter(eventData => {
-      if (
-        eventData.type &&
-        [
-          TxDetailsTypeEnum.Swap,
-          TxDetailsTypeEnum.Stake,
-          TxDetailsTypeEnum.Unstake,
-        ].includes(eventData.type)
-      ) {
-        return true;
-      }
-      return false;
-    });
-
     return (
       <ContentWrapper>
         <ContentWrapper className="transaction-view-wrapper desktop-view">
-          {renderTxTable(filteredData, ViewType.DESKTOP, loading)}
+          {renderTxTable(data, ViewType.DESKTOP, loading)}
         </ContentWrapper>
         <ContentWrapper className="transaction-view-wrapper mobile-view">
-          {renderTxTable(filteredData, ViewType.MOBILE, loading)}
+          {renderTxTable(data, ViewType.MOBILE, loading)}
         </ContentWrapper>
         {count ? (
           <StyledPagination
@@ -242,7 +233,7 @@ const Transaction: React.FC<Props> = (props): JSX.Element => {
             {(error?.message ?? false) && <p>{error.message}</p>}
           </ContentWrapper>
         ),
-        (data: InlineResponse200): JSX.Element => {
+        (data: InlineResponse2001): JSX.Element => {
           const { count = 0, txs = [] } = data;
 
           return pageContent(txs, count, false);

@@ -14,7 +14,7 @@ import { getSwapData } from '../utils';
 import { SwapTableRowType, SwapCardType } from './types';
 import * as midgardActions from '../../../redux/midgard/actions';
 import { PriceDataIndex, PoolDataMap } from '../../../redux/midgard/types';
-import { FixmeType, Maybe, ViewType, Nothing } from '../../../types/bepswap';
+import { FixmeType, Maybe, ViewType, Nothing  } from '../../../types/bepswap';
 
 import { ContentWrapper, ActionHeader } from './SwapView.style';
 import { RootState } from '../../../redux/store';
@@ -22,6 +22,8 @@ import { getAssetFromString } from '../../../redux/midgard/utils';
 import { PoolInfoType } from '../../Pool/types';
 import { PoolDetailStatusEnum } from '../../../types/generated/midgard/api';
 import PoolFilter from '../../../components/poolFilter';
+import { User } from '../../../redux/wallet/types';
+
 
 type ComponentProps = {};
 
@@ -32,6 +34,7 @@ type ConnectedProps = {
   basePriceAsset: string;
   loading: boolean;
   getPools: typeof midgardActions.getPools;
+  user: Maybe<User>;
 };
 
 type Props = ComponentProps & ConnectedProps;
@@ -41,10 +44,12 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
     pools,
     poolData,
     priceIndex,
-    basePriceAsset,
     loading,
     getPools,
+    user,
   } = props;
+
+  const wallet: Maybe<string> = user ? user.wallet : Nothing;
 
   const [poolStatus, selectPoolStatus] = useState<PoolDetailStatusEnum>(
     PoolDetailStatusEnum.Enabled,
@@ -53,7 +58,7 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
   useEffect(() => {
     getPools();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [wallet]);
 
   const renderSwapTable = (
     swapViewData: SwapTableRowType[],
@@ -148,28 +153,12 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
         sortDirections: ['descend', 'ascend'],
       },
       {
-        key: 'transaction',
-        title: 'avg. transaction',
-        dataIndex: 'transaction',
-        sorter: (a: SwapTableRowType, b: SwapTableRowType) =>
-          a.raw.transaction.minus(b.raw.transaction),
-        sortDirections: ['descend', 'ascend'],
-      },
-      {
         key: 'slip',
         title: 'avg. slip',
         dataIndex: 'slip',
         render: (slip: string) => <Trend amount={bn(slip)} />,
         sorter: (a: SwapTableRowType, b: SwapTableRowType) =>
           a.raw.slip.minus(b.raw.slip),
-        sortDirections: ['descend', 'ascend'],
-      },
-      {
-        key: 'trade',
-        title: 'no. of trades',
-        dataIndex: 'trade',
-        sorter: (a: SwapTableRowType, b: SwapTableRowType) =>
-          a.raw.trade.minus(b.raw.trade),
         sortDirections: ['descend', 'ascend'],
       },
       btnCol,
@@ -201,7 +190,6 @@ const SwapView: React.FC<Props> = (props): JSX.Element => {
         'rune',
         poolInfo,
         priceIndex,
-        basePriceAsset,
       );
 
       if (swapCardData) {
@@ -244,6 +232,7 @@ export default compose(
       priceIndex: state.Midgard.priceIndex,
       basePriceAsset: state.Midgard.basePriceAsset,
       loading: state.Midgard.poolLoading,
+      user: state.Wallet.user,
     }),
     {
       getPools: midgardActions.getPools,

@@ -288,12 +288,12 @@ describe.skip('pool/utils/', () => {
           },
           target: 'FSN',
           symbol: 'FSN-F1B',
-          depth: 'RUNE 0.00',
-          volume24: 'RUNE 0.00',
-          transaction: 'RUNE 0.00',
-          liqFee: 'RUNE 0.00',
+          depth: '0.00',
+          volume24: '0.00',
+          transaction: '0.00',
+          liqFee: '0.00',
           roiAT: '50% APR',
-          poolPrice: 'RUNE 2.000',
+          poolPrice: '2.000',
         },
         raw: {
           depth: baseAmount(200000),
@@ -304,7 +304,7 @@ describe.skip('pool/utils/', () => {
           poolPrice: bn(1),
         },
       };
-      const result = getPoolData('RUNE', fsnPoolDetail, priceIndex, 'RUNE');
+      const result = getPoolData('RUNE', fsnPoolDetail, priceIndex);
       const rRaw = result.raw;
       const eRaw = expected.raw;
 
@@ -349,12 +349,12 @@ describe.skip('pool/utils/', () => {
           },
           target: 'BNB',
           symbol: 'BNB',
-          depth: 'RUNE 2.00',
-          volume24: 'RUNE 0.00',
-          transaction: 'RUNE 0.00',
-          liqFee: 'RUNE 0.00',
+          depth: '2.00',
+          volume24: '0.00',
+          transaction: '0.00',
+          liqFee: '0.00',
           roiAT: '99927.69% APR',
-          poolPrice: 'RUNE 0.000',
+          poolPrice: '0.000',
         },
         raw: {
           depth: baseAmount(199999799),
@@ -365,7 +365,7 @@ describe.skip('pool/utils/', () => {
           poolPrice: bn(0.09),
         },
       };
-      const result = getPoolData('RUNE', bnbPoolDetail, priceIndex, 'RUNE');
+      const result = getPoolData('RUNE', bnbPoolDetail, priceIndex);
       const rRaw = result.raw;
       const eRaw = expected.raw;
 
