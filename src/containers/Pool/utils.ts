@@ -14,6 +14,7 @@ import {
   isValidBN,
 } from '@thorchain/asgardex-util';
 import {
+  tokenAmount,
   TokenAmount,
   tokenToBase,
   baseAmount,
@@ -44,6 +45,12 @@ export type CalcResult = {
 
 export const getRoundedDownBN = (value: BigNumber, decimal = 2) => {
   return value.toFixed(decimal, 1);
+};
+
+export const roundedDownAmount = (value: BigNumber, decimal = 2) => {
+  const roundedBN = getRoundedDownBN(value, decimal);
+
+  return tokenAmount(roundedBN);
 };
 
 export const getCalcResult = (
