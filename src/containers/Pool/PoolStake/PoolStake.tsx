@@ -371,8 +371,6 @@ class PoolStake extends React.Component<Props, State> {
     const totalTokenAmount = targetToken.assetValue.amount();
     const valueAsToken = tokenAmount(value);
 
-    console.log('here', valueAsToken.amount().toNumber())
-
     if (!selectRatio) {
       if (tokenName === 'rune') {
         this.setState({
