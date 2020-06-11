@@ -23,7 +23,7 @@ import { RootState } from '../../../redux/store';
 import { AssetData, User } from '../../../redux/wallet/types';
 import { PoolDataMap, PriceDataIndex } from '../../../redux/midgard/types';
 import { getAssetFromString } from '../../../redux/midgard/utils';
-import { ViewType, FixmeType, Maybe } from '../../../types/bepswap';
+import { ViewType, Maybe } from '../../../types/bepswap';
 import { PoolDetailStatusEnum } from '../../../types/generated/midgard/api';
 
 type ComponentProps = {
@@ -41,7 +41,6 @@ type ConnectedProps = {
 };
 
 type State = {
-  activeAsset: string;
   poolStatus: PoolDetailStatusEnum;
 };
 
@@ -51,7 +50,6 @@ class PoolView extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      activeAsset: 'rune',
       poolStatus: PoolDetailStatusEnum.Enabled,
     };
   }
@@ -89,7 +87,7 @@ class PoolView extends React.Component<Props, State> {
       } else {
         notification.warning({
           message: 'Create Pool Failed',
-          description: 'You cannot create a new pool.',
+          description: 'You don\'t have available asset to create a new pool.',
           getContainer: getAppContainer,
         });
       }
@@ -114,8 +112,8 @@ class PoolView extends React.Component<Props, State> {
           </Button>
         </ActionHeader>
       ),
-      render: (text: string, record: { symbol?: string }) => {
-        const { symbol } = record;
+      render: (text: string, record: PoolData) => {
+        const { target: symbol } = record;
         if (symbol) {
           const URL = `/pool/${symbol.toUpperCase()}`;
           const dataTest = `stake-button-${symbol.toLowerCase()}`;
@@ -167,33 +165,25 @@ class PoolView extends React.Component<Props, State> {
       {
         key: 'poolprice',
         title: 'pool price',
-        dataIndex: 'poolPrice',
-        sorter: (a: PoolData, b: PoolData) =>
-          a.raw.poolPrice.minus(b.raw.poolPrice),
+        dataIndex: ['values', 'poolPrice'],
+        sorter: (a: PoolData, b: PoolData) => a.poolPrice.minus(b.poolPrice),
         sortDirections: ['descend', 'ascend'],
         defaultSortOrder: 'descend',
       },
       {
         key: 'depth',
         title: 'depth',
-        dataIndex: 'depth',
+        dataIndex: ['values', 'depth'],
         sorter: (a: PoolData, b: PoolData) =>
-          a.raw.depth.amount().minus(b.raw.depth.amount()),
+          a.depth.amount().minus(b.depth.amount()),
         sortDirections: ['descend', 'ascend'],
       },
       {
         key: 'volume24',
         title: '24h vol',
-        dataIndex: 'volume24',
+        dataIndex: ['values', 'volume24'],
         sorter: (a: PoolData, b: PoolData) =>
-          a.raw.volume24.amount().minus(b.raw.volume24.amount()),
-        sortDirections: ['descend', 'ascend'],
-      },
-      {
-        key: 'roiAT',
-        title: 'historical ROI',
-        dataIndex: 'roiAT',
-        sorter: (a: PoolData, b: PoolData) => a.raw.roiAT - b.raw.roiAT,
+          a.volume24.amount().minus(b.volume24.amount()),
         sortDirections: ['descend', 'ascend'],
       },
       buttonCol,
@@ -217,33 +207,27 @@ class PoolView extends React.Component<Props, State> {
 
   renderPoolList = (view: ViewType) => {
     const { pools, poolData, priceIndex } = this.props;
-    const { activeAsset, poolStatus } = this.state;
+    const { poolStatus } = this.state;
 
-    let key = 0;
-    const stakeViewData = pools.reduce((result, pool) => {
-      const { symbol = '' } = getAssetFromString(pool);
+    const poolViewData = pools.map((poolName, index) => {
+      const { symbol = '' } = getAssetFromString(poolName);
+
       const poolInfo = poolData[symbol] || {};
 
-      const { values: stakeCardData, raw }: PoolData = getPoolData(
+      const poolDataDetail: PoolData = getPoolData(
         'rune',
         poolInfo,
         priceIndex,
       );
 
-      if (stakeCardData.target !== activeAsset) {
-        result.push({
-          ...stakeCardData,
-          raw,
-          key,
-          status: poolInfo?.status ?? null,
-        });
-        key += 1;
-      }
+      return {
+        ...poolDataDetail,
+        status: poolInfo?.status ?? null,
+        key: index,
+      };
+    });
 
-      return result;
-    }, [] as FixmeType[]);
-
-    const filteredData = stakeViewData.filter(
+    const filteredData = poolViewData.filter(
       poolData => poolData.status === poolStatus,
     );
 
