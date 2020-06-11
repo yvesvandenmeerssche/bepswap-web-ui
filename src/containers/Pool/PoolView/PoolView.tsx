@@ -108,6 +108,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
               getPools();
             }}
             typevalue="outline"
+            round="true"
           >
             <SyncOutlined />
             refresh
