@@ -5,15 +5,16 @@ import { bn, isValidBN } from '@thorchain/asgardex-util';
 import { CoinInputAdvancedView } from './coinInputAdvanced.view';
 import { emptyString } from '../../../../helpers/stringHelper';
 
-const formatNumber = (value: string, minimumFractionDigits: number) => {
-  return Number(value || 0).toLocaleString(undefined, {
-    minimumFractionDigits,
-  });
-};
+// const formatNumber = (value: string, minimumFractionDigits: number) => {
+//   return Number(value || 0).toLocaleString(undefined, {
+//     minimumFractionDigits,
+//   });
+// };
 
 function formatStringToBigNumber(value: string): BigNumber {
   // (Rudi) This will have a localisation problem
   const cleanValue = value.replace(/,/g, '');
+
   return bn(cleanValue);
 }
 
@@ -58,8 +59,9 @@ export function useCoinCardInputBehaviour({
   const getOutval = useCallback(() => {
     const txtValue =
       textFieldValue !== undefined ? textFieldValue : valueAsString; // (Rudi) allows for empty string ''
-    return focus ? txtValue : formatNumber(txtValue, minimumFractionDigits);
-  }, [focus, minimumFractionDigits, textFieldValue, valueAsString]);
+
+    return txtValue;
+  }, [textFieldValue, valueAsString]);
 
   const handleFocus = useCallback(
     event => {
@@ -94,8 +96,6 @@ export function useCoinCardInputBehaviour({
     const numberfiedValueStr = focus
       ? getOutval()
       : formatStringToBigNumber(getOutval()).toString();
-
-    numberfiedValueStr;
 
     if (isBroadcastable(numberfiedValueStr)) {
       const valToSend = formatStringToBigNumber(numberfiedValueStr);

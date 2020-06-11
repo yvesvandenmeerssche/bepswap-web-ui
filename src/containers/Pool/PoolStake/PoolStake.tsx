@@ -165,8 +165,6 @@ type State = {
   validatingPassword: boolean;
   runeAmount: TokenAmount;
   tokenAmount: TokenAmount;
-  fR: number;
-  fT: number;
   runeTotal: BigNumber;
   tokenTotal: BigNumber;
   runePercent: number;
@@ -212,8 +210,6 @@ class PoolStake extends React.Component<Props, State> {
       validatingPassword: false,
       runeAmount: tokenAmount(0),
       tokenAmount: tokenAmount(0),
-      fR: 1,
-      fT: 1,
       runeTotal: bn(0),
       tokenTotal: bn(0),
       runePercent: 0,
@@ -353,7 +349,7 @@ class PoolStake extends React.Component<Props, State> {
    */
   handleChangeTokenAmount = (tokenName: string) => (value: BigNumber) => {
     const { assetData, symbol } = this.props;
-    const { fR, fT, selectRatio } = this.state;
+    const { selectRatio } = this.state;
 
     const sourceAsset = getAssetFromAssetData(
       assetData,
@@ -371,15 +367,11 @@ class PoolStake extends React.Component<Props, State> {
       return;
     }
 
-    const balance = tokenName === 'rune' ? fR : fT;
+    const totalSourceAmount = sourceAsset.assetValue.amount();
+    const totalTokenAmount = targetToken.assetValue.amount();
+    const valueAsToken = tokenAmount(value);
 
-    // formula: sourceAsset.assetValue * balance
-    const totalAmount = sourceAsset.assetValue.amount().multipliedBy(balance);
-    // formula: targetToken.assetValue * balance
-    const totalTokenAmount = targetToken.assetValue
-      .amount()
-      .multipliedBy(balance);
-    const valueAsToken = roundedDownAmount(value);
+    console.log('here', valueAsToken.amount().toNumber())
 
     if (!selectRatio) {
       if (tokenName === 'rune') {
@@ -402,16 +394,16 @@ class PoolStake extends React.Component<Props, State> {
         ? tokenValue
         : totalTokenAmount;
 
-      if (totalAmount.isLessThan(valueAsToken.amount())) {
+      if (totalSourceAmount.isLessThan(valueAsToken.amount())) {
         this.setState({
-          runeAmount: roundedDownAmount(totalAmount),
-          tokenAmount: roundedDownAmount(tokenAmountBN),
+          runeAmount: tokenAmount(totalSourceAmount),
+          tokenAmount: tokenAmount(tokenAmountBN),
           runePercent: 100,
         });
       } else {
         this.setState({
           runeAmount: valueAsToken,
-          tokenAmount: roundedDownAmount(tokenAmountBN),
+          tokenAmount: tokenAmount(tokenAmountBN),
         });
       }
     } else if (tokenName !== 'rune') {
@@ -420,15 +412,14 @@ class PoolStake extends React.Component<Props, State> {
       // formula: newValue / ratio
       const tokenValue = valueAsToken.amount().dividedBy(ratio);
 
-      console.log('here');
-      if (totalAmount.isLessThan(valueAsToken.amount())) {
+      if (totalSourceAmount.isLessThan(valueAsToken.amount())) {
         this.setState({
-          runeAmount: roundedDownAmount(tokenValue),
-          tokenAmount: roundedDownAmount(totalAmount),
+          runeAmount: tokenAmount(tokenValue),
+          tokenAmount: tokenAmount(totalSourceAmount),
         });
       } else {
         this.setState({
-          runeAmount: roundedDownAmount(tokenValue),
+          runeAmount: tokenAmount(tokenValue),
           tokenAmount: valueAsToken,
         });
       }
@@ -447,7 +438,6 @@ class PoolStake extends React.Component<Props, State> {
    */
   handleChangePercent = (tokenName: string) => (amount: number) => {
     const { assetData, symbol } = this.props;
-    const { fR, fT } = this.state;
 
     const selectedToken = getAssetFromAssetData(assetData, tokenName);
     const targetToken = getAssetFromAssetData(assetData, symbol);
@@ -455,14 +445,9 @@ class PoolStake extends React.Component<Props, State> {
       return;
     }
 
-    const balance = tokenName === 'rune' ? fR : fT;
     const totalAmount = selectedToken.assetValue.amount();
     const totalTokenAmount = targetToken.assetValue.amount();
-    // formula: (totalAmount * amount) / 100) * balance
-    const value = totalAmount
-      .multipliedBy(amount)
-      .div(100)
-      .multipliedBy(balance);
+    const value = totalAmount.multipliedBy(amount).div(100);
 
     if (tokenName === 'rune') {
       const data = this.getData();
@@ -486,42 +471,6 @@ class PoolStake extends React.Component<Props, State> {
         tokenTotal: totalAmount,
       });
     }
-  };
-
-  /**
-   * `handleChangeBalance` is not used currently
-   */
-  handleChangeBalance = (balance: number) => {
-    const { runePercent, tokenPercent, runeTotal, tokenTotal } = this.state;
-    const fR = balance <= 100 ? 1 : (200 - balance) / 100;
-    const fT = balance >= 100 ? 1 : balance / 100;
-
-    if (runePercent > 0) {
-      // formula: ((runeTotal * runePercent) / 100) * fR;
-      const runeAmountBN = runeTotal
-        .multipliedBy(runePercent)
-        .div(100)
-        .multipliedBy(fR);
-      const runeAmount = tokenAmount(runeAmountBN);
-      this.setState({
-        runeAmount,
-      });
-    }
-    if (tokenPercent > 0) {
-      // formula:  ((tokenTotal * tokenPercent) / 100) * fT
-      const tokenAmountBN = tokenTotal
-        .multipliedBy(tokenPercent)
-        .div(100)
-        .multipliedBy(fT);
-
-      this.setState({
-        tokenAmount: tokenAmount(tokenAmountBN),
-      });
-    }
-    this.setState({
-      fR,
-      fT,
-    });
   };
 
   handleDrag = () => {
