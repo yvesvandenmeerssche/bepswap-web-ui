@@ -9,6 +9,8 @@ import {
   CalcResult,
   getCreatePoolCalc,
   CreatePoolCalc,
+  getRoundedDownBN,
+  roundedDownAmount,
 } from './utils';
 import { PoolData } from './types';
 import { AssetData } from '../../redux/wallet/types';
@@ -102,7 +104,11 @@ const poolData: PoolDataMap = {
 };
 
 // TODO: Fix unit test
+<<<<<<< HEAD
 describe.skip('pool/utils/', () => {
+=======
+describe('pool/utils/', () => {
+>>>>>>> 159bababbf256b9331829c6e1a70f2e0f82315fa
   describe('witdrawResult', () => {
     it('should validate a withdraw transfer', () => {
       const tx: TransferEvent = {
@@ -272,6 +278,10 @@ describe.skip('pool/utils/', () => {
       const expected: PoolData = {
         asset: 'RUNE',
         target: 'FSN',
+        pool: {
+          asset: 'RUNE',
+          target: 'FSN',
+        },
         depth: baseAmount(200000),
         volume24: baseAmount(0),
         volumeAT: baseAmount(0),
@@ -281,6 +291,7 @@ describe.skip('pool/utils/', () => {
         poolROI12: bn(50),
         totalSwaps: 0,
         totalStakers: 1,
+        poolPrice: bn(1),
         values: {
           pool: {
             asset: 'RUNE',
@@ -295,18 +306,8 @@ describe.skip('pool/utils/', () => {
           roiAT: '50% APR',
           poolPrice: '2.000',
         },
-        raw: {
-          depth: baseAmount(200000),
-          volume24: baseAmount(0),
-          transaction: baseAmount(0),
-          liqFee: baseAmount(0),
-          roiAT: 50,
-          poolPrice: bn(1),
-        },
       };
       const result = getPoolData('RUNE', fsnPoolDetail, priceIndex);
-      const rRaw = result.raw;
-      const eRaw = expected.raw;
 
       expect(result.asset).toEqual(expected.asset);
       expect(result.target).toEqual(expected.target);
@@ -321,11 +322,11 @@ describe.skip('pool/utils/', () => {
       expect(result.totalStakers).toEqual(expected.totalStakers);
       expect(result.values).toEqual(expected.values);
 
-      expect(rRaw.depth.amount()).toEqual(eRaw.depth.amount());
-      expect(rRaw.volume24.amount()).toEqual(eRaw.volume24.amount());
-      expect(rRaw.transaction.amount()).toEqual(eRaw.transaction.amount());
-      expect(rRaw.liqFee.amount()).toEqual(eRaw.liqFee.amount());
-      expect(rRaw.roiAT).toEqual(eRaw.roiAT);
+      expect(result.depth.amount()).toEqual(expected.depth.amount());
+      expect(result.volume24.amount()).toEqual(expected.volume24.amount());
+      expect(result.transaction.amount()).toEqual(expected.transaction.amount());
+      expect(result.liqFee.amount()).toEqual(expected.liqFee.amount());
+      expect(result.roiAT).toEqual(expected.roiAT);
       // Unsafe, just to test all props again (in case we might forget to test a new property in the future)
       expect(result.toString()).toEqual(expected.toString());
     });
@@ -333,6 +334,10 @@ describe.skip('pool/utils/', () => {
       const expected: PoolData = {
         asset: 'RUNE',
         target: 'BNB',
+        pool: {
+          asset: 'RUNE',
+          target: 'BNB',
+        },
         depth: baseAmount(199999799),
         volume24: baseAmount(0),
         volumeAT: baseAmount(32387),
@@ -342,6 +347,7 @@ describe.skip('pool/utils/', () => {
         poolROI12: bn(50),
         totalSwaps: 1,
         totalStakers: 1,
+        poolPrice: bn(0.09),
         values: {
           pool: {
             asset: 'RUNE',
@@ -356,18 +362,8 @@ describe.skip('pool/utils/', () => {
           roiAT: '99927.69% APR',
           poolPrice: '0.000',
         },
-        raw: {
-          depth: baseAmount(199999799),
-          volume24: baseAmount(0),
-          transaction: baseAmount(16193),
-          liqFee: baseAmount(99800),
-          roiAT: 99927.69,
-          poolPrice: bn(0.09),
-        },
       };
       const result = getPoolData('RUNE', bnbPoolDetail, priceIndex);
-      const rRaw = result.raw;
-      const eRaw = expected.raw;
 
       expect(result.asset).toEqual(expected.asset);
       expect(result.target).toEqual(expected.target);
@@ -382,11 +378,11 @@ describe.skip('pool/utils/', () => {
       expect(result.totalStakers).toEqual(expected.totalStakers);
       expect(result.values).toEqual(expected.values);
 
-      expect(rRaw.depth.amount()).toEqual(eRaw.depth.amount());
-      expect(rRaw.volume24.amount()).toEqual(eRaw.volume24.amount());
-      expect(rRaw.transaction.amount()).toEqual(eRaw.transaction.amount());
-      expect(rRaw.liqFee.amount()).toEqual(eRaw.liqFee.amount());
-      expect(rRaw.roiAT).toEqual(eRaw.roiAT);
+      expect(result.depth.amount()).toEqual(expected.depth.amount());
+      expect(result.volume24.amount()).toEqual(expected.volume24.amount());
+      expect(result.transaction.amount()).toEqual(expected.transaction.amount());
+      expect(result.liqFee.amount()).toEqual(expected.liqFee.amount());
+      expect(result.roiAT).toEqual(expected.roiAT);
       // Unsafe, just to test all props again (in case we might forget to test a new property in the future)
       expect(result.toString()).toEqual(expected.toString());
     });
@@ -541,6 +537,39 @@ describe.skip('pool/utils/', () => {
       expect(result.Pr).toEqual(expected.Pr);
       // Test all again, just in case of other properties in the future
       expect(result).toEqual(expected);
+    });
+  });
+
+  describe('getRoundedDownBN', () => {
+    const number = '3.3467';
+    const bigNumber = bn(number);
+
+    it('round down big number with 2 decimal point as default', () => {
+      const expected = '3.34';
+      expect(getRoundedDownBN(bigNumber)).toEqual(expected);
+    });
+
+    it('round down big number with 3 decimal point', () => {
+      const expected = '3.346';
+      expect(getRoundedDownBN(bigNumber, 3)).toEqual(expected);
+    });
+
+    it('round down big number and work with tokenAmount', () => {
+      const expected = '3.34';
+      const roundedBN = getRoundedDownBN(bigNumber);
+      const resultAmount = tokenAmount(bn(roundedBN));
+      expect(resultAmount.amount()).toEqual(bn(expected));
+    });
+  });
+
+  describe('roundedDownAmount', () => {
+    const number = '3.3467';
+    const bigNumber = bn(number);
+
+    it('round down big number and equal with tokenAmount', () => {
+      const expected = '3.34';
+      const resultAmount = roundedDownAmount(bigNumber);
+      expect(resultAmount.amount()).toEqual(bn(expected));
     });
   });
 });
