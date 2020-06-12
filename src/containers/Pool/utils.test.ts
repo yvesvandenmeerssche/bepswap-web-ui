@@ -104,11 +104,7 @@ const poolData: PoolDataMap = {
 };
 
 // TODO: Fix unit test
-<<<<<<< HEAD
-describe.skip('pool/utils/', () => {
-=======
 describe('pool/utils/', () => {
->>>>>>> 159bababbf256b9331829c6e1a70f2e0f82315fa
   describe('witdrawResult', () => {
     it('should validate a withdraw transfer', () => {
       const tx: TransferEvent = {
