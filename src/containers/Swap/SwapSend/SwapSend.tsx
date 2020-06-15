@@ -881,8 +881,9 @@ class SwapSend extends React.Component<Props, State> {
     if (slip.isGreaterThanOrEqualTo(maxSlip)) {
       notification.error({
         message: 'Swap Invalid',
-        description: `Slip ${formatBN(
-          slip,
+        description: `Slip ${slip.toFormat(
+          2,
+          BigNumber.ROUND_DOWN,
         )}% is too high, try less than ${maxSlip}%.`,
         getContainer: getAppContainer,
       });
@@ -1129,7 +1130,9 @@ class SwapSend extends React.Component<Props, State> {
 
       const disableDrag = this.bnbFeeIsNotCovered();
 
-      const slipValue = slip ? `SLIP ${formatBN(slip, 2)}%` : Nothing;
+      const slipValue = slip
+        ? `SLIP ${slip.toFormat(2, BigNumber.ROUND_DOWN)}%`
+        : Nothing;
 
       return (
         <ContentWrapper className="swap-detail-wrapper">
