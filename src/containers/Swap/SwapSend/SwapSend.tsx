@@ -12,7 +12,6 @@ import {
 import {
   validBNOrZero,
   bnOrZero,
-  formatBN,
   isValidBN,
   bn,
   delay,
