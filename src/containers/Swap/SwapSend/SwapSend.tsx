@@ -635,8 +635,10 @@ class SwapSend extends React.Component<Props, State> {
       });
       return;
     }
-
     if (source && target) {
+      this.setState({
+        xValue: tokenAmount(0),
+      });
       const URL = `/swap/${target}-${source}`;
       this.props.history.push(URL);
     } else {
