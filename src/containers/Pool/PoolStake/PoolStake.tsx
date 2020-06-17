@@ -370,6 +370,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         setTargetAmount(tokenAmount(tokenAmountBN));
         setRunePercent(100);
       } else {
+        const percent = valueAsToken.amount().dividedBy(totalSourceAmount).multipliedBy(100);
+        setRunePercent(percent.toNumber());
         setRuneAmount(valueAsToken);
         setTargetAmount(tokenAmount(tokenAmountBN));
       }
