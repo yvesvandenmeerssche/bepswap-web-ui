@@ -237,7 +237,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
   }, [getStakerPoolData, symbol, user]);
 
   useEffect(() => {
-    console.log(stakerPoolData, stakerPoolDataError);
     if (stakerPoolData) {
       setStakersAssetData(stakerPoolData[tokenSymbol]);
     } else if (stakerPoolDataError) {
