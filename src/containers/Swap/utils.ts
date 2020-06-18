@@ -93,8 +93,6 @@ export const getCalcResult = (
     symbolTo: Nothing,
   };
 
-  const lim = Nothing;
-
   if (swapType === SwapType.DOUBLE_SWAP) {
     let X = tokenAmount(10000); // Input asset
     let Y = tokenAmount(10); // Output asset
