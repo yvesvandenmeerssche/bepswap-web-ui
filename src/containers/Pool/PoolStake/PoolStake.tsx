@@ -228,7 +228,9 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     dateFirstStaked: 0,
   };
 
-  const [stakersAssetData, setStakersAssetData] = useState<StakersAssetData>(emptyStakerPoolData);
+  const [stakersAssetData, setStakersAssetData] = useState<StakersAssetData>(
+    emptyStakerPoolData,
+  );
 
   let withdrawData: Maybe<WithdrawData> = Nothing;
 
@@ -284,7 +286,6 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       subscribeBinanceTransfers({ address: wallet, net: getNet() });
     }
   }, [user?.wallet, subscribeBinanceTransfers, unSubscribeBinanceTransfers]);
-
 
   const refreshStakerData = useCallback(() => {
     // get staker info again after finished
@@ -752,6 +753,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
       try {
         const percent = withdrawRate * 100;
+
         const { result } = await confirmWithdraw({
           bncClient,
           wallet,
@@ -782,6 +784,18 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
     if (!wallet) {
       setOpenWalletAlert(true);
+      return;
+    }
+
+    const runeValue = withdrawData?.runeValue ?? baseAmount(0);
+    const runeAmount = baseToToken(runeValue);
+
+    if (runeAmount.amount().isLessThanOrEqualTo(1)) {
+      notification.error({
+        message: 'Invalid amount',
+        description: 'Withdraw amount must exceed 1 RUNE to cover network fees.',
+        getContainer: getAppContainer,
+      });
       return;
     }
 
@@ -1201,7 +1215,11 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
     return (
       <div className="share-detail-wrapper">
-        <Tabs withBorder onChange={setSelectedShareDetailTab} activeKey={selectedShareDetailTab}>
+        <Tabs
+          withBorder
+          onChange={setSelectedShareDetailTab}
+          activeKey={selectedShareDetailTab}
+        >
           <TabPane tab="Add" key={ShareDetailTabKeys.ADD}>
             <Row>
               <Col span={24} lg={12}>
