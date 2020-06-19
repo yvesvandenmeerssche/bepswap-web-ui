@@ -54,10 +54,7 @@ import {
   FeeParagraph,
   SliderSwapWrapper,
 } from './SwapSend.style';
-import {
-  getTickerFormat,
-  getPair,
-} from '../../../helpers/stringHelper';
+import { getTickerFormat, getPair } from '../../../helpers/stringHelper';
 import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
 import {
   getCalcResult,
@@ -268,12 +265,18 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     const { source, target } = swapPair;
     const runePrice = validBNOrZero(priceIndex?.RUNE);
 
+    // calculate the input after 1 RUNE network fee
+    const runeFee = getRuneFeeAmount();
+    const inputValueAfterRune = xValue.amount().isGreaterThan(runeFee)
+      ? tokenAmount(xValue.amount().minus(runeFee))
+      : tokenAmount(0);
+
     return getCalcResult(
       source,
       target,
       poolData,
       poolAddress,
-      xValue,
+      inputValueAfterRune,
       runePrice,
     );
   };
@@ -310,6 +313,19 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     const bnbAmount = bnbBaseAmount(assetData);
     const fee = bnbFeeAmount();
     return !!bnbAmount && !!fee && bnbAmount.amount().isLessThan(fee.amount());
+  };
+
+  /**
+   * calculate the amount to cover 1 RUNE network fee
+   */
+  const getRuneFeeAmount = (): BigNumber => {
+    const { source }: Pair = getPair(info);
+    if (!source) return 0;
+
+    const runePrice = priceIndex.RUNE;
+    const curTokenPrice = bn(priceIndex[source.toUpperCase()]);
+
+    return runePrice.dividedBy(curTokenPrice);
   };
 
   /**
