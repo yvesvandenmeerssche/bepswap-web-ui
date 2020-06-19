@@ -320,7 +320,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
    */
   const getRuneFeeAmount = (): BigNumber => {
     const { source }: Pair = getPair(info);
-    if (!source) return 0;
+    if (!source) return bn(0);
 
     const runePrice = priceIndex.RUNE;
     const curTokenPrice = bn(priceIndex[source.toUpperCase()]);
