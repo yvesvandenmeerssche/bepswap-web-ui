@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, Link, useHistory } from 'react-router-dom';
@@ -32,8 +31,7 @@ import {
 const { TabPane } = Tabs;
 
 type ComponentProps = {
-  status?: string;
-  view?: string;
+  status: string;
 };
 
 type ConnectedProps = {
@@ -44,11 +42,11 @@ type ConnectedProps = {
   getPools: typeof midgardActions.getPools;
   priceIndex: PriceDataIndex;
   basePriceAsset: string;
-  history: H.History;
   pathname: string;
 };
 
 type Props = ComponentProps & ConnectedProps;
+type State = {}
 
 const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
   const {
@@ -64,6 +62,7 @@ const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
   } = props;
 
   const history = useHistory();
+
 
   useEffect(() => {
     getPools();
@@ -134,7 +133,7 @@ const WalletView: React.FC<Props> = (props: Props): JSX.Element => {
 
   const renderStakeTitle = (stakeData: StakeDataListLoadingState) =>
     RD.fold(
-      () => null, // initial data
+      () => <></>, // initial data
       () => <Loader />, // loading
       (error: Error) => <>{error.toString()}</>, // error
       (data: StakeData[]): JSX.Element =>
@@ -215,4 +214,4 @@ export default compose(
     },
   ),
   withRouter,
-)(WalletView);
+)(WalletView) as React.ComponentClass<ComponentProps, State>;
