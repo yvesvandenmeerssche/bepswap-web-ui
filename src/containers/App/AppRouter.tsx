@@ -12,23 +12,27 @@ type AppRoute = {
 const routes: AppRoute[] = [
   {
     path: '',
-    component: asyncComponent(() => import('../pages/Swap/SwapLanding')),
+    component: asyncComponent(() => import('../Pool/PoolView')),
+    exact: true,
   },
   {
     path: 'swap/:info',
-    component: asyncComponent(() => import('../pages/Swap/SwapDetail')),
-  },
-  {
-    path: 'swap/',
-    component: asyncComponent(() => import('../pages/Swap/SwapLanding')),
+    component: asyncComponent(() => import('../Swap/SwapSend')),
   },
   {
     path: 'pools',
-    component: asyncComponent(() => import('../pages/Pool/Pools')),
+    component: asyncComponent(() => import('../Pool/PoolView')),
+    exact: true,
   },
   {
-    path: 'pool/:symbol/:action?',
-    component: asyncComponent(() => import('../pages/Pool')),
+    path: 'pool/:symbol/new',
+    component: asyncComponent(() => import('../Pool/PoolCreate')),
+    exact: true,
+  },
+  {
+    path: 'pool/:symbol',
+    component: asyncComponent(() => import('../Pool/PoolStake')),
+    exact: true,
   },
   {
     path: 'connect',
@@ -41,6 +45,10 @@ const routes: AppRoute[] = [
   {
     path: 'transaction',
     component: asyncComponent(() => import('../TransactionView')),
+  },
+  {
+    path: '*',
+    component: asyncComponent(() => import('../404')),
   },
 ];
 

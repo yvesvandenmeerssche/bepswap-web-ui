@@ -12,7 +12,7 @@ import { RootState } from './redux/store';
 const maintenanceRoute = [
   {
     path: '',
-    component: asyncComponent(() => import('./containers/pages/500')),
+    component: asyncComponent(() => import('./containers/500')),
   },
 ];
 
@@ -31,12 +31,12 @@ const publicRoutes: RouteType[] = [
   {
     exact: true,
     path: '/404',
-    component: asyncComponent(() => import('./containers/pages/404')),
+    component: asyncComponent(() => import('./containers/404')),
   },
   {
     exact: true,
     path: '/500',
-    component: asyncComponent(() => import('./containers/pages/500')),
+    component: asyncComponent(() => import('./containers/500')),
   },
 ];
 
