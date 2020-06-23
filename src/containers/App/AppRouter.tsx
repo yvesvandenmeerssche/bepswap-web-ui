@@ -15,22 +15,6 @@ const routes: AppRoute[] = [
     component: asyncComponent(() => import('../pages/Swap/SwapLanding')),
   },
   {
-    path: 'connect',
-    component: asyncComponent(() => import('../pages/Connect')),
-  },
-  {
-    path: 'stats',
-    component: asyncComponent(() => import('../pages/Stats')),
-  },
-  {
-    path: 'faqs',
-    component: asyncComponent(() => import('../pages/Faqs')),
-  },
-  {
-    path: 'network',
-    component: asyncComponent(() => import('../pages/Network')),
-  },
-  {
     path: 'swap/:info',
     component: asyncComponent(() => import('../pages/Swap/SwapDetail')),
   },
@@ -45,6 +29,18 @@ const routes: AppRoute[] = [
   {
     path: 'pool/:symbol/:action?',
     component: asyncComponent(() => import('../pages/Pool')),
+  },
+  {
+    path: 'connect',
+    component: asyncComponent(() => import('../pages/Connect')),
+  },
+  {
+    path: 'stats',
+    component: asyncComponent(() => import('../pages/Stats')),
+  },
+  {
+    path: 'faqs',
+    component: asyncComponent(() => import('../pages/Faqs')),
   },
   {
     path: 'transaction',
