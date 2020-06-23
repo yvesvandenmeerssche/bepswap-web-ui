@@ -48,7 +48,7 @@ const routes: AppRoute[] = [
   },
   {
     path: 'transaction',
-    component: asyncComponent(() => import('../pages/Transactions')),
+    component: asyncComponent(() => import('../TransactionView')),
   },
 ];
 
