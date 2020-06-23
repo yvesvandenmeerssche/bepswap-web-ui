@@ -35,10 +35,6 @@ const routes: AppRoute[] = [
     component: asyncComponent(() => import('../pages/Connect')),
   },
   {
-    path: 'stats',
-    component: asyncComponent(() => import('../pages/Stats')),
-  },
-  {
     path: 'faqs',
     component: asyncComponent(() => import('../pages/Faqs')),
   },
