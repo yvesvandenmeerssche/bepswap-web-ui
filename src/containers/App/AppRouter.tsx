@@ -32,11 +32,11 @@ const routes: AppRoute[] = [
   },
   {
     path: 'connect',
-    component: asyncComponent(() => import('../pages/Connect')),
+    component: asyncComponent(() => import('../ConnectView')),
   },
   {
     path: 'faqs',
-    component: asyncComponent(() => import('../pages/Faqs')),
+    component: asyncComponent(() => import('../FaqsView')),
   },
   {
     path: 'transaction',
