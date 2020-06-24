@@ -10,25 +10,25 @@ import {
   DatabaseOutlined,
 } from '@ant-design/icons';
 
-import Label from '../../../components/uielements/label';
-import AddIcon from '../../../components/uielements/addIcon';
-import CoinIcon from '../../../components/uielements/coins/coinIcon';
-import Table from '../../../components/uielements/table';
-import Button from '../../../components/uielements/button';
-import PoolFilter from '../../../components/poolFilter';
+import Label from '../../components/uielements/label';
+import AddIcon from '../../components/uielements/addIcon';
+import CoinIcon from '../../components/uielements/coins/coinIcon';
+import Table from '../../components/uielements/table';
+import Button from '../../components/uielements/button';
+import PoolFilter from '../../components/poolFilter';
 
 import { ContentWrapper, ActionHeader, ActionColumn } from './PoolView.style';
-import { getCreatePoolTokens, getPoolData } from '../utils';
-import { PoolData } from '../types';
-import { getTickerFormat } from '../../../helpers/stringHelper';
-import { getAppContainer } from '../../../helpers/elementHelper';
-import * as midgardActions from '../../../redux/midgard/actions';
-import { RootState } from '../../../redux/store';
-import { AssetData, User } from '../../../redux/wallet/types';
-import { PoolDataMap, PriceDataIndex } from '../../../redux/midgard/types';
-import { getAssetFromString } from '../../../redux/midgard/utils';
-import { ViewType, Maybe } from '../../../types/bepswap';
-import { PoolDetailStatusEnum } from '../../../types/generated/midgard/api';
+import { getCreatePoolTokens, getPoolData } from '../../helpers/utils/poolUtils';
+import { PoolData } from '../../helpers/utils/types';
+import { getTickerFormat } from '../../helpers/stringHelper';
+import { getAppContainer } from '../../helpers/elementHelper';
+import * as midgardActions from '../../redux/midgard/actions';
+import { RootState } from '../../redux/store';
+import { AssetData, User } from '../../redux/wallet/types';
+import { PoolDataMap, PriceDataIndex } from '../../redux/midgard/types';
+import { getAssetFromString } from '../../redux/midgard/utils';
+import { ViewType, Maybe } from '../../types/bepswap';
+import { PoolDetailStatusEnum } from '../../types/generated/midgard/api';
 
 type ComponentProps = {
   loading: boolean;

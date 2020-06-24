@@ -30,14 +30,14 @@ import {
   tokenToBase,
 } from '@thorchain/asgardex-token';
 import Text from 'antd/lib/typography/Text';
-import Button from '../../../components/uielements/button';
-import Label from '../../../components/uielements/label';
-import Drag from '../../../components/uielements/drag';
-import TokenCard from '../../../components/uielements/tokens/tokenCard';
-import CoinData from '../../../components/uielements/coins/coinData';
-import TxTimer from '../../../components/uielements/txTimer';
-import Modal from '../../../components/uielements/modal';
-import PrivateModal from '../../../components/modals/privateModal';
+import Button from '../../components/uielements/button';
+import Label from '../../components/uielements/label';
+import Drag from '../../components/uielements/drag';
+import TokenCard from '../../components/uielements/tokens/tokenCard';
+import CoinData from '../../components/uielements/coins/coinData';
+import TxTimer from '../../components/uielements/txTimer';
+import Modal from '../../components/uielements/modal';
+import PrivateModal from '../../components/modals/privateModal';
 
 import {
   ContentWrapper,
@@ -54,52 +54,53 @@ import {
   FeeParagraph,
   SliderSwapWrapper,
 } from './SwapSend.style';
-import { getTickerFormat, getPair } from '../../../helpers/stringHelper';
-import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
+import { getTickerFormat, getPair } from '../../helpers/stringHelper';
+import { TESTNET_TX_BASE_URL } from '../../helpers/apiHelper';
 import {
   getCalcResult,
   confirmSwap,
   getTxResult,
   validatePair,
   isValidSwap,
-} from '../utils';
-import { getAppContainer } from '../../../helpers/elementHelper';
+} from '../../helpers/utils/swapUtils';
+import { getAppContainer } from '../../helpers/elementHelper';
+import { CalcResult } from '../../helpers/utils/types';
 
-import * as appActions from '../../../redux/app/actions';
-import * as midgardActions from '../../../redux/midgard/actions';
-import * as walletActions from '../../../redux/wallet/actions';
-import * as binanceActions from '../../../redux/binance/actions';
-import AddressInput from '../../../components/uielements/addressInput';
-import ContentTitle from '../../../components/uielements/contentTitle';
-import Slider from '../../../components/uielements/slider';
-import StepBar from '../../../components/uielements/stepBar';
-import Trend from '../../../components/uielements/trend';
-import { MAX_VALUE } from '../../../redux/app/const';
+import * as appActions from '../../redux/app/actions';
+import * as midgardActions from '../../redux/midgard/actions';
+import * as walletActions from '../../redux/wallet/actions';
+import * as binanceActions from '../../redux/binance/actions';
+import AddressInput from '../../components/uielements/addressInput';
+import ContentTitle from '../../components/uielements/contentTitle';
+import Slider from '../../components/uielements/slider';
+import StepBar from '../../components/uielements/stepBar';
+import Trend from '../../components/uielements/trend';
+import { MAX_VALUE } from '../../redux/app/const';
 import {
   Maybe,
   Nothing,
   TokenData,
   Pair,
   AssetPair,
-} from '../../../types/bepswap';
-import { SwapSendView, CalcResult } from './types';
-import { User, AssetData } from '../../../redux/wallet/types';
-import { TxStatus, TxTypes } from '../../../redux/app/types';
+} from '../../types/bepswap';
+import { SwapSendView } from './types';
+import { User, AssetData } from '../../redux/wallet/types';
+import { TxStatus, TxTypes } from '../../redux/app/types';
 
-import { PriceDataIndex, PoolDataMap } from '../../../redux/midgard/types';
-import { RootState } from '../../../redux/store';
-import { getAssetFromString } from '../../../redux/midgard/utils';
-import { BINANCE_NET, getNet } from '../../../env';
-import { PoolDetailStatusEnum } from '../../../types/generated/midgard';
+import { PriceDataIndex, PoolDataMap } from '../../redux/midgard/types';
+import { RootState } from '../../redux/store';
+import { getAssetFromString } from '../../redux/midgard/utils';
+import { BINANCE_NET, getNet } from '../../env';
+import { PoolDetailStatusEnum } from '../../types/generated/midgard';
 import {
   TransferEventRD,
   TransferFeesRD,
   TransferFees,
-} from '../../../redux/binance/types';
+} from '../../redux/binance/types';
 import {
   getAssetFromAssetData,
   bnbBaseAmount,
-} from '../../../helpers/walletHelper';
+} from '../../helpers/walletHelper';
 
 type Props = {
   history: H.History;

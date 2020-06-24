@@ -22,22 +22,22 @@ import {
 } from '@thorchain/asgardex-util';
 
 import { TokenAmount, tokenAmount } from '@thorchain/asgardex-token';
-import Button from '../../../components/uielements/button';
-import Label from '../../../components/uielements/label';
-import Status from '../../../components/uielements/status';
-import CoinIcon from '../../../components/uielements/coins/coinIcon';
-import CoinCard from '../../../components/uielements/coins/coinCard';
-import Drag from '../../../components/uielements/drag';
-import { greyArrowIcon } from '../../../components/icons';
-import TxTimer from '../../../components/uielements/txTimer';
-import StepBar from '../../../components/uielements/stepBar';
-import CoinData from '../../../components/uielements/coins/coinData';
-import PrivateModal from '../../../components/modals/privateModal';
-import { getAppContainer } from '../../../helpers/elementHelper';
+import Button from '../../components/uielements/button';
+import Label from '../../components/uielements/label';
+import Status from '../../components/uielements/status';
+import CoinIcon from '../../components/uielements/coins/coinIcon';
+import CoinCard from '../../components/uielements/coins/coinCard';
+import Drag from '../../components/uielements/drag';
+import { greyArrowIcon } from '../../components/icons';
+import TxTimer from '../../components/uielements/txTimer';
+import StepBar from '../../components/uielements/stepBar';
+import CoinData from '../../components/uielements/coins/coinData';
+import PrivateModal from '../../components/modals/privateModal';
+import { getAppContainer } from '../../helpers/elementHelper';
 
-import * as appActions from '../../../redux/app/actions';
-import * as midgardActions from '../../../redux/midgard/actions';
-import * as binanceActions from '../../../redux/binance/actions';
+import * as appActions from '../../redux/app/actions';
+import * as midgardActions from '../../redux/midgard/actions';
+import * as binanceActions from '../../redux/binance/actions';
 
 import {
   ContentWrapper,
@@ -45,24 +45,24 @@ import {
   ConfirmModalContent,
   LoaderWrapper,
 } from './PoolCreate.style';
-import { getTickerFormat } from '../../../helpers/stringHelper';
+import { getTickerFormat } from '../../helpers/stringHelper';
 import {
   confirmCreatePool,
   getCreatePoolTokens,
   getCreatePoolCalc,
   CreatePoolCalc,
-} from '../utils';
+} from '../helpers/utils/poolUtils';
 
-import { TESTNET_TX_BASE_URL } from '../../../helpers/apiHelper';
-import { MAX_VALUE } from '../../../redux/app/const';
-import { RootState } from '../../../redux/store';
-import { TxStatus, TxTypes } from '../../../redux/app/types';
-import { State as BinanceState } from '../../../redux/binance/types';
-import { PriceDataIndex, PoolDataMap } from '../../../redux/midgard/types';
-import { Maybe, AssetPair } from '../../../types/bepswap';
-import { User, AssetData } from '../../../redux/wallet/types';
+import { TESTNET_TX_BASE_URL } from '../../helpers/apiHelper';
+import { MAX_VALUE } from '../../redux/app/const';
+import { RootState } from '../../redux/store';
+import { TxStatus, TxTypes } from '../../redux/app/types';
+import { State as BinanceState } from '../../redux/binance/types';
+import { PriceDataIndex, PoolDataMap } from '../../redux/midgard/types';
+import { Maybe, AssetPair } from '../../types/bepswap';
+import { User, AssetData } from '../../redux/wallet/types';
 
-import { BINANCE_NET } from '../../../env';
+import { BINANCE_NET } from '../../env';
 
 type Props = {
   assetData: AssetData[];

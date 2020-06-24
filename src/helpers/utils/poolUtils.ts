@@ -20,8 +20,8 @@ import {
   baseAmount,
   formatBaseAsTokenAmount,
 } from '@thorchain/asgardex-token';
-import { getStakeMemo, getWithdrawMemo } from '../../helpers/memoHelper';
-import { getTickerFormat } from '../../helpers/stringHelper';
+import { getStakeMemo, getWithdrawMemo } from '../memoHelper';
+import { getTickerFormat } from '../stringHelper';
 import { PoolDataMap, PriceDataIndex } from '../../redux/midgard/types';
 import { PoolDetail } from '../../types/generated/midgard';
 import { getAssetFromString } from '../../redux/midgard/utils';

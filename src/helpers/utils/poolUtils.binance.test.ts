@@ -8,7 +8,7 @@ import {
   WithdrawErrorMsg,
   confirmStake,
   StakeErrorMsg,
-} from './utils';
+} from './poolUtils';
 
 const transferResponseMock: TransferResult = {
   result: [{ code: 1, hash: 'hash', log: 'log', ok: true }],

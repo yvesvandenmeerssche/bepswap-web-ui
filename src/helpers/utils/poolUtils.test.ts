@@ -11,7 +11,7 @@ import {
   CreatePoolCalc,
   getRoundedDownBN,
   roundedDownAmount,
-} from './utils';
+} from './poolUtils';
 import { PoolData } from './types';
 import { AssetData } from '../../redux/wallet/types';
 import {

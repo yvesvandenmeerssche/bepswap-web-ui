@@ -12,8 +12,8 @@ import {
   baseAmount,
   tokenToBase,
 } from '@thorchain/asgardex-token';
-import { getSwapMemo } from '../../helpers/memoHelper';
-import { getTickerFormat } from '../../helpers/stringHelper';
+import { getSwapMemo } from '../memoHelper';
+import { getTickerFormat } from '../stringHelper';
 import {
   getZValue,
   getPx,
@@ -22,10 +22,10 @@ import {
   getFee,
   SingleSwapCalcData,
   DoubleSwapCalcData,
-} from './calc';
+} from '../calculations';
 import { PoolDataMap } from '../../redux/midgard/types';
 import { Nothing, Maybe, SwapType, Pair, AssetPair } from '../../types/bepswap';
-import { CalcResult } from './SwapSend/types';
+import { CalcResult } from './types';
 import { getAssetFromString } from '../../redux/midgard/utils';
 
 export const validatePair = (

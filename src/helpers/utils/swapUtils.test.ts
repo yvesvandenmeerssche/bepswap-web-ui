@@ -10,14 +10,14 @@ import {
   getCalcResult,
   validateSwap,
   SwapErrorMsg,
-} from './utils';
+} from './swapUtils';
 import {
   PoolDetail,
   PoolDetailStatusEnum,
 } from '../../types/generated/midgard';
 import { Nothing, Pair, AssetPair, SwapType } from '../../types/bepswap';
 import { PoolDataMap } from '../../redux/midgard/types';
-import { CalcResult } from './SwapSend/types';
+import { CalcResult } from './types';
 
 const bnbPoolInfo: PoolDetail = {
   asset: 'BNB.BNB',
