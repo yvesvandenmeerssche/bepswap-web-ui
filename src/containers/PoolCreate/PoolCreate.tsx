@@ -51,7 +51,7 @@ import {
   getCreatePoolTokens,
   getCreatePoolCalc,
   CreatePoolCalc,
-} from '../helpers/utils/poolUtils';
+} from '../../helpers/utils/poolUtils';
 
 import { TESTNET_TX_BASE_URL } from '../../helpers/apiHelper';
 import { MAX_VALUE } from '../../redux/app/const';
