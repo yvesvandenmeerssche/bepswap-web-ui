@@ -48,7 +48,7 @@ import {
 import { getTickerFormat } from '../../helpers/stringHelper';
 import {
   confirmCreatePool,
-  getCreatePoolTokens,
+  getAvailableTokensToCreate,
   getCreatePoolCalc,
   CreatePoolCalc,
 } from '../../helpers/utils/poolUtils';
@@ -389,7 +389,7 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
     const target = getTickerFormat(symbol);
 
     const runePrice = validBNOrZero(priceIndex?.RUNE);
-    const tokensData = getCreatePoolTokens(assetData, pools);
+    const tokensData = getAvailableTokensToCreate(assetData, pools);
     // AssetData[] -> AssetPair[]
     const coinDardData = tokensData.map<AssetPair>((detail: AssetData) => ({
       asset: detail.asset || '',

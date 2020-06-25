@@ -3,7 +3,7 @@ import { bn } from '@thorchain/asgardex-util';
 import { tokenAmount, baseAmount } from '@thorchain/asgardex-token';
 import {
   withdrawResult,
-  getCreatePoolTokens,
+  getAvailableTokensToCreate,
   getPoolData,
   getCalcResult,
   CalcResult,
@@ -136,7 +136,7 @@ describe('pool/utils/', () => {
     });
   });
 
-  describe('getCreatePoolTokens', () => {
+  describe('getAvailableTokensToCreate', () => {
     it('should filter pool assets and the asset with small amount ', () => {
       const assetA: AssetData = {
         asset: 'A',
@@ -155,7 +155,7 @@ describe('pool/utils/', () => {
       };
       const assets: AssetData[] = [assetA, assetB, assetWithSmallAmount];
       const pools: string[] = ['A.A'];
-      const result = getCreatePoolTokens(assets, pools);
+      const result = getAvailableTokensToCreate(assets, pools);
       const expected = [assetB];
       expect(result).toEqual(expected);
     });
@@ -177,7 +177,7 @@ describe('pool/utils/', () => {
       };
       const assets: AssetData[] = [assetA, assetB, assetC];
       const pools: string[] = ['A.A'];
-      const result = getCreatePoolTokens(assets, pools);
+      const result = getAvailableTokensToCreate(assets, pools);
       const expected = [assetC];
       expect(result).toEqual(expected);
     });

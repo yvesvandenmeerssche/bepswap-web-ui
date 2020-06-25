@@ -123,7 +123,7 @@ export const getCalcResult = (
   };
 };
 
-export const getCreatePoolTokens = (
+export const getAvailableTokensToCreate = (
   assetData: AssetData[],
   pools: string[],
 ): AssetData[] => {

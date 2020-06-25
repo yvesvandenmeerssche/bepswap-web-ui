@@ -191,6 +191,8 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
 
     const wallet = user?.wallet;
     if (wallet) {
+      // refresh wallet balance
+      refreshBalance(wallet);
       subscribeBinanceTransfers({ address: wallet, net });
     }
 
@@ -658,6 +660,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     setTimerFinished(false);
     resetTxStatus();
 
+    // refresh balance once finished
     const wallet = user?.wallet;
     if (wallet) {
       refreshBalance(wallet);

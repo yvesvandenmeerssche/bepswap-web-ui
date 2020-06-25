@@ -70,7 +70,6 @@ export const getSwapType = (from: string, to: string) =>
     ? SwapType.SINGLE_SWAP
     : SwapType.DOUBLE_SWAP;
 
-// TODO: (Chris) Refactor swap calc method
 export const getSwapData = (
   from: string,
   to: string,
