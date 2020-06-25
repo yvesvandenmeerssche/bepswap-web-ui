@@ -239,7 +239,7 @@ export enum StakeErrorMsg {
   INVALID_RUNE_AMOUNT = 'Invalid RUNE amount.',
 }
 
-export type ConfirmStakeParams = {
+export type StakeRequestParams = {
   bncClient: BinanceClient;
   wallet: Address;
   runeAmount: TokenAmount;
@@ -248,8 +248,8 @@ export type ConfirmStakeParams = {
   symbolTo: Maybe<string>;
 };
 
-export const confirmStake = (
-  params: ConfirmStakeParams,
+export const stakeRequest = (
+  params: StakeRequestParams,
 ): Promise<TransferResult> => {
   const {
     bncClient,
@@ -423,7 +423,7 @@ type WithdrawParams = {
   symbol: string;
   percent: number;
 };
-export const confirmWithdraw = (
+export const withdrawRequest = (
   params: WithdrawParams,
 ): Promise<TransferResult> => {
   const { bncClient, wallet, poolAddress, symbol, percent } = params;

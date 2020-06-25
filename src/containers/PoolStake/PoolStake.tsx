@@ -72,8 +72,8 @@ import {
 } from './PoolStake.style';
 import {
   WithdrawResultParams,
-  confirmStake,
-  confirmWithdraw,
+  stakeRequest,
+  withdrawRequest,
   getCalcResult,
   CalcResult,
   getPoolData,
@@ -650,7 +650,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       const bncClient = await binanceClient(BINANCE_NET);
 
       try {
-        const { result } = await confirmStake({
+        const { result } = await stakeRequest({
           bncClient,
           wallet,
           runeAmount,
@@ -745,7 +745,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       try {
         const percent = withdrawRate * 100;
 
-        const { result } = await confirmWithdraw({
+        const { result } = await withdrawRequest({
           bncClient,
           wallet,
           poolAddress,
