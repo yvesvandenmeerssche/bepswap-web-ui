@@ -7,8 +7,6 @@ import {
   getPoolData,
   getCalcResult,
   CalcResult,
-  getCreatePoolCalc,
-  CreatePoolCalc,
 } from './poolUtils';
 import { PoolData } from './types';
 import { AssetData } from '../../redux/wallet/types';
@@ -467,70 +465,6 @@ describe('pool/utils/', () => {
       expect(result.Pr).toEqual(expected.Pr);
       expect(result.R).toEqual(expected.R);
       expect(result.T).toEqual(expected.T);
-    });
-  });
-
-  describe('getCreatePoolCalc', () => {
-    it('calculates data to create a TOMOB-1E1 pool', () => {
-      const tokenSymbol = 'TOMOB-1E1';
-      const poolAddress = 'tbnb1XXX';
-      const runeAmount = tokenAmount(809.29);
-      const runePrice = bn(1);
-      const tAmount = tokenAmount(0.14);
-      const expected: CreatePoolCalc = {
-        poolAddress: 'tbnb1XXX',
-        tokenSymbol: 'TOMOB-1E1',
-        poolPrice: bn('5780.64285714285714285714'),
-        depth: bn(809.29),
-        share: 100,
-        Pr: bn(1),
-      };
-      const result = getCreatePoolCalc({
-        tokenSymbol,
-        poolAddress,
-        runeAmount,
-        runePrice,
-        tokenAmount: tAmount,
-      });
-      expect(result.poolAddress).toEqual(expected.poolAddress);
-      expect(result.tokenSymbol).toEqual(expected.tokenSymbol);
-      expect(result.poolPrice).toEqual(expected.poolPrice);
-      expect(result.depth).toEqual(expected.depth);
-      expect(result.share).toEqual(expected.share);
-      expect(result.Pr).toEqual(expected.Pr);
-      // Test all again, just in case of other properties in the future
-      expect(result).toEqual(expected);
-    });
-
-    it('calculates data to create a TOMOB-1E1 pool again, but with more amounts', () => {
-      const tokenSymbol = 'TOMOB-1E1';
-      const poolAddress = 'tbnb1XXX';
-      const runeAmount = tokenAmount(3237.152);
-      const runePrice = bn(1);
-      const tAmount = tokenAmount(0.559);
-      const expected: CreatePoolCalc = {
-        poolAddress: 'tbnb1XXX',
-        tokenSymbol: 'TOMOB-1E1',
-        poolPrice: bn('5790.96958855098389982111'),
-        depth: bn(3237.152),
-        share: 100,
-        Pr: bn(1),
-      };
-      const result = getCreatePoolCalc({
-        tokenSymbol,
-        poolAddress,
-        runeAmount,
-        runePrice,
-        tokenAmount: tAmount,
-      });
-      expect(result.poolAddress).toEqual(expected.poolAddress);
-      expect(result.tokenSymbol).toEqual(expected.tokenSymbol);
-      expect(result.poolPrice).toEqual(expected.poolPrice);
-      expect(result.depth).toEqual(expected.depth);
-      expect(result.share).toEqual(expected.share);
-      expect(result.Pr).toEqual(expected.Pr);
-      // Test all again, just in case of other properties in the future
-      expect(result).toEqual(expected);
     });
   });
 });

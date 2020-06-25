@@ -4,7 +4,7 @@ import { tokenAmount } from '@thorchain/asgardex-token';
 import {
   CreatePoolErrorMsg,
   confirmWithdraw,
-  confirmCreatePool,
+  createPoolRequest,
   WithdrawErrorMsg,
   confirmStake,
   StakeErrorMsg,
@@ -75,13 +75,13 @@ describe('pool/utils/', () => {
       });
     });
 
-    describe('confirmCreatePool', () => {
+    describe('createPoolRequest', () => {
       beforeEach(async () => {
         mocked(bncClient.multiSend).mockClear();
       });
 
       it('returns result of a transfer', async () => {
-        const response = await confirmCreatePool({
+        const response = await createPoolRequest({
           bncClient,
           wallet: 'abc123',
           runeAmount: tokenAmount(2),
@@ -97,7 +97,7 @@ describe('pool/utils/', () => {
 
       it('rejects if wallet address is not provided', async () => {
         await expect(
-          confirmCreatePool({
+          createPoolRequest({
             bncClient,
             wallet: '',
             runeAmount: tokenAmount(2),
@@ -110,7 +110,7 @@ describe('pool/utils/', () => {
 
       it('rejects if token amount is not > 0', async () => {
         await expect(
-          confirmCreatePool({
+          createPoolRequest({
             bncClient,
             wallet: 'abc123',
             runeAmount: tokenAmount(2),
@@ -123,7 +123,7 @@ describe('pool/utils/', () => {
 
       it('rejects if pool address is missing', async () => {
         await expect(
-          confirmCreatePool({
+          createPoolRequest({
             bncClient,
             wallet: 'abc123',
             runeAmount: tokenAmount(2),
@@ -136,7 +136,7 @@ describe('pool/utils/', () => {
 
       it('rejects if token symbol is missing', async () => {
         await expect(
-          confirmCreatePool({
+          createPoolRequest({
             bncClient,
             wallet: 'abc123',
             runeAmount: tokenAmount(2),

@@ -232,60 +232,6 @@ export const getPoolData = (
   };
 };
 
-export type CreatePoolCalc = {
-  poolPrice: BigNumber;
-  depth: BigNumber;
-  share: number;
-  poolAddress?: string;
-  tokenSymbol?: string;
-  Pr?: BigNumber;
-};
-
-type GetCreatePoolCalcParams = {
-  tokenSymbol: string;
-  poolAddress: string;
-  runeAmount: TokenAmount;
-  tokenAmount: TokenAmount;
-  runePrice: BigNumber;
-};
-
-export const getCreatePoolCalc = ({
-  tokenSymbol,
-  poolAddress,
-  runeAmount,
-  runePrice,
-  tokenAmount,
-}: GetCreatePoolCalcParams): CreatePoolCalc => {
-  const share = 100;
-
-  if (!poolAddress) {
-    return {
-      poolPrice: bn(0),
-      depth: bn(0),
-      share: 100,
-    };
-  }
-
-  // formula: (runeAmount / tokenAmount) * runePrice)
-  const poolPrice = tokenAmount.amount().isGreaterThan(0)
-    ? runeAmount
-        .amount()
-        .div(tokenAmount.amount())
-        .multipliedBy(runePrice)
-    : bn(0);
-  // formula: runePrice * runeAmount
-  const depth = runeAmount.amount().multipliedBy(runePrice);
-
-  return {
-    poolAddress,
-    tokenSymbol,
-    poolPrice,
-    depth,
-    share,
-    Pr: runePrice,
-  };
-};
-
 export enum StakeErrorMsg {
   MISSING_SYMBOL = 'Symbol to stake is missing.',
   MISSING_POOL_ADDRESS = 'Pool address is missing.',
@@ -385,7 +331,7 @@ export enum CreatePoolErrorMsg {
   MISSING_TOKEN_SYMBOL = 'Token symbol is missing.',
 }
 
-type ConfirmCreatePoolParams = {
+type CreatePoolRequestParams = {
   bncClient: BinanceClient;
   wallet: string;
   runeAmount: TokenAmount;
@@ -393,8 +339,9 @@ type ConfirmCreatePoolParams = {
   poolAddress: Maybe<string>;
   tokenSymbol?: string;
 };
-export const confirmCreatePool = (
-  params: ConfirmCreatePoolParams,
+
+export const createPoolRequest = (
+  params: CreatePoolRequestParams,
 ): Promise<TransferResult> => {
   const {
     bncClient,
