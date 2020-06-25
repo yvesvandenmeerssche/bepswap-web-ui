@@ -14,7 +14,6 @@ import {
   isValidBN,
 } from '@thorchain/asgardex-util';
 import {
-  tokenAmount,
   TokenAmount,
   tokenToBase,
   baseAmount,
@@ -41,16 +40,6 @@ export type CalcResult = {
   Pr: BigNumber;
   R: BigNumber;
   T: BigNumber;
-};
-
-export const getRoundedDownBN = (value: BigNumber, decimal = 2) => {
-  return value.toFixed(decimal, 1);
-};
-
-export const roundedDownAmount = (value: BigNumber, decimal = 2) => {
-  const roundedBN = getRoundedDownBN(value, decimal);
-
-  return tokenAmount(roundedBN);
 };
 
 export const getCalcResult = (
@@ -156,7 +145,6 @@ export const getCreatePoolTokens = (
   });
 };
 
-// TODO(Chris): merge duplicated functions from swap and pool utils
 // TODO(Chris): Refactor utils
 
 export const getPoolData = (

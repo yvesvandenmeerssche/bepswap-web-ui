@@ -1,18 +1,16 @@
 import BigNumber from 'bignumber.js';
 import { TokenAmount, BaseAmount } from '@thorchain/asgardex-token';
-import { Maybe } from '../../types/bepswap';
 
-export type CalcResult = {
-  poolAddressFrom: Maybe<string>;
-  poolAddressTo: Maybe<string>;
-  symbolFrom: Maybe<string>;
-  symbolTo: Maybe<string>;
+export type SwapData = {
+  poolAddress: string;
+  symbolFrom: string;
+  symbolTo: string;
   Px: BigNumber;
   slip: BigNumber;
   outputAmount: TokenAmount;
   outputPrice: BigNumber;
   fee: TokenAmount;
-  lim: Maybe<BaseAmount>;
+  lim: BaseAmount;
 };
 
 export type PoolInfoType = {

@@ -57,14 +57,14 @@ import {
 import { getTickerFormat, getPair } from '../../helpers/stringHelper';
 import { TESTNET_TX_BASE_URL } from '../../helpers/apiHelper';
 import {
-  getCalcResult,
+  getSwapData,
   confirmSwap,
   getTxResult,
   validatePair,
   isValidSwap,
 } from '../../helpers/utils/swapUtils';
 import { getAppContainer } from '../../helpers/elementHelper';
-import { CalcResult } from '../../helpers/utils/types';
+import { SwapData } from '../../helpers/utils/types';
 
 import * as appActions from '../../redux/app/actions';
 import * as midgardActions from '../../redux/midgard/actions';
@@ -83,7 +83,6 @@ import {
   Pair,
   AssetPair,
 } from '../../types/bepswap';
-import { SwapSendView } from './types';
 import { User, AssetData } from '../../redux/wallet/types';
 import { TxStatus, TxTypes } from '../../redux/app/types';
 
@@ -101,6 +100,8 @@ import {
   getAssetFromAssetData,
   bnbBaseAmount,
 } from '../../helpers/walletHelper';
+
+import { SwapSendView, TxResult } from './types';
 
 type Props = {
   history: H.History;
@@ -126,12 +127,6 @@ type Props = {
   transferFees: TransferFeesRD;
   subscribeBinanceTransfers: typeof binanceActions.subscribeBinanceTransfers;
   unSubscribeBinanceTransfers: typeof binanceActions.unSubscribeBinanceTransfers;
-};
-
-type TxResult = {
-  type: string;
-  amount: string;
-  token: string;
 };
 
 const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
@@ -251,7 +246,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     return bncClient.isValidAddress(address);
   };
 
-  const calcResult = (): Maybe<CalcResult> => {
+  const handleGetSwapData = (): Maybe<SwapData> => {
     const swapPair: Pair = getPair(info);
 
     if (!swapPair.source || !swapPair.target) {
@@ -267,7 +262,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       ? tokenAmount(xValue.amount().minus(runeFee))
       : tokenAmount(0);
 
-    return getCalcResult(
+    return getSwapData(
       source,
       target,
       poolData,
@@ -428,9 +423,9 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
 
   const handleConfirmSwap = async () => {
     const { source = '', target = '' }: Pair = getPair(info);
-    const calcResultData = calcResult();
+    const swapData = handleGetSwapData();
 
-    if (user && source && target && calcResultData) {
+    if (user && source && target && swapData) {
       let tokenAmountToSwap = xValue;
       const fee = bnbFeeAmount() || baseAmount(0);
       // fee transformation: BaseAmount -> TokenAmount -> BigNumber
@@ -452,7 +447,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
           user.wallet,
           source,
           target,
-          calcResultData,
+          swapData,
           tokenAmountToSwap,
           slipProtection,
           address,
@@ -609,8 +604,8 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     }
 
     // Validate calculation + slip
-    const calcData = calcResult();
-    if (calcData && validateSlip(calcData.slip)) {
+    const swapData = handleGetSwapData();
+    if (swapData && validateSlip(swapData.slip)) {
       if (keystore) {
         handleOpenPrivateModal();
       } else if (wallet) {
@@ -834,10 +829,10 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   const renderSwapModalContent = (
     swapSource: string,
     swapTarget: string,
-    calcResult: CalcResult,
+    swapData: SwapData,
   ) => {
     const { status, value, startTime, hash } = txStatus;
-    const { slip, outputAmount } = calcResult;
+    const { slip, outputAmount } = swapData;
 
     const Px = validBNOrZero(priceIndex[swapSource.toUpperCase()]);
     const tokenPrice = validBNOrZero(priceIndex[swapTarget.toUpperCase()]);
@@ -978,11 +973,11 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
 
   const openSwapModal = txStatus.type === 'swap' ? txStatus.modal : false;
 
-  const calcData = calcResult();
-  if (!calcData) {
+  const swapData = handleGetSwapData();
+  if (!swapData) {
     return <></>;
   } else {
-    const { slip, outputAmount, outputPrice } = calcData;
+    const { slip, outputAmount, outputPrice } = swapData;
 
     const sourcePriceBN = bn(priceIndex[swapSource.toUpperCase()]);
     const sourcePrice = isValidBN(sourcePriceBN) ? sourcePriceBN : outputPrice;
@@ -1147,7 +1142,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
           footer={null}
           onCancel={handleCloseModal}
         >
-          {renderSwapModalContent(swapSource, swapTarget, calcData)}
+          {renderSwapModalContent(swapSource, swapTarget, swapData)}
         </SwapModal>
         <PrivateModal
           visible={openPrivateModal}
