@@ -153,7 +153,11 @@ const Keystore: React.FC<Props> = (props: Props): JSX.Element => {
               disabled={!keystore}
             />
             {invalideStatus && (
-              <div className="ant-form-explain">Password is wrong!</div>
+              <div className="ant-form-explain">
+                <Label color="error">
+                  Password is wrong!
+                </Label>
+              </div>
             )}
           </Form>
         </FormGroup>
