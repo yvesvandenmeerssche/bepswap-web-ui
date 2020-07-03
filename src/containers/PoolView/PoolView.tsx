@@ -221,7 +221,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
       },
       {
         key: 'roiAT',
-        title: 'historical roi',
+        title: 'ARP',
         dataIndex: ['values', 'roiAT'],
         sorter: (a: PoolData, b: PoolData) =>
           Number(a.roiAT) - Number(b.roiAT),
