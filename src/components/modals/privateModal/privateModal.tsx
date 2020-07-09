@@ -100,8 +100,11 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
       // Short delay to render latest state changes of `validating`
       await delay(200);
 
+      console.log('keystore -->', user?.keystore);
+      console.log('password -->', password);
+
       // verify private key
-      const result = await verifyPrivateKey(user?.keystore, address);
+      const result = await verifyPrivateKey(user?.keystore, password);
 
       // confirm if decoded address is matched to the user's wallet address
       if (result.address === address) {
@@ -120,7 +123,7 @@ const PrivateModal: React.FC<Props> = (props): JSX.Element => {
     if (walletType === 'disconnected') {
       history.push('/connect');
     }
-  }, [user, walletType, validating, history, onOk]);
+  }, [user, walletType, validating, history, password, onOk]);
 
   const handleCancel = useCallback(() => {
     if (onCancel) {
