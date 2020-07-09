@@ -10,11 +10,15 @@ import Button from '../../components/uielements/button';
 import { getAppContainer } from '../../helpers/elementHelper';
 
 import { BINANCE_NET } from '../../env';
+import * as walletActions from '../../redux/wallet/actions';
 
 ledger.transports.u2f = u2f_transport;
-window.ledger = ledger;
 
-const LedgerConnector = props => {
+type Props = {
+  saveWallet: typeof walletActions.saveWallet;
+}
+
+const LedgerConnector = (props: Props) => {
   const [connecting, setConnecting] = useState(false);
   const [ledgerIndex, setLedgerIndex] = useState(0);
 
@@ -30,7 +34,6 @@ const LedgerConnector = props => {
     const timeout = 50000;
     const transport = await ledger.transports.u2f.create(timeout);
     const app = new ledger.app(transport, 100000, 100000);
-    window.app = app;
 
     // get version
     try {
@@ -150,8 +153,10 @@ const LedgerConnector = props => {
               min={0}
               size="small"
               value={ledgerIndex}
-              onChange={i => {
-                setLedgerIndex(i);
+              onChange={(i: number | undefined) => {
+                if (i) {
+                  setLedgerIndex(i);
+                }
               }}
             />
           </div>

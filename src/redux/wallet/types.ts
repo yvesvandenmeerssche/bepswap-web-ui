@@ -10,8 +10,8 @@ export interface User {
   type: 'keystore' | 'walletconnect' | 'ledger';
   wallet: Address;
   keystore?: FixmeType;
-  ledger?: string;
-  hdPath?: string;
+  ledger?: FixmeType;
+  hdPath?: number [];
   walletConnector?: FixmeType;
 }
 

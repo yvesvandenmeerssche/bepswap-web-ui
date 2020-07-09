@@ -1,25 +1,26 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 // import { crypto } from '@binance-chain/javascript-sdk';
 import { Row } from 'antd';
 import WalletConnect from '@trustwallet/walletconnect';
+import { Account } from '@trustwallet/types';
 import WalletConnectQRCodeModal from '@walletconnect/qrcode-modal';
 
 import { ContentWrapper, QRCodeWrapper } from './ConnectView.style';
 
 import * as walletActions from '../../redux/wallet/actions';
 import Label from '../../components/uielements/label';
+import { Maybe } from '../../types/bepswap';
 
-const { saveWallet } = walletActions;
+type Props = {
+  saveWallet: typeof walletActions.saveWallet;
+};
 
-const WalletConnectPane = props => {
+const WalletConnectPane = (props: Props) => {
   const walletConnect = async () => {
     const walletConnector = new WalletConnect({
       bridge: 'https://bridge.walletconnect.org', // Required
     });
-
-    window.mywallet = walletConnector;
 
     walletConnector.killSession();
 
@@ -49,11 +50,13 @@ const WalletConnectPane = props => {
 
       walletConnector
         .getAccounts()
-        .then(result => {
+        .then((result: Account[]) => {
           // Returns the accounts
-          const account = result.find(account => account.network === 714);
+          const account: Maybe<Account> = result.find(
+            account => account.network === 714,
+          );
           // const address = crypto.decodeAddress(account.address);
-          const { address } = account;
+          const address = account?.address ?? '';
 
           props.saveWallet({
             type: 'walletconnect',
@@ -82,7 +85,7 @@ const WalletConnectPane = props => {
       }
 
       // Delete walletConnector
-      props.saveWallet({});
+      props.saveWallet({ type: 'walletconnect', walletConnector: null, wallet: '' });
     });
   };
 
@@ -111,6 +114,4 @@ WalletConnectPane.propTypes = {
   saveWallet: PropTypes.func.isRequired,
 };
 
-export default connect(null, {
-  saveWallet,
-})(WalletConnectPane);
+export default WalletConnectPane;
