@@ -5,7 +5,7 @@ import * as H from 'history';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, useHistory, useParams } from 'react-router-dom';
-import { Row, Col, notification, Popover } from 'antd';
+import { Row, Col, Popover } from 'antd';
 import {
   InboxOutlined,
   InfoOutlined,
@@ -36,7 +36,6 @@ import {
   tokenToBase,
 } from '@thorchain/asgardex-token';
 import Text from 'antd/lib/typography/Text';
-import { getAppContainer } from '../../helpers/elementHelper';
 
 import Label from '../../components/uielements/label';
 import Status from '../../components/uielements/status';
@@ -104,6 +103,7 @@ import {
   bnbBaseAmount,
 } from '../../helpers/walletHelper';
 import { ShareDetailTabKeys, WithdrawData } from './types';
+import showNotification from '../../components/uielements/notification';
 
 const { TabPane } = Tabs;
 
@@ -644,11 +644,11 @@ const PoolStake: React.FC<Props> = (props: Props) => {
           setTxHash(hash);
         }
       } catch (error) {
-        notification.error({
+        showNotification({
+          type: 'error',
           message: 'Stake Invalid',
           description: `${error?.toString() ??
             'Stake information is not valid.'}`,
-          getContainer: getAppContainer,
         });
         handleCloseModal();
         setDragReset(true);
@@ -675,10 +675,10 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       runeAmount.amount().isLessThanOrEqualTo(0) &&
       targetAmount.amount().isLessThanOrEqualTo(0)
     ) {
-      notification.error({
+      showNotification({
+        type: 'error',
         message: 'Stake Invalid',
         description: 'You need to enter an amount to stake.',
-        getContainer: getAppContainer,
       });
       handleCloseModal();
       setDragReset(true);
@@ -692,10 +692,10 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       // fee transformation: BaseAmount -> TokenAmount -> BigNumber
       const feeAsTokenAmount = baseToToken(fee).amount();
       if (targetAmount.amount().isLessThanOrEqualTo(feeAsTokenAmount)) {
-        notification.error({
+        showNotification({
+          type: 'error',
           message: 'Invalid BNB value',
           description: 'Not enough BNB to cover the fee for this transaction.',
-          getContainer: getAppContainer,
         });
         setDragReset(true);
         return;
@@ -739,10 +739,10 @@ const PoolStake: React.FC<Props> = (props: Props) => {
           setTxHash(hash);
         }
       } catch (error) {
-        notification.error({
+        showNotification({
+          type: 'error',
           message: 'Withdraw Invalid',
           description: 'Withdraw information is not valid.',
-          getContainer: getAppContainer,
         });
         setDragReset(true);
         console.error(error); // eslint-disable-line no-console
@@ -763,11 +763,11 @@ const PoolStake: React.FC<Props> = (props: Props) => {
     const runeAmount = baseToToken(runeValue);
 
     if (runeAmount.amount().isLessThanOrEqualTo(1)) {
-      notification.error({
+      showNotification({
+        type: 'error',
         message: 'Invalid amount',
         description:
           'Withdraw amount must exceed 1 RUNE to cover network fees.',
-        getContainer: getAppContainer,
       });
       return;
     }
@@ -1161,6 +1161,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
 
     const dragText = withdrawDisabled ? '24hr cooldown' : 'drag to withdraw';
 
+    const ratioText = selectRatio ? 'Unlock to set the ratio manually' : 'Lock to set the ratio automatically';
+
     return (
       <div className="share-detail-wrapper">
         <Tabs
@@ -1203,7 +1205,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                 <PopoverContainer className="stake-ratio-select">
                   <Popover
                     content={
-                      <PopoverContent>Select the ratio for me</PopoverContent>
+                      <PopoverContent>{ratioText}</PopoverContent>
                     }
                     getPopupContainer={getPopupContainer}
                     placement="right"
@@ -1218,7 +1220,7 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                     <div>
                       <Button
                         onClick={handleSwitchSelectRatio}
-                        sizevalue="small"
+                        sizevalue="normal"
                         typevalue="outline"
                         focused={selectRatio}
                         tabIndex={-1}

@@ -4,7 +4,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, useHistory, useParams } from 'react-router-dom';
 import { SwapOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons';
-import { Row, notification } from 'antd';
+import { Row } from 'antd';
 import {
   client as binanceClient,
 } from '@thorchain/asgardex-binance';
@@ -60,7 +60,6 @@ import {
   validatePair,
   isValidSwap,
 } from '../../helpers/utils/swapUtils';
-import { getAppContainer } from '../../helpers/elementHelper';
 import { SwapData } from '../../helpers/utils/types';
 
 import * as appActions from '../../redux/app/actions';
@@ -99,6 +98,7 @@ import {
 } from '../../helpers/walletHelper';
 
 import { SwapSendView, TxResult } from './types';
+import showNotification from '../../components/uielements/notification';
 
 type Props = {
   history: H.History;
@@ -352,7 +352,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
 
   const handleChangePercent = (percent: number) => {
     const { source = '' }: Pair = getPair(info);
-
     const sourceAsset = getAssetFromAssetData(assetData, source);
 
     let totalAmount = sourceAsset?.assetValue.amount() ?? bn(0);
@@ -446,7 +445,8 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
           setTxHash(hash);
         }
       } catch (error) {
-        notification.error({
+        showNotification({
+          type: 'error',
           message: 'Swap Invalid',
           description: `Swap information is not valid: ${error.toString()}`,
         });
@@ -487,13 +487,13 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
 
   const validateSlip = (slip: BigNumber) => {
     if (slip.isGreaterThanOrEqualTo(maxSlip)) {
-      notification.error({
+      showNotification({
+        type: 'error',
         message: 'Swap Invalid',
         description: `Slip ${slip.toFormat(
           2,
           BigNumber.ROUND_DOWN,
         )}% is too high, try less than ${maxSlip}%.`,
-        getContainer: getAppContainer,
       });
       setDragReset(true);
       return false;
@@ -519,10 +519,10 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
 
     // Validate amount to swap
     if (xValue.amount().isLessThanOrEqualTo(0)) {
-      notification.error({
+      showNotification({
+        type: 'error',
         message: 'Swap Invalid',
         description: 'You need to enter an amount to swap.',
-        getContainer: getAppContainer,
       });
       setDragReset(true);
       return;
@@ -530,10 +530,10 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
 
     // Validate RUNE value of swap to cover network transactionFee
     if (runeFeeIsNotCovered(xValue.amount())) {
-      notification.error({
+      showNotification({
+        type: 'error',
         message: 'Invalid amount',
         description: 'Swap value must exceed 1 RUNE to cover network fees.',
-        getContainer: getAppContainer,
       });
       setDragReset(true);
       return;
@@ -545,10 +545,10 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       // fee transformation: BaseAmount -> TokenAmount -> BigNumber
       const feeAsTokenAmount = baseToToken(fee).amount();
       if (xValue.amount().isLessThanOrEqualTo(feeAsTokenAmount)) {
-        notification.error({
+        showNotification({
+          type: 'error',
           message: 'Invalid BNB value',
           description: 'Not enough BNB to cover the fee for this transaction.',
-          getContainer: getAppContainer,
         });
         setDragReset(true);
         return;
@@ -614,7 +614,10 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
   }, [setTxTimerStatus, setDragReset, setTimerFinished]);
 
   const handleCompleted = () => {
-    setXValue(xValue);
+    // reset input amount after swap completed
+    setXValue(tokenAmount(0));
+    setPercent(0);
+
     setTimerFinished(false);
     resetTxStatus();
 
@@ -689,10 +692,10 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     const { source, target }: Pair = getPair(info);
 
     if (!assetData.find(data => getTickerFormat(data.asset) === target)) {
-      notification.warning({
+      showNotification({
+        type: 'warning',
         message: 'Cannot Reverse Swap Direction',
         description: 'Token does not exist in your wallet.',
-        getContainer: getAppContainer,
       });
       return;
     }

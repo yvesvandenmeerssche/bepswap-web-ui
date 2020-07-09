@@ -139,3 +139,12 @@ export const QRCodeWrapper = styled.div`
   box-shadow: ${palette('primary', 0)};
   background-color: #48515d;
 `;
+
+export const KeystoreTitle = styled.div`
+  display: flex;
+  align-items: center;
+
+  .label-wrapper {
+    margin-right: 4px;
+  }
+`;
