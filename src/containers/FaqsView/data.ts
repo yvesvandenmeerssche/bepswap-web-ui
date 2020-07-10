@@ -57,6 +57,6 @@ export const faqs: Faq[] = [
   {
     question: 'How can I get involved?',
     answer:
-      'If youre a talented engineer or believe you can bring value to the project, talk to one of the admins on telegram or join https://t.me/thorchain_dev.',
+      'If you\'re a talented engineer or believe you can bring value to the project, talk to one of the admins on telegram or join https://t.me/thorchain_dev.',
   },
 ];
