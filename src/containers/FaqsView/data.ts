@@ -7,17 +7,17 @@ export type Faq = {
 export const faqs: Faq[] = [
   {
     question: 'What is BEPSwap?',
-    answer: `BEPSwap is a interface for the THORChain decentralised liquidity network and enables BEP2 assets to be swapped across liquidity pools on THORChain's decentralised liquidity network. Asset holders can also stake their unproductive assets and earn fees on swaps. THORNodes operate the network and split the responsibility of operating exchange infrastructure, asset management and trading software to enable assets to be swapped in a decentralised way.\n\nMore information can be found at https://docs.thorchain.org/ or https://rebase.foundation/network/thorchain/.`,
+    answer: `BEPSwap is an interface for the THORChain decentralised liquidity network that enables BEP2 assets to be swapped across liquidity pools on THORChain's decentralised liquidity network. Asset holders can also stake their unproductive assets and earn fees on swaps. THORNodes operate the network and split the responsibility of operating exchange infrastructure, asset management and trading software to enable assets to be swapped in a decentralised way.\n\nMore information can be found at https://docs.thorchain.org or https://rebase.foundation/network/thorchain.`,
   },
   {
     question: 'What assets are supported?',
     answer:
-      'THORChain currently only supports BEP2 assets on Binance Chain however support for Bitcoin and Ethereum networks will follow soon with the release of Asgard Wallet. THORChain is blockchain agnostic and can be connected to almost any blockchain & support a wide array of assets. BEPSwap is the first go-to-market product for THORChain, and thus will only support BEP2 and eventually will be retired.',
+      'Currently, THORChain only supports BEP2 assets on Binance Chain. Support for Bitcoin and Ethereum networks will follow soon with the release of Asgard Wallet. THORChain is blockchain agnostic and can be connected to most blockchain & support a wide array of assets. BEPSwap is the first go-to-market product for THORChain, and thus will only support BEP2 and eventually will be retired.',
   },
   {
     question: 'Is BEPSwap custodial?',
     answer:
-      'THORChain is a decentralised exchange that is non custodial, permissionless and trustlesss. This means no permission is needed to use the network, and nobody can confiscate your assets or block withdrawals. The THORChain protocol you dont need to trust any intermediary, and the network is Byzantine Fault Tolerant & can handle up to one third malicious nodes. THORNodes secure the network by bonding RUNE which can be slashed for disruptive and malicious behaviour, and no single node operator can interfere with your transactions.',
+      "THORChain is a decentralised exchange that is non custodial, permissionless and trustlesss. This means that no permission is needed to use the network, and nobody can confiscate your assets or block withdrawals. With THORChain protocol you don't need to trust any intermediary, and the network is Byzantine Fault Tolerant & can handle up to one third malicious nodes. THORNodes secure the network by bonding RUNE which can be slashed for disruptive and malicious behaviour, and no single node operator can interfere with your transactions.",
   },
   {
     question: 'How do I obtain testnet assets?',
@@ -27,7 +27,7 @@ export const faqs: Faq[] = [
   {
     question: 'How do I connect my new wallet?',
     answer:
-      'Click the ADD WALLET pill on the header and select KEYSTORE from the options. Browse your local disk and find the testnet keystore saved from the telegram bot. Enter the password and click OK. Your wallet will now be loaded and your binance chain address shown on the wallet button on the header. Click the wallet button to open the wallet drawer, your BEP2 assets will be shown.',
+      'Click the ADD WALLET on the header and select KEYSTORE from the options. Browse your local disk and find the testnet keystore saved from the telegram bot. Enter the password and click OK. Your wallet will now be loaded and your binance chain address shown on the wallet button on the header. Click the wallet button to open the wallet drawer, your BEP2 assets will be shown.',
   },
   {
     question: 'How do I swap?',
