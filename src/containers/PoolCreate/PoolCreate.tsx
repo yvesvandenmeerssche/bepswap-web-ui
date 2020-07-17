@@ -161,8 +161,7 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
 
   const handleCloseModal = useCallback(() => {
     setTxTimerModal(false);
-    handleEndTxTimer();
-  }, [setTxTimerModal, handleEndTxTimer]);
+  }, [setTxTimerModal]);
 
   const handleFinishTx = () => {
     showNotification({
