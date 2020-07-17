@@ -5,9 +5,7 @@ import { connect } from 'react-redux';
 import { withRouter, useHistory, useParams } from 'react-router-dom';
 import { SwapOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons';
 import { Row } from 'antd';
-import {
-  client as binanceClient,
-} from '@thorchain/asgardex-binance';
+import { client as binanceClient } from '@thorchain/asgardex-binance';
 import {
   validBNOrZero,
   bnOrZero,
@@ -638,9 +636,6 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       handleCompleted();
     } else {
       setTxTimerModal(false);
-
-      // Finish the tx timer as we no longer minimize modal to txView in the header
-      handleEndTxTimer();
     }
   };
 
