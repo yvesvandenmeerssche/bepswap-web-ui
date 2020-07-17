@@ -56,7 +56,7 @@ const Header: React.FC<Props> = (props: Props): JSX.Element => {
     } else {
       history.push('/transaction');
     }
-  }, [setTxTimerModal, txStatus]);
+  }, [setTxTimerModal, txStatus, history]);
 
   const handleEndTxProgress = useCallback(() => {
     // Update `status` from here if modal is hided (not running)
