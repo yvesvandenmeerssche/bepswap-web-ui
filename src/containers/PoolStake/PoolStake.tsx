@@ -477,6 +477,11 @@ const PoolStake: React.FC<Props> = (props: Props) => {
         status: true,
         startTime: Date.now(),
       });
+
+      // dismiss modal after 1s
+      setTimeout(() => {
+        setTxTimerModal(false);
+      }, 1000);
     },
     [resetTxStatus],
   );

@@ -583,6 +583,11 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
       status: true,
       startTime: Date.now(),
     });
+
+    // dismiss modal after 1s
+    setTimeout(() => {
+      setTxTimerModal(false);
+    }, 1000);
   };
 
   const handleChangeTxTimer = () => {
