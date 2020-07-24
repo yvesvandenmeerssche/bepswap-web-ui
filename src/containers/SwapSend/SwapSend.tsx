@@ -588,6 +588,7 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     // dismiss modal after 1s
     setTimeout(() => {
       setTxTimerModal(false);
+      setDragReset(true);
     }, 1000);
   };
 
