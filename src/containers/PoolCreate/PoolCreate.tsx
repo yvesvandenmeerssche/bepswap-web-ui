@@ -152,7 +152,7 @@ const PoolCreate: React.FC<Props> = (props: Props): JSX.Element => {
     //   setTxTimerModal(false);
     //   setDragReset(true);
     // }, 1000);
-  }, [resetTxStatus, setTxTimerModal]);
+  }, [resetTxStatus]);
 
   const handleEndTxTimer = useCallback(() => {
     setTxTimerStatus(false);
