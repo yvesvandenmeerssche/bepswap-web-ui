@@ -24,6 +24,7 @@ const initState: State = {
   bnbPoolAddress: Nothing,
   poolAddress: Nothing,
   poolData: {},
+  stats: {},
   stakerPoolData: Nothing,
   stakerPoolDataLoading: false,
   stakerPoolDataError: Nothing,
@@ -36,6 +37,7 @@ const initState: State = {
   poolLoading: true,
   poolDataLoading: true,
   assetLoading: true,
+  statsLoading: false,
   txData: initial,
   txCurData: {},
   apiBasePath: initial,
@@ -94,6 +96,24 @@ const reducer: Reducer<State, MidgardActionTypes> = (
       return {
         ...state,
         poolLoading: false,
+        error: action.payload,
+      };
+    case 'GET_STATS_REQUEST':
+      return {
+        ...state,
+        statsLoading: true,
+        error: Nothing,
+      };
+    case 'GET_STATS_SUCCESS':
+      return {
+        ...state,
+        statsLoading: false,
+        stats: action.payload,
+      };
+    case 'GET_STATS_FAILED':
+      return {
+        ...state,
+        statsLoading: false,
         error: action.payload,
       };
     case 'GET_POOL_DATA_REQUEST':

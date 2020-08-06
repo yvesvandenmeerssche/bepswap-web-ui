@@ -4,6 +4,7 @@ import { Maybe, FixmeType } from '../../types/bepswap';
 import {
   AssetDetail,
   PoolDetail,
+  StatsData,
   StakersAssetData,
   ThorchainEndpoints,
   ThorchainEndpoint,
@@ -86,6 +87,7 @@ export type State = {
   assets: AssetDetailMap;
   assetArray: AssetDetail[];
   pools: string[];
+  stats: StatsData;
   poolAddressData: Maybe<ThorchainEndpoints>;
   bnbPoolAddress: Maybe<ThorchainEndpoint>;
   poolAddress: Maybe<string>;
@@ -100,6 +102,7 @@ export type State = {
   poolLoading: boolean;
   assetLoading: boolean;
   poolDataLoading: boolean;
+  statsLoading: boolean;
   txData: TxDetailData;
   txCurData: Maybe<InlineResponse2001>;
   apiBasePath: ApiBasePathRD;
