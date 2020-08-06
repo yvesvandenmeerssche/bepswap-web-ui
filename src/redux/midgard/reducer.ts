@@ -33,8 +33,9 @@ const initState: State = {
     RUNE: bn(1),
   },
   error: null,
-  poolLoading: false,
-  poolDataLoading: false,
+  poolLoading: true,
+  poolDataLoading: true,
+  assetLoading: true,
   txData: initial,
   txCurData: {},
   apiBasePath: initial,
@@ -74,6 +75,7 @@ const reducer: Reducer<State, MidgardActionTypes> = (
         ...state,
         assets: payload.assetDetailIndex,
         assetArray: payload.assetDetails,
+        assetLoading: false,
       };
     }
     case 'GET_POOLS_REQUEST':
