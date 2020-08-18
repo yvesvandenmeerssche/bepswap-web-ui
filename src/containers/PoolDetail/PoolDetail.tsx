@@ -133,7 +133,6 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
   const assetDetail = assets?.[tokenSymbol];
   const poolStats = getPoolData(tokenSymbol, poolInfo, assetDetail, priceIndex);
 
-  console.log('txData', txData);
   return (
     <ContentWrapper className="pool-detail-wrapper" transparent>
       <Row className="detail-info-header">
