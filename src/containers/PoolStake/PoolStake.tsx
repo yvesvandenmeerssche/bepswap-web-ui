@@ -757,6 +757,13 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       };
     });
 
+    const runeAssetData = assetData.find(item => item.asset === RUNE_SYMBOL);
+    let runeTotalAmount = '0';
+    if (runeAssetData) {
+      const { assetValue: runeAssetValue } = runeAssetData;
+      runeTotalAmount = formatTokenAmount(runeAssetValue);
+    }
+
     const targetAssetData = assetData.find(item => item.asset === tokenSymbol);
     let targetTotalAmount = '0';
     if (targetAssetData) {
@@ -867,6 +874,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                   priceIndex={priceIndex}
                   unit={basePriceAssetTicker}
                   onChange={handleChangeTokenAmount(RUNE_SYMBOL)}
+                  withTotalAmount
+                  totalAmount={runeTotalAmount}
                 />
                 <Slider
                   value={runePercent}
