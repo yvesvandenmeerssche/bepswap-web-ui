@@ -64,9 +64,26 @@ export const DropdownIconHolder = styled.div`
   padding-top: 5px;
 `;
 
+export const AssetLabelWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+`;
+
 export const AssetNameLabel = styled(Label).attrs({
   size: 'normal',
   weight: 'bold',
+})`
+  font-size: 14px;
+  letter-spacing: 0.75px;
+  transition: transform 0.2s ease-in-out;
+  text-transform: uppercase;
+  padding: 8px 16px 6px 16px;
+`;
+
+export const AssetAmountLabel = styled(Label).attrs({
+  size: 'normal',
+  weight: 'normal',
 })`
   font-size: 14px;
   letter-spacing: 0.75px;

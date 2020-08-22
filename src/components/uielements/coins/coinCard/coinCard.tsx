@@ -9,10 +9,13 @@ import Label from '../../label';
 import Selection from '../../selection';
 import CoinInputAdvanced from '../coinInputAdvanced';
 import CoinCardMenu from './coinCardMenu';
+
 import {
   AssetCardFooter,
   AssetData,
   AssetNameLabel,
+  AssetAmountLabel,
+  AssetLabelWrapper,
   CardBorderWrapper,
   CardTopRow,
   CoinCardWrapper,
@@ -68,6 +71,8 @@ type Props = {
   searchDisable: string[];
   withSelection: boolean;
   withSearch: boolean;
+  withTotalAmount?: boolean;
+  totalAmount?: string;
   onSelect: (value: number) => void;
   onChange: (value: BigNumber) => void;
   onChangeAsset: (asset: string) => void;
@@ -103,6 +108,8 @@ class CoinCard extends React.Component<Props, State> {
     title: '',
     withSelection: false,
     withSearch: false,
+    withTotalAmount: false,
+    totalAmount: '0',
     searchDisable: [],
     onSelect: (_: number) => {},
     onChange: (_: BigNumber) => {},
@@ -249,6 +256,8 @@ class CoinCard extends React.Component<Props, State> {
       title,
       max,
       withSelection,
+      withTotalAmount,
+      totalAmount,
       onSelect,
       onChange,
       onChangeAsset,
@@ -273,7 +282,14 @@ class CoinCard extends React.Component<Props, State> {
             visible={openDropdown}
           >
             <CardBorderWrapper>
-              <AssetNameLabel>{asset}</AssetNameLabel>
+              <AssetLabelWrapper>
+                <AssetNameLabel>
+                  {asset}
+                </AssetNameLabel>
+                {withTotalAmount && (
+                  <AssetAmountLabel>{totalAmount}</AssetAmountLabel>
+                )}
+              </AssetLabelWrapper>
               <HorizontalDivider />
               <CardTopRow>
                 <AssetData>

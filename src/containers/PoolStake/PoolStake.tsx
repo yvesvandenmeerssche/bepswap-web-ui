@@ -27,6 +27,7 @@ import {
   BaseAmount,
   tokenAmount,
   formatBaseAsTokenAmount,
+  formatTokenAmount,
   baseAmount,
   baseToToken,
 } from '@thorchain/asgardex-token';
@@ -756,6 +757,12 @@ const PoolStake: React.FC<Props> = (props: Props) => {
       };
     });
 
+    const targetAssetData = assetData.find(item => item.asset === tokenSymbol);
+    let targetTotalAmount = '0';
+    if (targetAssetData) {
+      const { assetValue: targetAssetValue } = targetAssetData;
+      targetTotalAmount = formatTokenAmount(targetAssetValue);
+    }
     // withdraw values
     const withdrawRate: number = widthdrawPercentage / 100;
     const { stakeUnits }: StakersAssetData = stakersAssetData;
@@ -910,6 +917,8 @@ const PoolStake: React.FC<Props> = (props: Props) => {
                   onChangeAsset={handleSelectTraget}
                   onChange={handleChangeTokenAmount(tokenSymbol)}
                   withSearch
+                  withTotalAmount
+                  totalAmount={targetTotalAmount}
                 />
               </div>
             </div>
