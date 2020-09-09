@@ -60,7 +60,6 @@ const initState: State = {
   assetLoading: true,
   statsLoading: false,
   txData: initial,
-  refreshTxStatus: false,
   txCurData: {},
   rtVolumeLoading: false,
   rtVolume: [],
@@ -296,24 +295,6 @@ const reducer: Reducer<State, MidgardActionTypes> = (
       return {
         ...state,
         txData: failure(action.payload),
-      };
-    case 'GET_TRANSACTION_WITH_REFRESH':
-      return {
-        ...state,
-        txData: pending,
-        refreshTxStatus: true,
-      };
-    case 'GET_TRANSACTION_WITH_REFRESH_SUCCESS':
-      return {
-        ...state,
-        txData: success(action.payload),
-        refreshTxStatus: false,
-      };
-    case 'GET_TRANSACTION_WITH_REFRESH_FAILED':
-      return {
-        ...state,
-        txData: failure(action.payload),
-        refreshTxStatus: false,
       };
     case 'GET_TX_BY_ADDRESS':
       return {

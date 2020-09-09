@@ -6,8 +6,7 @@ import DynamicCoin from '../dynamicCoin';
 import { CoinSize } from './types';
 import { Nothing, Maybe } from '../../../../types/bepswap';
 import { coinGroup } from '../../../../settings';
-import { coinIconsFromTrustWallet } from '../../../../settings/logoData';
-import { getTickerFormat } from '../../../../helpers/stringHelper';
+import { coinIconsFromTrustWallet } from '../coinIcon/iconList';
 
 type Props = {
   type: string;
@@ -18,13 +17,12 @@ type Props = {
 
 const Coin: React.FC<Props> = (props: Props): JSX.Element => {
   const {
-    type: coinType,
+    type,
     size = 'big',
     over = Nothing,
     className = '',
     ...otherProps
   } = props;
-  const type = getTickerFormat(coinType);
 
   const isDynamicIcon = useMemo(
     () =>

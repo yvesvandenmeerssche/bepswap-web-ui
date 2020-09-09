@@ -450,19 +450,6 @@ export function* getTransactions() {
   });
 }
 
-export function* getTransactionWithRefresh() {
-  yield takeEvery('GET_TRANSACTION_WITH_REFRESH', function*({
-    payload,
-  }: ReturnType<typeof actions.getTransaction>) {
-    try {
-      const data = yield call(tryGetTransactions, payload);
-      yield put(actions.getTransactionWithRefreshSuccess(data));
-    } catch (error) {
-      yield put(actions.getTransactionWithRefreshFailed(error));
-    }
-  });
-}
-
 function* tryGetTxByAddress(payload: GetTxByAddressPayload) {
   for (let i = 0; i < MIDGARD_MAX_RETRY; i++) {
     try {
@@ -701,7 +688,6 @@ export default function* rootSaga() {
     fork(getPoolAddress),
     fork(setBasePriceAsset),
     fork(getTransactions),
-    fork(getTransactionWithRefresh),
     fork(getTxByAddress),
     fork(getTxByAddressTxId),
     fork(getTxByAddressAsset),

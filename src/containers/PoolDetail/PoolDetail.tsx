@@ -46,7 +46,6 @@ import { PoolStatBar } from '../../components/statBar';
 import PoolChart from '../../components/poolChart';
 import TxTable from '../../components/transaction/txTable';
 import { getTickerFormat, getTokenName } from '../../helpers/stringHelper';
-import { PoolDetailStatusEnum } from '../../types/generated/midgard';
 
 type Props = {
   history: H.History;
@@ -196,7 +195,6 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
       ? bnOrZero(assets[busdToken]?.priceRune).toNumber()
       : 0;
     const poolPrice = getUSDPrice(poolPriceInRune, busdPriceInRune);
-    const poolStatus = poolInfo?.status ?? null;
 
     return (
       <Col className={`pool-caption-container ${viewMode}`}>
@@ -211,14 +209,12 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
               stake
             </Button>
           </Link>
-          {poolStatus === PoolDetailStatusEnum.Enabled && (
-            <Link to={swapUrl}>
-              <Button round="true">
-                <SwapOutlined />
-                swap
-              </Button>
-            </Link>
-          )}
+          <Link to={swapUrl}>
+            <Button round="true">
+              <SwapOutlined />
+              swap
+            </Button>
+          </Link>
         </PoolCaptionButtonsWrapper>
       </Col>
     );

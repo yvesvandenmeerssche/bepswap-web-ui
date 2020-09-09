@@ -70,7 +70,6 @@ type Props = {
   pools: string[];
   poolData: PoolDataMap;
   txData: TxDetailData;
-  refreshTxStatus: boolean;
   stats: StatsData;
   assets: AssetDetailMap;
   priceIndex: PriceDataIndex;
@@ -92,7 +91,6 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     pools,
     poolData,
     txData,
-    refreshTxStatus,
     stats,
     assets,
     priceIndex,
@@ -112,7 +110,6 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   const [poolStatus, selectPoolStatus] = useState<PoolDetailStatusEnum>(
     PoolDetailStatusEnum.Enabled,
   );
-  const [currentTxPage, setCurrentTxPage] = useState<number>(1);
   const history = useHistory();
 
   const themeType = useSelector((state: RootState) => state.App.themeType);
@@ -170,12 +167,8 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   );
 
   useEffect(() => {
-    if (refreshTxStatus) setCurrentTxPage(1);
-  }, [refreshTxStatus]);
-
-  useEffect(() => {
-    getTransactionInfo((currentTxPage - 1) * 10, 10);
-  }, [currentTxPage, getTransactionInfo]);
+    getTransactionInfo(0, 10);
+  }, [getTransactionInfo]);
 
   useEffect(() => {
     const timeStamp: number = moment().unix();
@@ -213,7 +206,6 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
 
   const handlePagination = useCallback(
     (page: number) => {
-      setCurrentTxPage(page);
       getTransactionInfo((page - 1) * 10, 10);
     },
     [getTransactionInfo],
@@ -341,6 +333,8 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         render: renderPoolPriceCell,
         sorter: (a: PoolData, b: PoolData) => a.poolPrice.minus(b.poolPrice),
         sortDirections: ['descend', 'ascend'],
+        defaultSortOrder:
+          poolStatus === PoolDetailStatusEnum.Enabled ? 'descend' : undefined,
       },
       {
         key: 'depth',
@@ -350,7 +344,8 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         sorter: (a: PoolData, b: PoolData) =>
           a.depth.amount().minus(b.depth.amount()),
         sortDirections: ['descend', 'ascend'],
-        defaultSortOrder: 'descend',
+        defaultSortOrder:
+          poolStatus !== PoolDetailStatusEnum.Enabled ? 'descend' : undefined,
       },
       {
         key: 'volume24',
@@ -465,8 +460,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         </Label>
         <TxTable txData={txData} />
         <StyledPagination
-          defaultCurrent={1}
-          current={currentTxPage}
+          defaultCurrent={0}
           total={txData._tag === 'RemoteSuccess' ? txData.value.count : 0}
           showSizeChanger={false}
           onChange={handlePagination}
@@ -489,7 +483,6 @@ export default compose(
       poolDataLoading: state.Midgard.poolDataLoading,
       priceIndex: state.Midgard.priceIndex,
       txData: state.Midgard.txData,
-      refreshTxStatus: state.Midgard.refreshTxStatus,
       assetData: state.Wallet.assetData,
       user: state.Wallet.user,
       rtVolumeLoading: state.Midgard.rtVolumeLoading,

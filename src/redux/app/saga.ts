@@ -44,7 +44,8 @@ export function* getPoolViewData() {
     yield put(midgardActions.getStats());
     yield put(midgardActions.getNetworkInfo());
     yield put(walletActions.refreshWallet());
-    yield put(midgardActions.getTransactionWithRefresh({ offset: 0, limit: 10 }));
+
+    yield put(midgardActions.getTransaction({ offset: 0, limit: 10 }));
 
     const timeStamp: number = moment().unix();
     yield put(
