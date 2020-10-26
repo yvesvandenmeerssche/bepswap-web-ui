@@ -2,8 +2,8 @@ import React, { Dispatch, SetStateAction } from 'react';
 import moment from 'moment';
 import { defaults } from 'react-chartjs-2';
 import Loader from '../utility/loaders/chart';
-import { CodeIcon } from '../icons';
 import { abbreviateNumber } from '../../helpers/numberHelper';
+import { CodeIcon } from '../icons';
 
 import {
   ChartContainer,
@@ -13,9 +13,9 @@ import {
   HeaderToggle,
   LineChartContainer,
   LineChart,
+  BlurWrapper,
   ComingSoonWrapper,
   ComingSoonText,
-  BlurWrapper,
 } from './poolChart.style';
 
 type ChartDetail = {
@@ -30,6 +30,7 @@ type ChartInfo = {
 };
 
 type Props = {
+  hasLiquidity?: boolean;
   chartData: ChartInfo;
   textColor: string;
   lineColor: string;
@@ -102,6 +103,7 @@ defaults.global.defaultFontSize = 14;
 defaults.global.defaultFontStyle = 'normal';
 
 const renderChart = (
+  hasLiquidity: boolean,
   chartData: ChartInfo,
   type: string,
   time: string,
@@ -278,15 +280,16 @@ const renderChart = (
 
   return (
     <LineChartContainer>
-      {type === 'LIQUIDITY' && (
+      {!hasLiquidity && type === 'LIQUIDITY' && (
         <ComingSoonWrapper>
           <CodeIcon />
           <ComingSoonText>Coming Soon...</ComingSoonText>
         </ComingSoonWrapper>
       )}
+
       {chartData?.loading && <Loader />}
       {!chartData?.loading && (
-        <BlurWrapper isBlur={type === 'LIQUIDITY'}>
+        <BlurWrapper isBlur={type === 'LIQUIDITY' && !hasLiquidity}>
           <LineChart data={data} options={options} />
         </BlurWrapper>
       )}
@@ -296,6 +299,7 @@ const renderChart = (
 
 const PoolChart: React.FC<Props> = (props: Props): JSX.Element => {
   const {
+    hasLiquidity = true,
     chartData,
     textColor,
     lineColor,
@@ -316,6 +320,7 @@ const PoolChart: React.FC<Props> = (props: Props): JSX.Element => {
     >
       {renderHeader(chartType, chartTime, setChartType, setChartTime)}
       {renderChart(
+        hasLiquidity,
         chartData,
         chartType,
         chartTime,
