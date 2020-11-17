@@ -212,6 +212,19 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     getRTVolume({});
   }, [getRTVolume]);
 
+  const handleSelectPoolStatus = useCallback(
+    (status: PoolDetailStatusEnum) => {
+      selectPoolStatus(status);
+
+      if (status === PoolDetailStatusEnum.Enabled) {
+        getPools('enabled');
+      } else {
+        getPools('bootstrap');
+      }
+    },
+    [selectPoolStatus, getPools],
+  );
+
   const handleNewPool = () => {
     if (!wallet) {
       showNotification({
@@ -251,6 +264,14 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     },
     [],
   );
+
+  const handleRefresh = useCallback(() => {
+    if (poolStatus === PoolDetailStatusEnum.Enabled) {
+      getPools('enabled');
+    } else {
+      getPools('bootstrap');
+    }
+  }, [getPools, poolStatus]);
 
   const renderTextCell = useCallback(
     (text: string) => {
@@ -320,7 +341,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
       title: (
         <ActionHeader>
           <Button
-            onClick={getPools}
+            onClick={handleRefresh}
             typevalue="outline"
             round="true"
             color={!isValidFundCaps ? 'error' : statusColor}
@@ -399,12 +420,12 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     }),
     [
       statusColor,
-      getPools,
       isValidFundCaps,
       poolStatus,
       isOutboundDelayed,
       getOutboundBusyTooltip,
       withOutboundTooltip,
+      handleRefresh,
     ],
   );
 
@@ -595,7 +616,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         />
       </div>
       <PoolViewTools>
-        <PoolFilter selected={poolStatus} onClick={selectPoolStatus} />
+        <PoolFilter selected={poolStatus} onClick={handleSelectPoolStatus} />
         <div className="add-new-pool" onClick={handleNewPool}>
           <AddIcon />
           {isDesktopView && (
