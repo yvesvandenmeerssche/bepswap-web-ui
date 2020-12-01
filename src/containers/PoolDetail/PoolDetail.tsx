@@ -1,21 +1,49 @@
 /* eslint-disable no-underscore-dangle */
 import React, { useEffect, useCallback, useMemo, useState } from 'react';
-import { compose } from 'redux';
-import { Row, Col, Grid, Popover } from 'antd';
+
 import { connect } from 'react-redux';
-import { get as _get } from 'lodash';
 import { withRouter, useParams, Link, useHistory } from 'react-router-dom';
-import { Token } from '@thorchain/asgardex-binance';
-import { bnOrZero } from '@thorchain/asgardex-util';
 
 import { SwapOutlined, DatabaseOutlined } from '@ant-design/icons';
+import { Token } from '@thorchain/asgardex-binance';
+import { bnOrZero } from '@thorchain/asgardex-util';
+import { Row, Col, Grid, Popover } from 'antd';
+import { get as _get } from 'lodash';
+import { compose } from 'redux';
 
-import useNetwork from '../../hooks/useNetwork';
+import PoolChart from 'components/poolChart';
+import {
+  ChartDetail,
+  ChartValues,
+  ChartData,
+} from 'components/poolChart/types';
+import { PoolStatBar } from 'components/statBar';
+import TxTable from 'components/transaction/txTable';
+import Button from 'components/uielements/button';
+import Label from 'components/uielements/label';
 
-import Label from '../../components/uielements/label';
-import Button from '../../components/uielements/button';
+import * as midgardActions from 'redux/midgard/actions';
+import {
+  AssetDetailMap,
+  PoolDataMap,
+  PriceDataIndex,
+  TxDetailData,
+  RTAggregateData,
+  PoolEarningDetailsMap,
+} from 'redux/midgard/types';
+import { RootState } from 'redux/store';
 
-import * as midgardActions from '../../redux/midgard/actions';
+import useNetwork from 'hooks/useNetwork';
+import usePrice from 'hooks/usePrice';
+
+import { getAppContainer } from 'helpers/elementHelper';
+import { getTokenName } from 'helpers/stringHelper';
+import { getPoolData, isValidPool } from 'helpers/utils/poolUtils';
+import { PoolData } from 'helpers/utils/types';
+
+import { RUNE_SYMBOL } from 'settings/assetData';
+
+import { PoolDetailStatusEnum } from 'types/generated/midgard';
 
 import {
   ContentWrapper,
@@ -30,48 +58,12 @@ import {
   PopoverIcon,
 } from './PoolDetail.style';
 
-import { getPoolData, isValidPool } from '../../helpers/utils/poolUtils';
-import { PoolData } from '../../helpers/utils/types';
-import { RootState } from '../../redux/store';
-import { getAppContainer } from '../../helpers/elementHelper';
-
-import {
-  AssetDetailMap,
-  PoolDataMap,
-  PriceDataIndex,
-  TxDetailData,
-  RTAggregateData,
-} from '../../redux/midgard/types';
-import { RUNE_SYMBOL } from '../../settings/assetData';
-import { PoolStatBar } from '../../components/statBar';
-import PoolChart from '../../components/poolChart';
-import TxTable from '../../components/transaction/txTable';
-import { getTokenName } from '../../helpers/stringHelper';
-import { PoolDetailStatusEnum } from '../../types/generated/midgard';
-
-import usePrice from '../../hooks/usePrice';
-
-type ChartDataValue = {
-  time: number;
-  value: string;
-};
-
-type ChartData = {
-  liquidity: {
-    allTime: ChartDataValue[];
-    week: ChartDataValue[];
-  };
-  volume: {
-    allTime: ChartDataValue[];
-    week: ChartDataValue[];
-  };
-  loading: boolean;
-};
-
 type Props = {
   txData: TxDetailData;
   poolDetailedData: PoolDataMap;
   poolDetailedDataLoading: boolean;
+  poolEarningDetails: PoolEarningDetailsMap;
+  poolEarningDetailsLoading: boolean;
   assets: AssetDetailMap;
   pools: string[];
   priceIndex: PriceDataIndex;
@@ -82,6 +74,7 @@ type Props = {
   getRTAggregate: typeof midgardActions.getRTAggregateByAsset;
   getTxByAsset: typeof midgardActions.getTxByAsset;
   getPoolDetailByAsset: typeof midgardActions.getPoolDetailByAsset;
+  getPoolEarningDetails: typeof midgardActions.getPoolEarningDetails;
 };
 
 const PoolDetail: React.FC<Props> = (props: Props) => {
@@ -89,6 +82,8 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
     pools,
     poolDetailedData,
     poolDetailedDataLoading,
+    poolEarningDetails,
+    poolEarningDetailsLoading,
     txData,
     priceIndex,
     rtAggregateLoading,
@@ -98,10 +93,12 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
     getRTAggregate,
     getTxByAsset,
     getPoolDetailByAsset,
+    getPoolEarningDetails,
   } = props;
 
   const { getUSDPrice, pricePrefix, runePrice } = usePrice();
   const [currentTxPage, setCurrentTxPage] = useState<number>(1);
+  const [selectedChart, setSelectedChart] = useState('Volume');
 
   const {
     isValidFundCaps,
@@ -117,23 +114,26 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
   const tokenSymbol = symbol.toUpperCase();
 
   const chartData: ChartData = useMemo(() => {
+    const defaultChartValues: ChartValues = {
+      allTime: [],
+      week: [],
+    };
     if (rtAggregateLoading) {
       return {
-        liquidity: {
-          allTime: [],
-          week: [],
+        Liquidity: {
+          values: defaultChartValues,
+          loading: true,
         },
-        volume: {
-          allTime: [],
-          week: [],
+        Volume: {
+          values: defaultChartValues,
+          loading: true,
         },
-        loading: true,
       };
     }
     const { allTimeData, weekData } = rtAggregate;
 
-    const volumeSeriesDataAT: ChartDataValue[] = [];
-    const liquiditySeriesDataAT: ChartDataValue[] = [];
+    const volumeSeriesDataAT: ChartDetail[] = [];
+    const liquiditySeriesDataAT: ChartDetail[] = [];
 
     allTimeData.forEach(data => {
       const time = data?.time ?? 0;
@@ -150,8 +150,8 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
       liquiditySeriesDataAT.push(liquidityData);
     });
 
-    const volumeSeriesDataWeek: ChartDataValue[] = [];
-    const liquiditySeriesDataWeek: ChartDataValue[] = [];
+    const volumeSeriesDataWeek: ChartDetail[] = [];
+    const liquiditySeriesDataWeek: ChartDetail[] = [];
 
     weekData.forEach(data => {
       const time = data?.time ?? 0;
@@ -169,17 +169,35 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
     });
 
     return {
-      liquidity: {
-        allTime: liquiditySeriesDataAT,
-        week: liquiditySeriesDataWeek,
+      Liquidity: {
+        values: {
+          allTime: liquiditySeriesDataAT,
+          week: liquiditySeriesDataWeek,
+        },
+        loading: false,
+        type: 'line',
       },
-      volume: {
-        allTime: volumeSeriesDataAT,
-        week: volumeSeriesDataWeek,
+      Volume: {
+        values: {
+          allTime: volumeSeriesDataAT,
+          week: volumeSeriesDataWeek,
+        },
+        loading: false,
+        type: 'bar',
       },
-      loading: false,
     };
   }, [rtAggregate, rtAggregateLoading, getUSDPrice]);
+
+  const renderChart = () => (
+    <ChartContainer>
+      <PoolChart
+        chartIndexes={['Liquidity', 'Volume']}
+        chartData={chartData}
+        selectedIndex={selectedChart}
+        selectChart={setSelectedChart}
+      />
+    </ChartContainer>
+  );
 
   const getTransactionInfo = useCallback(
     (asset: string, offset: number, limit: number) => {
@@ -188,16 +206,15 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
     [getTxByAsset],
   );
 
-  const getPoolDetailInfo = useCallback(
-    (asset: string) => {
-      getPoolDetailByAsset({ asset });
-    },
-    [getPoolDetailByAsset],
-  );
+  useEffect(() => {
+    getPoolDetailByAsset({
+      asset: tokenSymbol,
+    });
+  }, [getPoolDetailByAsset, tokenSymbol]);
 
   useEffect(() => {
-    getPoolDetailInfo(tokenSymbol);
-  }, [getPoolDetailInfo, tokenSymbol]);
+    getPoolEarningDetails(tokenSymbol);
+  }, [getPoolEarningDetails, tokenSymbol]);
 
   useEffect(() => {
     getTransactionInfo(tokenSymbol, 0, 10);
@@ -293,23 +310,23 @@ const PoolDetail: React.FC<Props> = (props: Props) => {
   };
 
   const poolInfo = poolDetailedData[tokenSymbol] || {};
+  const poolEarning = poolEarningDetails[tokenSymbol] || {};
   const poolStats = getPoolData(tokenSymbol, poolInfo, priceIndex);
 
   return (
     <ContentWrapper className="pool-detail-wrapper" transparent>
-      <Row className="detail-info-header">{renderDetailCaption(poolStats)}</Row>
-      <Row className="detail-info-view">
+      <Row>{renderDetailCaption(poolStats)}</Row>
+      <Row>
         <Col xs={24} sm={24} md={8}>
           <PoolStatBar
             stats={poolStats}
             poolInfo={poolInfo}
-            loading={poolDetailedDataLoading}
+            poolEarning={poolEarning}
+            loading={poolDetailedDataLoading && poolEarningDetailsLoading}
           />
         </Col>
         <Col xs={24} sm={24} md={16}>
-          <ChartContainer>
-            <PoolChart chartData={chartData} />
-          </ChartContainer>
+          {renderChart()}
         </Col>
       </Row>
       <Row className="detail-transaction-view">
@@ -338,6 +355,8 @@ export default compose(
       tokenList: state.Binance.tokenList,
       poolDetailedData: state.Midgard.poolDetailedData,
       poolDetailedDataLoading: state.Midgard.poolDetailedDataLoading,
+      poolEarningDetails: state.Midgard.poolEarningDetails,
+      poolEarningDetailsLoading: state.Midgard.poolEarningDetailsLoading,
       refreshTxStatus: state.Midgard.refreshTxStatus,
       pools: state.Midgard.pools,
       priceIndex: state.Midgard.priceIndex,
@@ -349,6 +368,7 @@ export default compose(
       getRTAggregate: midgardActions.getRTAggregateByAsset,
       getTxByAsset: midgardActions.getTxByAsset,
       getPoolDetailByAsset: midgardActions.getPoolDetailByAsset,
+      getPoolEarningDetails: midgardActions.getPoolEarningDetails,
     },
   ),
   withRouter,

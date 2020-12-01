@@ -8,16 +8,15 @@ import {
   take,
 } from 'redux-saga/effects';
 
-import * as actions from './actions';
+import { BUSD_SYMBOL } from 'settings/assetData';
+
+import { TxDetailsTypeEnum } from 'types/generated/midgard';
+
 import * as binanceActions from '../binance/actions';
 import * as midgardActions from '../midgard/actions';
-import * as walletActions from '../wallet/actions';
-
 import { RootState } from '../store';
-
-import { TxDetailsTypeEnum } from '../../types/generated/midgard';
-
-import { BUSD_SYMBOL } from '../../settings/assetData';
+import * as walletActions from '../wallet/actions';
+import * as actions from './actions';
 
 // initial data used for bepswap
 export function* getBEPSwapData() {
@@ -58,7 +57,7 @@ export function* getPoolViewData() {
   });
 }
 
-// refresh data needed for pool view homepage
+// refresh data needed for pool detail page
 export function* getPoolDetailViewData() {
   yield takeEvery('GET_POOL_DETAIL_VIEW_DATA', function*({
     payload,
@@ -80,6 +79,8 @@ export function* getPoolDetailViewData() {
           asset: payload,
         }),
       );
+
+      yield put(midgardActions.getPoolEarningDetails(payload));
     }
   });
 }

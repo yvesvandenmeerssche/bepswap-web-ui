@@ -1,10 +1,9 @@
 /* eslint-disable no-underscore-dangle */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import * as H from 'history';
-import { compose } from 'redux';
+
 import { connect } from 'react-redux';
 import { withRouter, useHistory, Link } from 'react-router-dom';
-import { Row, Col, Grid, Popover } from 'antd';
+
 import {
   SearchOutlined,
   SyncOutlined,
@@ -13,14 +12,52 @@ import {
 } from '@ant-design/icons';
 import { Token } from '@thorchain/asgardex-binance';
 import { bnOrZero } from '@thorchain/asgardex-util';
+import { Row, Col, Grid, Popover } from 'antd';
+import * as H from 'history';
+import { compose } from 'redux';
 
-import Label from '../../components/uielements/label';
-import AddIcon from '../../components/uielements/addIcon';
-import CoinIcon from '../../components/uielements/coins/coinIcon';
-import Button from '../../components/uielements/button';
-import Input from '../../components/uielements/input';
-import PoolFilter from '../../components/poolFilter';
-import StatBar from '../../components/statBar';
+import PoolChart from 'components/poolChart';
+import {
+  ChartDetail,
+  ChartValues,
+  ChartData,
+} from 'components/poolChart/types';
+import PoolFilter from 'components/poolFilter';
+import StatBar from 'components/statBar';
+import TxTable from 'components/transaction/txTable';
+import AddIcon from 'components/uielements/addIcon';
+import Button from 'components/uielements/button';
+import CoinIcon from 'components/uielements/coins/coinIcon';
+import Input from 'components/uielements/input';
+import Label from 'components/uielements/label';
+import showNotification from 'components/uielements/notification';
+import LabelLoader from 'components/utility/loaders/label';
+
+import * as midgardActions from 'redux/midgard/actions';
+import { PoolDataMap, TxDetailData, RTVolumeData } from 'redux/midgard/types';
+import { getAssetFromString } from 'redux/midgard/utils';
+import { RootState } from 'redux/store';
+import { AssetData, User } from 'redux/wallet/types';
+
+import useNetwork from 'hooks/useNetwork';
+import usePrice from 'hooks/usePrice';
+
+import { getAppContainer } from 'helpers/elementHelper';
+import { getTickerFormat, getTokenName } from 'helpers/stringHelper';
+import {
+  getAvailableTokensToCreate,
+  getPoolData,
+} from 'helpers/utils/poolUtils';
+import { PoolData } from 'helpers/utils/types';
+
+import { RUNE_SYMBOL } from 'settings/assetData';
+
+import { Maybe } from 'types/bepswap';
+import {
+  PoolDetailStatusEnum,
+  StatsData,
+  NetworkInfo,
+} from 'types/generated/midgard/api';
 
 import {
   ContentWrapper,
@@ -34,39 +71,6 @@ import {
   PopoverContent,
   PopoverIcon,
 } from './PoolView.style';
-import {
-  getAvailableTokensToCreate,
-  getPoolData,
-} from '../../helpers/utils/poolUtils';
-import { PoolData } from '../../helpers/utils/types';
-import { getTickerFormat, getTokenName } from '../../helpers/stringHelper';
-import { getAppContainer } from '../../helpers/elementHelper';
-
-import * as midgardActions from '../../redux/midgard/actions';
-import { RootState } from '../../redux/store';
-import { AssetData, User } from '../../redux/wallet/types';
-import {
-  PoolDataMap,
-  TxDetailData,
-  RTVolumeData,
-} from '../../redux/midgard/types';
-import { getAssetFromString } from '../../redux/midgard/utils';
-import { Maybe } from '../../types/bepswap';
-import {
-  PoolDetailStatusEnum,
-  StatsData,
-  NetworkInfo,
-} from '../../types/generated/midgard/api';
-import showNotification from '../../components/uielements/notification';
-import { RUNE_SYMBOL } from '../../settings/assetData';
-
-import LabelLoader from '../../components/utility/loaders/label';
-import PoolChart from '../../components/poolChart';
-import TxTable from '../../components/transaction/txTable';
-
-import { generateRandomTimeSeries } from './utils';
-import usePrice from '../../hooks/usePrice';
-import useNetwork from '../../hooks/useNetwork';
 import { PoolViewData } from './types';
 
 type Props = {
@@ -118,6 +122,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
   );
   const [currentTxPage, setCurrentTxPage] = useState<number>(1);
   const [keyword, setKeyword] = useState<string>('');
+  const [selectedChart, setSelectedChart] = useState('Volume');
 
   const isDesktopView = Grid.useBreakpoint()?.md ?? true;
   const history = useHistory();
@@ -133,51 +138,65 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
     getOutboundBusyTooltip,
   } = useNetwork();
 
-  const chartData = useMemo(() => {
+  const chartData: ChartData = useMemo(() => {
+    const defaultChartValues: ChartValues = {
+      allTime: [],
+      week: [],
+    };
+
     if (rtVolumeLoading) {
       return {
-        liquidity: {
-          allTime: [],
-          week: [],
+        Liquidity: {
+          comingSoon: true,
         },
-        volume: {
-          allTime: [],
-          week: [],
+        Volume: {
+          values: defaultChartValues,
+          loading: true,
         },
-        loading: true,
       };
     }
 
     const { allTimeData, weekData } = rtVolume;
 
-    const allTimeVolumeData = allTimeData?.map(volume => {
-      return {
-        time: volume?.time ?? 0,
-        value: getUSDPrice(bnOrZero(volume?.totalVolume)),
-      };
-    });
+    const allTimeVolumeData: ChartDetail[] =
+      allTimeData?.map(volume => {
+        return {
+          time: volume?.time ?? 0,
+          value: getUSDPrice(bnOrZero(volume?.totalVolume)),
+        };
+      }) ?? [];
 
-    const weekVolumeData = weekData?.map(volume => {
-      return {
-        time: volume?.time ?? 0,
-        value: getUSDPrice(bnOrZero(volume?.totalVolume)),
-      };
-    });
-
-    const randomSeries = generateRandomTimeSeries(0, 15, '2020-05-01');
+    const weekVolumeData: ChartDetail[] =
+      weekData?.map(volume => {
+        return {
+          time: volume?.time ?? 0,
+          value: getUSDPrice(bnOrZero(volume?.totalVolume)),
+        };
+      }) ?? [];
 
     return {
-      liquidity: {
-        allTime: randomSeries,
-        week: randomSeries,
+      Liquidity: {
+        comingSoon: true,
       },
-      volume: {
-        allTime: allTimeVolumeData,
-        week: weekVolumeData,
+      Volume: {
+        values: {
+          allTime: allTimeVolumeData,
+          week: weekVolumeData,
+        },
+        loading: false,
+        type: 'bar',
       },
-      loading: false,
     };
   }, [rtVolume, rtVolumeLoading, getUSDPrice]);
+
+  const renderChart = () => (
+    <PoolChart
+      chartIndexes={['Liquidity', 'Volume']}
+      chartData={chartData}
+      selectedIndex={selectedChart}
+      selectChart={setSelectedChart}
+    />
+  );
 
   const getTransactionInfo = useCallback(
     (offset: number, limit: number) => {
@@ -608,9 +627,7 @@ const PoolView: React.FC<Props> = (props: Props): JSX.Element => {
         stats={stats}
         networkInfo={networkInfo}
       />
-      <div>
-        <PoolChart hasLiquidity={false} chartData={chartData} />
-      </div>
+      <div>{renderChart()}</div>
       <PoolViewTools>
         <PoolFilter selected={poolStatus} onClick={handleSelectPoolStatus} />
         <div className="add-new-pool" onClick={handleNewPool}>
