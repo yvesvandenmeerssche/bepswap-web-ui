@@ -1,18 +1,21 @@
-import { Reducer } from 'redux';
 import { initial, success, pending, failure } from '@devexperts/remote-data-ts';
-import { uniqWith as _uniqWith, isEqual as _isEqual } from 'lodash';
 import { bn } from '@thorchain/asgardex-util';
+import { uniqWith as _uniqWith, isEqual as _isEqual } from 'lodash';
+import { Reducer } from 'redux';
+
+import { getBasePriceAsset } from 'helpers/webStorageHelper';
+
+import { Nothing } from 'types/bepswap';
+import { StakersAssetData } from 'types/generated/midgard';
+
+import { MidgardActionTypes } from './actions';
+import { State, StakerPoolData } from './types';
 import {
   getBNBPoolAddress,
   getPoolAddress,
   getPriceIndex,
   getAssetSymbolFromPayload,
 } from './utils';
-import { getBasePriceAsset } from '../../helpers/webStorageHelper';
-import { State, StakerPoolData } from './types';
-import { MidgardActionTypes } from './actions';
-import { Nothing } from '../../types/bepswap';
-import { StakersAssetData } from '../../types/generated/midgard';
 
 // set base price asset to BUSD as a default
 const basePriceAsset = getBasePriceAsset() || 'BUSD';
@@ -27,6 +30,11 @@ const initState: State = {
   poolAddressLoading: false,
   poolData: {},
   poolDetailedData: {},
+  poolEarningDetails: {},
+  poolLoading: true,
+  poolDataLoading: false,
+  poolDetailedDataLoading: true,
+  poolEarningDetailsLoading: false,
   stats: {
     dailyActiveUsers: '0',
     dailyTx: '0',
@@ -54,9 +62,6 @@ const initState: State = {
     RUNE: bn(1),
   },
   error: null,
-  poolLoading: true,
-  poolDataLoading: false,
-  poolDetailedDataLoading: true,
   assetLoading: true,
   statsLoading: false,
   txData: initial,
@@ -159,6 +164,31 @@ const reducer: Reducer<State, MidgardActionTypes> = (
       return {
         ...state,
         statsLoading: false,
+        error: action.payload,
+      };
+    case 'GET_POOL_EARNING_DETAILS':
+      return {
+        ...state,
+        poolEarningDetailsLoading: true,
+      };
+    case 'GET_POOL_EARNING_DETAILS_SUCCESS': {
+      const { payload } = action;
+      const { symbol, poolEarningDetail } = payload;
+
+      return {
+        ...state,
+        poolEarningDetails: {
+          ...state.poolEarningDetails,
+          [symbol]: poolEarningDetail,
+        },
+        poolEarningDetailsLoading: false,
+        error: Nothing,
+      };
+    }
+    case 'GET_POOL_EARNING_DETAILS_FAILED':
+      return {
+        ...state,
+        poolEarningDetailsLoading: false,
         error: action.payload,
       };
     case 'GET_POOL_DATA_REQUEST':

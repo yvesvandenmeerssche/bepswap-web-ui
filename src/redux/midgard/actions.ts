@@ -1,4 +1,13 @@
-import { AssetSymbol } from '../../types/bepswap';
+import { AssetSymbol } from 'types/bepswap';
+import {
+  PoolDetail,
+  StatsData,
+  StakersAssetData,
+  ThorchainEndpoints,
+  InlineResponse2001,
+  NetworkInfo,
+} from 'types/generated/midgard';
+
 import {
   GetStakerPoolDataPayload,
   PriceDataIndex,
@@ -14,18 +23,11 @@ import {
   RTAggregateData,
   GetRTAggregateByAssetPayload,
   GetPoolDetailByAssetPayload,
+  GetPoolEarningDetailsPayload,
   ThorchainData,
   PoolStatus,
   PoolDataMap,
 } from './types';
-import {
-  PoolDetail,
-  StatsData,
-  StakersAssetData,
-  ThorchainEndpoints,
-  InlineResponse2001,
-  NetworkInfo,
-} from '../../types/generated/midgard';
 
 export const getPools = (payload?: PoolStatus) =>
   ({ type: 'GET_POOLS_REQUEST', payload } as const);
@@ -171,6 +173,15 @@ export const getStatsSuccess = (payload: StatsData) =>
 export const getStatsFailed = (payload: Error) =>
   ({ type: 'GET_STATS_FAILED', payload } as const);
 
+export const getPoolEarningDetails = (payload: string) =>
+  ({ type: 'GET_POOL_EARNING_DETAILS', payload } as const);
+
+export const getPoolEarningDetailsSuccess = (payload: GetPoolEarningDetailsPayload) =>
+  ({ type: 'GET_POOL_EARNING_DETAILS_SUCCESS', payload } as const);
+
+export const getPoolEarningDetailsFailed = (payload: Error) =>
+  ({ type: 'GET_POOL_EARNING_DETAILS_FAILED', payload } as const);
+
 export const getRTVolumeByAsset = (payload: GetRTVolumeByAssetPayload) =>
   ({ type: 'GET_RT_VOLUME_BY_ASSET', payload } as const);
 
@@ -242,6 +253,9 @@ export type MidgardActionTypes = ReturnType<
   | typeof getStats
   | typeof getStatsSuccess
   | typeof getStatsFailed
+  | typeof getPoolEarningDetails
+  | typeof getPoolEarningDetailsSuccess
+  | typeof getPoolEarningDetailsFailed
   | typeof getRTVolumeByAsset
   | typeof getRTVolumeByAssetSuccess
   | typeof getRTVolumeByAssetFailed
