@@ -18,6 +18,7 @@ import BigNumber from 'bignumber.js';
 import * as H from 'history';
 import { compose } from 'redux';
 
+import Helmet from 'components/helmet';
 import PrivateModal from 'components/modals/privateModal';
 import SlipVerifyModal from 'components/modals/slipVerifyModal';
 import AddressInput from 'components/uielements/addressInput';
@@ -557,11 +558,16 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
 
   // called when pool address is loaded successfully
   const handlePoolAddressConfirmed = useCallback(() => {
+    // if private modal is closed, don't process the tx
+    if (!openPrivateModal) {
+      return;
+    }
+
     // if wallet type is walletconnect, send the swap tx sign request to trustwallet
     if (user?.type === 'walletconnect') {
       handleConfirmSwap();
     }
-  }, [user, handleConfirmSwap]);
+  }, [user, openPrivateModal, handleConfirmSwap]);
 
   const handleChangeSwapType = useCallback((toSend: boolean) => {
     const view = toSend ? SwapSendView.SEND : SwapSendView.DETAIL;
@@ -743,8 +749,13 @@ const SwapSend: React.FC<Props> = (props: Props): JSX.Element => {
     ? `SLIP ${slip.toFormat(2, BigNumber.ROUND_DOWN)}%`
     : Nothing;
 
+
+  const pageTitle = `Swap ${swapSource.toUpperCase()} to ${swapTarget.toUpperCase()}`;
+  const metaDescription = pageTitle;
+
   return (
     <ContentWrapper className="swap-detail-wrapper">
+      <Helmet title={pageTitle} content={metaDescription} />
       <SwapAssetCard>
         <ContentTitle>
           swapping {swapSource} &gt;&gt; {swapTarget}
